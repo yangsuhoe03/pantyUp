@@ -1,13 +1,17 @@
 const express = require('express');
 const http = require('http');
-const path = require('path');
 const { Server } = require('socket.io');
-
+const path = require('path');
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);  // Socket.IO 서버 생성
+const PORT = process.env.PORT || 3000;
 
-const PORT = 3000;
+const io = new Server(server, {
+  cors: {
+    origin: "*", // 개발 시엔 전체 허용, 배포 시엔 특정 도메인으로 제한
+    methods: ["GET", "POST"]
+  }
+});
 
 // 🔹 Brotli 압축 파일 MIME 설정
 app.use((req, res, next) => {
@@ -36,23 +40,13 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('✅ Unity 클라이언트 연결됨');
 
-  socket.on('unityToServer', (msg) => {
-    console.log('📩 Unity에서 수신:', msg);
 
-    // 메시지를 Unity로 다시 전송
-    socket.emit('serverToUnity', `서버가 받은 메시지: ${msg}`);
-  });
+  
     socket.on('SendPos', (pos) => {
     console.log('3');
     socket.emit('ServerToPos', pos);
 
   });
-
-
-
-
-
-
 
 
   socket.on('disconnect', () => {

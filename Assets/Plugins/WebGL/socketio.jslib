@@ -11,34 +11,16 @@ mergeInto(LibraryManager.library, {
       console.log(" Socket connssssssssssssssssssssected.");
     });
 
-    socket.on('serverToUnity', function (data) {
-      console.log(" Received from server:", data);
-      SendMessage('SocketManager', 'ReceiveMessage', data);
-    });
-
-    socket.on('ServerToPos', function(pos){
+    socket.on('ServerToPos', function(Pos){
+      var pos = UTF8ToString(Pos); 
       console.log("4");
       SendMessage('SocketManager', 'ReceivePos', pos);
     })
   },
 
-  SendMessageToServer: function (ptr) {
-    const message = UTF8ToString(ptr);
-    if (window.socket) {
-      console.log(" Sending to server:", message);
-      socket.emit('unityToServer', message);
-    } else {
-      console.warn("Socket not connected.");
-    }
-  },
-
   SendPosToServer: function (Pos) {
+    var pos = UTF8ToString(Pos); 
     console.log("2");
-    socket.emit('SendPos', Pos);
+    socket.emit('SendPos', pos);
   }
-
-
-
-
-
 });

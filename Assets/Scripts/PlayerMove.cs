@@ -7,18 +7,20 @@ public class PlayerMove: MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
 
-    GameObject multiManager;
+    GameObject SocketManager;
     private Vector3 lastSentPosition;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        multiManager = GameObject.Find("MultiManager");
+        SocketManager = GameObject.Find("SocketManager");
+        Debug.Log(-1);
         lastSentPosition = transform.position;
     }
 
     void Update()
     {
+
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -29,6 +31,7 @@ public class PlayerMove: MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            Debug.Log("Jump");
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;  
         }
@@ -36,10 +39,13 @@ public class PlayerMove: MonoBehaviour
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.05f)
         {
-            if (multiManager != null)
+            Debug.Log(0);
+            if (SocketManager != null)
             {
+
                 string pos = $"{transform.position.x} {transform.position.y} {transform.position.z}";
-                multiManager.GetComponent<SocketManager>().SendPlayerPosition(pos);
+                Debug.Log(pos);
+                SocketManager.GetComponent<SocketManager>().SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
             }
         }
