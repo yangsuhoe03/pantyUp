@@ -42,6 +42,18 @@ io.on('connection', (socket) => {
     // 메시지를 Unity로 다시 전송
     socket.emit('serverToUnity', `서버가 받은 메시지: ${msg}`);
   });
+    socket.on('SendPos', (pos) => {
+    console.log('3');
+    socket.emit('ServerToPos', pos);
+
+  });
+
+
+
+
+
+
+
 
   socket.on('disconnect', () => {
     console.log('❌ 클라이언트 연결 종료');
@@ -52,3 +64,4 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
 });
+//<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>

@@ -8,13 +8,18 @@ mergeInto(LibraryManager.library, {
     window.socket = io();
 
     socket.on('connect', function () {
-      console.log(" Socket connected.");
+      console.log(" Socket connssssssssssssssssssssected.");
     });
 
     socket.on('serverToUnity', function (data) {
       console.log(" Received from server:", data);
       SendMessage('SocketManager', 'ReceiveMessage', data);
     });
+
+    socket.on('ServerToPos', function(pos){
+      console.log("4");
+      SendMessage('SocketManager', 'ReceivePos', pos);
+    })
   },
 
   SendMessageToServer: function (ptr) {
@@ -25,5 +30,15 @@ mergeInto(LibraryManager.library, {
     } else {
       console.warn("Socket not connected.");
     }
+  },
+
+  SendPosToServer: function (Pos) {
+    console.log("2");
+    socket.emit('SendPos', Pos);
   }
+
+
+
+
+
 });
