@@ -36,14 +36,22 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+
+let Players = {}
 // 🔹 Socket.IO 통신 처리
 io.on('connection', (socket) => {
-  console.log('✅ Unity 클라이언트 연결됨');
+  console.log('✅ Unity 클라이언트 연결됨', socket.id);
+
+  socket.on('MakePlayers', (PlayerID) =>{  
+    Players[PlayerID] = {id: PlayerID} 
+    console.log(Players);
+
+    socket.emit('MakePlayers', Players);
+  });
 
 
-  
-    socket.on('SendPos', (pos) => {
-    console.log('3');
+  socket.on('SendPos', (pos) => {
+    console.log(2, pos);
     socket.emit('ServerToPos', pos);
 
   });
@@ -56,6 +64,6 @@ io.on('connection', (socket) => {
 
 // 🔹 서버 실행
 server.listen(PORT, () => {
-  console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
+  console.log('🚀 서버 실행 중: http://localhost:${PORT}');
 });
 //<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>

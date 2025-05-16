@@ -1,44 +1,52 @@
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 using System.Runtime.InteropServices;
-using MiniJSON; // MiniJSON 사용
+using UnityEngine;
+using UnityEngine.UI;
+
 public class SocketManager : MonoBehaviour
 {
-    public GameObject myPlayerPrefab;
-    public GameObject otherPlayerPrefab;
 
-    private Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
-    private string myId;
-
+    public GameObject testObj;
+    public GameObject otherPlayer;
+    // JavaScript와 통신 (JS 함수 정의 필요)
     [DllImport("__Internal")]
     private static extern void ConnectToSocket();
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
-
     void Start()
     {
-        gameObject.name = "SocketManager";
+        //Debug.Log(gameObject.name);
+        gameObject.name = "SocketManager";//이름이 다르대서 바꿔줌
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
+        Instantiate(testObj, new Vector3(1, 1, 1), Quaternion.identity);
+
+    }
+
+
+    public void SendPlayerPosition(string pos)
+    {
+
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+    SendPosToServer(pos);
+#endif
+    }
+
+    public void MakePlayer(string Players)
+    {
+        Debug.Log(Players);
     }
 
     public void ReceivePos(string pos)
     {
-        // 위치 동기화는 이후 구현
-        Debug.Log("위치 수신: " + pos);
-    }
+        Debug.Log($"4 :{pos}");
+        Instantiate(testObj, new Vector3(1, 1, 1), Quaternion.identity);
 
-    public void MakePlayer(string playersJson)
-    {
 
     }
 
-    public void SetMyId(string id)
-    {
-        Debug.Log("내 ID 설정됨: " + id);
-        myId = id;
-    }
 
 }
