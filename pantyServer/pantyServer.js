@@ -36,29 +36,31 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-
-let Players = {}
+let Players = [];
 // 🔹 Socket.IO 통신 처리
 io.on('connection', (socket) => {
   console.log('✅ Unity 클라이언트 연결됨', socket.id);
 
-  socket.on('MakePlayers', (PlayerID) =>{  
-    Players[PlayerID] = {id: PlayerID} 
-    console.log(Players);
-
-    socket.emit('MakePlayers', Players);
+  socket.on('makePlayers', (PlayerID) => {
+      Players.push(PlayerID); // ID만 배열에 저장
+    
+    // 쉼표로 이어 붙인 문자열로 보냄
+    io.emit('ServerToMakePlayers', Players.join(','));
   });
 
 
   socket.on('SendPos', (pos) => {
-    console.log(2, pos);
-    socket.emit('ServerToPos', pos);
+    //console.log(2, pos);
+    io.emit('ServerToPos', pos);
 
   });
 
 
   socket.on('disconnect', () => {
     console.log('❌ 클라이언트 연결 종료');
+    // 연결 종료 시 목록에서 제거
+    Players = Players.filter(id => id !== socket.id);
+
   });
 });
 

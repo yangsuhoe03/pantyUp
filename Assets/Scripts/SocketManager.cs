@@ -28,8 +28,6 @@ public class SocketManager : MonoBehaviour
 
     public void SendPlayerPosition(string pos)
     {
-
-
 #if !UNITY_EDITOR && UNITY_WEBGL
     SendPosToServer(pos);
 #endif
@@ -37,12 +35,12 @@ public class SocketManager : MonoBehaviour
 
     public void MakePlayer(string Players)
     {
-        Debug.Log(Players);
+        Debug.Log("hello" + Players);
     }
 
     public void ReceivePos(string pos)
     {
-        Debug.Log($"4 :{pos}");
+        //Debug.Log($"4 :{pos}");
         Instantiate(testObj, new Vector3(1, 1, 1), Quaternion.identity);
 
 
