@@ -14,7 +14,7 @@ public class PlayerMove: MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         SocketManager = GameObject.Find("SocketManager");
-        Debug.Log(-1);
+
         lastSentPosition = transform.position;
     }
 
@@ -31,7 +31,7 @@ public class PlayerMove: MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            Debug.Log("Jump");
+
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;  
         }
@@ -39,12 +39,10 @@ public class PlayerMove: MonoBehaviour
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.05f)
         {
-            Debug.Log(0);
             if (SocketManager != null)
             {
 
                 string pos = $"{transform.position.x} {transform.position.y} {transform.position.z}";
-                Debug.Log(pos);
                 SocketManager.GetComponent<SocketManager>().SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
             }

@@ -24,6 +24,7 @@
       </div>
     </div>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    
     <script>
       var canvas = document.querySelector("#unity-canvas");
 
@@ -53,12 +54,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/pantyTest.loader.js";
+      var loaderUrl = buildUrl + "/PantyUp.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/pantyTest.data",
-        frameworkUrl: buildUrl + "/pantyTest.framework.js",
-        codeUrl: buildUrl + "/pantyTest.wasm",
+        dataUrl: buildUrl + "/PantyUp.data",
+        frameworkUrl: buildUrl + "/PantyUp.framework.js",
+        codeUrl: buildUrl + "/PantyUp.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "pantyUp",
