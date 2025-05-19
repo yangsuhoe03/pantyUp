@@ -42,7 +42,7 @@ public class PlayerMove: MonoBehaviour
             if (SocketManager != null)
             {
 
-                string pos = $"{transform.position.x} {transform.position.y} {transform.position.z}";
+                string pos = $"{transform.position.x},{transform.position.y},{transform.position.z}";
                 SocketManager.GetComponent<SocketManager>().SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
             }

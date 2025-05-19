@@ -11,18 +11,20 @@ mergeInto(LibraryManager.library, {
       socket.emit('makePlayers', socket.id);
     });
 
-    socket.on('ServerToPos', function(Pos){
-      var pos = UTF8ToString(Pos); 
-      //console.log("3", pos);
+    socket.on('ServerToPos', function(data){
 
-      SendMessage('SocketManager', 'ReceivePos', pos);
+      SendMessage('SocketManager', 'ReceivePos', data);
+
     });
 
+
     socket.on('ServerToMakePlayers', function(Players){
-        var pos = UTF8ToString(Players); 
-        console.log("hihihi", Players);
+
+
         SendMessage('SocketManager', 'MakePlayer', Players);
-        SendMessage('SocketManager', 'MakePlayer', pos);
+
+
+
     });
 
 
@@ -31,8 +33,10 @@ mergeInto(LibraryManager.library, {
   },
 
   SendPosToServer: function (Pos) {
+
     var pos = UTF8ToString(Pos); 
-    //console.log("1",pos);
     socket.emit('SendPos', pos);
+
   }
+  
 });
