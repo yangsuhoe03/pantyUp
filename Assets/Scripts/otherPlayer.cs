@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class otherPlayer : MonoBehaviour
+public class OtherPlayer : MonoBehaviour
 {
-
+    string playerID;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,4 +14,13 @@ public class otherPlayer : MonoBehaviour
     {
         
     }
+    public void SetPlayerID(string Id)
+    {
+        playerID = Id;
+    }
+    public void SetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+    }
+
 }

@@ -43,7 +43,9 @@ io.on('connection', (socket) => {
 
 
   socket.on('makePlayers', (PlayerID) => {
-    Players.push(PlayerID); // ID만 배열에 저장
+    if (!Players.includes(PlayerID)) {
+    Players.push(PlayerID);
+    }
     
     // 쉼표로 이어 붙인 문자열로 보냄
     io.emit('ServerToMakePlayers', Players.join(',')); 
@@ -57,7 +59,7 @@ io.on('connection', (socket) => {
     const data = `${socket.id}:${pos}`; 
 
     //console.log(2, pos);
-  io.emit('ServerToPos', data);
+    socket.broadcast.emit('ServerToPos', data);
     
 
   });

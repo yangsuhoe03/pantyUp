@@ -8,6 +8,7 @@ mergeInto(LibraryManager.library, {
     window.socket = io();
     socket.on('connect', function () {
       console.log(" Socket connssssssssssssssssssssected.");
+      SendMessage('SocketManager', 'SetMySocketID', socket.id);
       socket.emit('makePlayers', socket.id);
     });
 
