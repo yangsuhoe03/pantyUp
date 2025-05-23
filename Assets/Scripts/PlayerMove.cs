@@ -3,10 +3,10 @@ public class PlayerMove: MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
-
+    bool atkTrigger;
     private Rigidbody rb;
     private bool isGrounded;
-
+    playerAttack playerAttack;
     GameObject SocketManager;
     private Vector3 lastSentPosition;
 
@@ -14,6 +14,7 @@ public class PlayerMove: MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         SocketManager = GameObject.Find("SocketManager");
+        playerAttack = GetComponentInChildren<playerAttack>();
 
         lastSentPosition = transform.position;
     }
@@ -35,6 +36,19 @@ public class PlayerMove: MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;  
         }
+        if (Input.GetMouseButtonDown(0)) 
+        {
+            if (playerAttack.attackTrigger == true)
+            {
+                Debug.Log("공격 성공");
+            }
+            else 
+            {
+
+                Debug.Log("공격 실패"); 
+            }
+
+        }
 
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.05f)
@@ -51,15 +65,15 @@ public class PlayerMove: MonoBehaviour
     }
 
 
-
-
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
         }
+
     }
+
 
     private void OnCollisionStay(Collision collision)
     {
@@ -67,6 +81,8 @@ public class PlayerMove: MonoBehaviour
         {
             isGrounded = true;
         }
+        
+         
     }
 
     private void OnCollisionExit(Collision collision)
@@ -75,5 +91,6 @@ public class PlayerMove: MonoBehaviour
         {
             isGrounded = false;
         }
+
     }
 }
