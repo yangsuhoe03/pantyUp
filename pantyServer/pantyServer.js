@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('makePlayers', (PlayerID) => {
-    if (!Players.includes(PlayerID)) {
+    if (!Players.includes(PlayerID)) {// 중복 방지
     Players.push(PlayerID);
     }
     

@@ -18,9 +18,10 @@ public class OtherPlayer : MonoBehaviour
     {
         playerID = Id;
     }
-    public void SetPosition(Vector3 pos)
+    public void SetPosition(Vector3 pos, float rotationY)
     {
         transform.position = pos;
+        transform.rotation = Quaternion.Euler(0, rotationY, 0); // Y축 회전 적용
     }
 
 }

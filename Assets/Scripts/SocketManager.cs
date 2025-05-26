@@ -83,8 +83,9 @@ public class SocketManager : MonoBehaviour
             float x = float.Parse(PlayerPos[0]);
             float y = float.Parse(PlayerPos[1]);
             float z = float.Parse(PlayerPos[2]);
+            float rotationY = float.Parse(PlayerPos[3]);
             Vector3 pos = new Vector3(x, y, z);
-            playerDict[playerID].GetComponent<OtherPlayer>().SetPosition(pos);
+            playerDict[playerID].GetComponent<OtherPlayer>().SetPosition(pos, rotationY);
         }
         else
         {
