@@ -11,8 +11,9 @@ public class PlayerMove: MonoBehaviour
     bool isAttack = false; // 공격 상태 변수
     float rotationY = 0; // 현재 Y축 회전 값
     bool attackSuccess = false; // 공격 성공 여부
-    float wedgieTime;
+    float wedgieTime = 0;
     int score = 0; // 점수 변수
+    GameObject otherPlayer;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -42,7 +43,7 @@ public class PlayerMove: MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0)) 
         {
-            if (isAttack == false && isGrounded)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
+            if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
                 isAttack = true; // 공격 시 이동 멈춤
                 Invoke("AttackEnd", 0.5f); // 0.5초 후에 공격 종료 함수 호출
@@ -81,6 +82,11 @@ public class PlayerMove: MonoBehaviour
         }
 
     }
+
+    public void GetOtherPlayer(GameObject otherP)
+    {
+        otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
+    }
     void AttackEnd()
     {
         isAttack = false; // 공격 상태를 false로 변경하여 이동 가능하게 함
@@ -93,19 +99,11 @@ public class PlayerMove: MonoBehaviour
         {
             isGrounded = true;
         }
-        if (collision.gameObject.CompareTag("pantyDistance"))
-        {
-            Debug.Log("팬티 공격 성공");
-            //wedgieTime = wedgieTime + Time.deltaTime; // 팬티 공격 성공 시 시간 증가
-            //if(wedgieTime >= 3f) // 3초 이상 지속되면
-            //{
-            //    score += 10; // 점수 증가
-            //    Debug.Log("점수 증가: " + score);
-            //    wedgieTime = 0f; // 시간 초기화
-            //    attackSuccess = false; // 공격 성공 상태 초기화
-            //    GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
-            //}
-        }
+
+
+    }
+    private void OnTriggerEnter(Collider other)
+    {
 
     }
 
@@ -116,21 +114,25 @@ public class PlayerMove: MonoBehaviour
         {
             isGrounded = true;
         }
-        if(collision.gameObject.CompareTag("pantyDistance"))
+
+     
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
-            Debug.Log("팬티 공격 성공");
-            //wedgieTime = wedgieTime + Time.deltaTime; // 팬티 공격 성공 시 시간 증가
-            //if(wedgieTime >= 3f) // 3초 이상 지속되면
-            //{
-            //    score += 10; // 점수 증가
-            //    Debug.Log("점수 증가: " + score);
-            //    wedgieTime = 0f; // 시간 초기화
-            //    attackSuccess = false; // 공격 성공 상태 초기화
-            //    GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
-            //}
+            wedgieTime = wedgieTime + Time.deltaTime; // 팬티 공격 성공 시 시간 증가
+            Debug.Log("팬티 공격 성공 시간: " + wedgieTime);
+            otherPlayer.GetComponent<OtherPlayer>().BeingAttacked(); // 다른 플레이어에게 공격 알림
+            if (wedgieTime >= 10f) // 10초 이상 지속되면
+            {
+                score += 1; // 점수 증가
+                Debug.Log("점수 증가: " + score);
+                wedgieTime = 0f; // 시간 초기화
+                attackSuccess = false; // 공격 성공 상태 초기화
+                GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
+            }
         }
-        
-         
     }
 
     private void OnCollisionExit(Collision collision)
@@ -144,6 +146,7 @@ public class PlayerMove: MonoBehaviour
         {
             Debug.Log("팬티 끊어짐");
             attackSuccess = false; // 공격 성공 상태 초기화
+            otherPlayer = null; // 다른 플레이어 오브젝트 초기화
         }
     }
 }

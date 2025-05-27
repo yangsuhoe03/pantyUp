@@ -25,7 +25,7 @@ public class SocketManager : MonoBehaviour
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
-        Instantiate(testObj, new Vector3(1, 1, 1), Quaternion.identity);
+        Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
 
     }
 
