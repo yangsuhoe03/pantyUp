@@ -1,3 +1,4 @@
+
 using UnityEngine;
 public class PlayerMove: MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class PlayerMove: MonoBehaviour
     private bool isGrounded;
     playerAttack playerAttack;
     GameObject SocketManager;
+    SocketManager SocketManagerScript; // SocketManager 스크립트 참조
     private Vector3 lastSentPosition;
     bool isAttack = false; // 공격 상태 변수
     float rotationY = 0; // 현재 Y축 회전 값
@@ -14,10 +16,14 @@ public class PlayerMove: MonoBehaviour
     float wedgieTime = 0;
     int score = 0; // 점수 변수
     GameObject otherPlayer;
+    string otherPlayerID; // 다른 플레이어의 ID
+    string attacked;
+    bool isAttacked = false; // 공격을 받았는지 여부
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         SocketManager = GameObject.Find("SocketManager");
+        SocketManagerScript = SocketManager.GetComponent<SocketManager>();
         playerAttack = GetComponentInChildren<playerAttack>();
 
         lastSentPosition = transform.position;
@@ -52,6 +58,8 @@ public class PlayerMove: MonoBehaviour
                     Debug.Log("공격 성공");
                     attackSuccess = true; // 공격 성공 상태로 변경
                     GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+                    attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // 공격자 ID와 대상 ID를 쉼표로 구분하여 저장
+                    SocketManagerScript.SendAttack(attacked); // 공격 전송
                 }
                 else
                 {
@@ -75,17 +83,25 @@ public class PlayerMove: MonoBehaviour
             {
 
                 string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.rotation.y}";
-                SocketManager.GetComponent<SocketManager>().SendPlayerPosition(pos);
+                SocketManagerScript.SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
                 rotationY = transform.rotation.y; // 현재 Y축 회전 값 저장
             }
         }
 
     }
+    public void IsWedgied()
+    {
+        Debug.Log("공격 받음");
+        isAttacked = true; // 공격을 받았음을 표시
+        GetComponent<Renderer>().material.color = Color.blue; 
+        
+    }
 
     public void GetOtherPlayer(GameObject otherP)
     {
         otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
+        otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // 다른 플레이어의 ID 저장
     }
     void AttackEnd()
     {
@@ -102,10 +118,7 @@ public class PlayerMove: MonoBehaviour
 
 
     }
-    private void OnTriggerEnter(Collider other)
-    {
 
-    }
 
 
     private void OnCollisionStay(Collision collision)
@@ -117,13 +130,22 @@ public class PlayerMove: MonoBehaviour
 
      
     }
+    private void OnTriggerEnter(Collider other)
+    {
+
+    }
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
             wedgieTime = wedgieTime + Time.deltaTime; // 팬티 공격 성공 시 시간 증가
-            Debug.Log("팬티 공격 성공 시간: " + wedgieTime);
-            otherPlayer.GetComponent<OtherPlayer>().BeingAttacked(); // 다른 플레이어에게 공격 알림
+            //Debug.Log("팬티 공격 성공 시간: " + wedgieTime);
+            if(isAttacked == false)
+            {
+                otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//한번만실행
+                isAttacked = true;
+            }
+            // 다른 플레이어에게 공격 알림
             if (wedgieTime >= 10f) // 10초 이상 지속되면
             {
                 score += 1; // 점수 증가
@@ -131,7 +153,20 @@ public class PlayerMove: MonoBehaviour
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
                 GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
+                isAttacked = false; 
             }
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
+        {
+            Debug.Log("팬티 끊어짐");
+            wedgieTime = 0f; // 시간 초기화
+            attackSuccess = false; // 공격 성공 상태 초기화
+            otherPlayer = null; // 다른 플레이어 오브젝트 초기화
+            GetComponent<Renderer>().material.color = Color.white;
+            isAttacked = false; 
         }
     }
 
@@ -142,11 +177,6 @@ public class PlayerMove: MonoBehaviour
             isGrounded = false;
         }
 
-        if (collision.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
-        {
-            Debug.Log("팬티 끊어짐");
-            attackSuccess = false; // 공격 성공 상태 초기화
-            otherPlayer = null; // 다른 플레이어 오브젝트 초기화
-        }
+
     }
 }

@@ -63,6 +63,11 @@ io.on('connection', (socket) => {
     
 
   });
+  socket.on('SendAttack', (attacks) => {
+    console.log("서버받음: ", attacks);
+    
+    socket.broadcast.emit('ServerToAttack', attacks);
+  });
 
 
   socket.on('disconnect', () => {
@@ -75,7 +80,7 @@ io.on('connection', (socket) => {
 
 // 🔹 서버 실행
 server.listen(PORT, () => {
-  console.log('🚀 서버 실행 중: http://localhost:${PORT}');
+  console.log('🚀 서버 실행 중');
 });
 //<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 

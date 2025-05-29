@@ -10,6 +10,7 @@ public class SocketManager : MonoBehaviour
     public GameObject otherPlayer;
     public GameObject testObj;
     private string mySocketID;
+    public GameObject myPlayer;
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//성능 저하 시 이렇게 사용
     // JavaScript와 통신 (JS 함수 정의 필요)
@@ -18,14 +19,19 @@ public class SocketManager : MonoBehaviour
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
+
+    [DllImport("__Internal")]
+    private static extern void SendAttackToServer(string attacked);
+
     void Start()
     {
+         myPlayer.GetComponent<PlayerMove>();
         //Debug.Log(gameObject.name);
         gameObject.name = "SocketManager";//이름이 다르대서 바꿔줌
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
-        Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
+        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//테스트용
 
     }
 
@@ -45,6 +51,13 @@ public class SocketManager : MonoBehaviour
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
     SendPosToServer(pos);
+#endif
+    }
+    public void SendAttack(string attacked)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    SendAttackToServer(attacked);
 #endif
     }
 
@@ -72,7 +85,7 @@ public class SocketManager : MonoBehaviour
 
     public void ReceivePos(string data)
     {
-        Debug.Log("받은 데이터: " + data);
+        //Debug.Log("받은 데이터: " + data);
 
         string[] PlayerData = data.Split(':');
         string playerID = PlayerData[0];
@@ -95,6 +108,33 @@ public class SocketManager : MonoBehaviour
 
 
     }
+    public void Attacking(string attacks)//공격했을때 데이터 처리
+    {
+        string[] ids = attacks.Split(',');
+        if (ids.Length != 2) return;
 
+        string attackerID = ids[0];
+        string targetID = ids[1];
+
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기 안됨
+        {
+            GameObject attacker = playerDict[attackerID];
+            GameObject target = playerDict[targetID];
+
+            // 색상 변경
+            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f); // 주황
+            target.GetComponent<Renderer>().material.color = Color.black;               // 검정
+            Debug.Log("색 바꿈");
+            if (targetID == GetMySocketID())
+            {
+                Debug.Log("내가 공격당함ㄴ ");
+                // 공격당한 플레이어가 자신인 경우
+                myPlayer.GetComponent<PlayerMove>().IsWedgied(); // 공격을 받았음을 알림
+
+            }
+            
+        }
+
+    }
 
 }

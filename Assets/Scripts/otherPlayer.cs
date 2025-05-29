@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class OtherPlayer : MonoBehaviour
 {
-    string playerID;
+    public string playerID;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -27,8 +27,8 @@ public class OtherPlayer : MonoBehaviour
     {
         // 공격을 받았을 때의 로직
         // 예: 색상 변경, 애니메이션 재생 등
-        Debug.Log("공격 받음: " + playerID);
-        GetComponent<Renderer>().material.color = Color.black; // 
+        //Debug.Log("공격 받음: " + playerID);
+        GetComponent<Renderer>().material.color = Color.black; 
     }
 
 }
