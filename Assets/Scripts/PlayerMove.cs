@@ -8,17 +8,17 @@ public class PlayerMove: MonoBehaviour
     private bool isGrounded;
     playerAttack playerAttack;
     GameObject SocketManager;
-    SocketManager SocketManagerScript; // SocketManager ½ºÅ©¸³Æ® ÂüÁ¶
+    SocketManager SocketManagerScript; // SocketManager ìŠ¤í¬ë¦½íŠ¸ ì°¸ì¡°
     private Vector3 lastSentPosition;
-    bool isAttack = false; // °ø°İ »óÅÂ º¯¼ö
-    float rotationY = 0; // ÇöÀç YÃà È¸Àü °ª
-    bool attackSuccess = false; // °ø°İ ¼º°ø ¿©ºÎ
+    bool isAttack = false; // ê³µê²© ìƒíƒœ ë³€ìˆ˜
+    float rotationY = 0; // í˜„ì¬ Yì¶• íšŒì „ ê°’
+    bool attackSuccess = false; // ê³µê²© ì„±ê³µ ì—¬ë¶€
     float wedgieTime = 0;
-    int score = 0; // Á¡¼ö º¯¼ö
+    int score = 0; // ì ìˆ˜ ë³€ìˆ˜
     GameObject otherPlayer;
-    string otherPlayerID; // ´Ù¸¥ ÇÃ·¹ÀÌ¾îÀÇ ID
+    string otherPlayerID; // ë‹¤ë¥¸ í”Œë ˆì´ì–´ì˜ ID
     string attacked;
-    bool isAttacked = false; // °ø°İÀ» ¹Ş¾Ò´ÂÁö ¿©ºÎ
+    bool isAttacked = false; // ê³µê²©ì„ ë°›ì•˜ëŠ”ì§€ ì—¬ë¶€
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -49,22 +49,22 @@ public class PlayerMove: MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0)) 
         {
-            if (isAttack == false && isGrounded && attackSuccess == false)// °ø°İ »óÅÂ°¡ ¾Æ´Ï°í ¶¥¿¡ ÀÖÀ» ¶§¸¸ °ø°İ °¡´É
+            if (isAttack == false && isGrounded && attackSuccess == false)// ê³µê²© ìƒíƒœê°€ ì•„ë‹ˆê³  ë•…ì— ìˆì„ ë•Œë§Œ ê³µê²© ê°€ëŠ¥
             {
-                isAttack = true; // °ø°İ ½Ã ÀÌµ¿ ¸ØÃã
-                Invoke("AttackEnd", 0.5f); // 0.5ÃÊ ÈÄ¿¡ °ø°İ Á¾·á ÇÔ¼ö È£Ãâ
+                isAttack = true; // ê³µê²© ì‹œ ì´ë™ ë©ˆì¶¤
+                Invoke("AttackEnd", 0.5f); // 0.5ì´ˆ í›„ì— ê³µê²© ì¢…ë£Œ í•¨ìˆ˜ í˜¸ì¶œ
                 if (playerAttack.attackTrigger == true)
                 {
-                    Debug.Log("°ø°İ ¼º°ø");
-                    attackSuccess = true; // °ø°İ ¼º°ø »óÅÂ·Î º¯°æ
+                    Debug.Log("ê³µê²© ì„±ê³µ");
+                    attackSuccess = true; // ê³µê²© ì„±ê³µ ìƒíƒœë¡œ ë³€ê²½
                     GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
-                    attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // °ø°İÀÚ ID¿Í ´ë»ó ID¸¦ ½°Ç¥·Î ±¸ºĞÇÏ¿© ÀúÀå
-                    SocketManagerScript.SendAttack(attacked); // °ø°İ Àü¼Û
+                    attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // ê³µê²©ì IDì™€ ëŒ€ìƒ IDë¥¼ ì‰¼í‘œë¡œ êµ¬ë¶„í•˜ì—¬ ì €ì¥
+                    SocketManagerScript.SendAttack(attacked); // ê³µê²© ì „ì†¡
                 }
                 else
                 {
 
-                    Debug.Log("°ø°İ ½ÇÆĞ");
+                    Debug.Log("ê³µê²© ì‹¤íŒ¨");
                 }
             }
 
@@ -78,34 +78,34 @@ public class PlayerMove: MonoBehaviour
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.05f || Mathf.Abs(transform.rotation.y - rotationY) > 0.01f)
         {
-            //Debug.Log("ÇÃ·¹ÀÌ¾î À§Ä¡ Àü¼ÛµÊ: " + transform.position + ", È¸Àü: " + transform.rotation.y);
+            //Debug.Log("í”Œë ˆì´ì–´ ìœ„ì¹˜ ì „ì†¡ë¨: " + transform.position + ", íšŒì „: " + transform.rotation.y);
             if (SocketManager != null)
             {
 
                 string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.rotation.y}";
                 SocketManagerScript.SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
-                rotationY = transform.rotation.y; // ÇöÀç YÃà È¸Àü °ª ÀúÀå
+                rotationY = transform.rotation.y; // í˜„ì¬ Yì¶• íšŒì „ ê°’ ì €ì¥
             }
         }
 
     }
     public void IsWedgied()
     {
-        Debug.Log("°ø°İ ¹ŞÀ½");
-        isAttacked = true; // °ø°İÀ» ¹Ş¾ÒÀ½À» Ç¥½Ã
+        Debug.Log("ê³µê²© ë°›ìŒ");
+        isAttacked = true; // ê³µê²©ì„ ë°›ì•˜ìŒì„ í‘œì‹œ
         GetComponent<Renderer>().material.color = Color.blue; 
         
     }
 
     public void GetOtherPlayer(GameObject otherP)
     {
-        otherPlayer = otherP; // ´Ù¸¥ ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ÀúÀå
-        otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // ´Ù¸¥ ÇÃ·¹ÀÌ¾îÀÇ ID ÀúÀå
+        otherPlayer = otherP; // ë‹¤ë¥¸ í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ ì €ì¥
+        otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // ë‹¤ë¥¸ í”Œë ˆì´ì–´ì˜ ID ì €ì¥
     }
     void AttackEnd()
     {
-        isAttack = false; // °ø°İ »óÅÂ¸¦ false·Î º¯°æÇÏ¿© ÀÌµ¿ °¡´ÉÇÏ°Ô ÇÔ
+        isAttack = false; // ê³µê²© ìƒíƒœë¥¼ falseë¡œ ë³€ê²½í•˜ì—¬ ì´ë™ ê°€ëŠ¥í•˜ê²Œ í•¨
     }
 
 
@@ -138,21 +138,21 @@ public class PlayerMove: MonoBehaviour
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
-            wedgieTime = wedgieTime + Time.deltaTime; // ÆÒÆ¼ °ø°İ ¼º°ø ½Ã ½Ã°£ Áõ°¡
-            //Debug.Log("ÆÒÆ¼ °ø°İ ¼º°ø ½Ã°£: " + wedgieTime);
+            wedgieTime = wedgieTime + Time.deltaTime; // íŒ¬í‹° ê³µê²© ì„±ê³µ ì‹œ ì‹œê°„ ì¦ê°€
+            //Debug.Log("íŒ¬í‹° ê³µê²© ì„±ê³µ ì‹œê°„: " + wedgieTime);
             if(isAttacked == false)
             {
-                otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//ÇÑ¹ø¸¸½ÇÇà
+                otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//í•œë²ˆë§Œì‹¤í–‰
                 isAttacked = true;
             }
-            // ´Ù¸¥ ÇÃ·¹ÀÌ¾î¿¡°Ô °ø°İ ¾Ë¸²
-            if (wedgieTime >= 10f) // 10ÃÊ ÀÌ»ó Áö¼ÓµÇ¸é
+            // ë‹¤ë¥¸ í”Œë ˆì´ì–´ì—ê²Œ ê³µê²© ì•Œë¦¼
+            if (wedgieTime >= 10f) // 10ì´ˆ ì´ìƒ ì§€ì†ë˜ë©´
             {
-                score += 1; // Á¡¼ö Áõ°¡
-                Debug.Log("Á¡¼ö Áõ°¡: " + score);
-                wedgieTime = 0f; // ½Ã°£ ÃÊ±âÈ­
-                attackSuccess = false; // °ø°İ ¼º°ø »óÅÂ ÃÊ±âÈ­
-                GetComponent<Renderer>().material.color = Color.white; // »ö»ó ¿ø·¡´ë·Î º¹¿ø
+                score += 1; // ì ìˆ˜ ì¦ê°€
+                Debug.Log("ì ìˆ˜ ì¦ê°€: " + score);
+                wedgieTime = 0f; // ì‹œê°„ ì´ˆê¸°í™”
+                attackSuccess = false; // ê³µê²© ì„±ê³µ ìƒíƒœ ì´ˆê¸°í™”
+                GetComponent<Renderer>().material.color = Color.white; // ìƒ‰ìƒ ì›ë˜ëŒ€ë¡œ ë³µì›
                 isAttacked = false; 
             }
         }
@@ -161,10 +161,10 @@ public class PlayerMove: MonoBehaviour
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
-            Debug.Log("ÆÒÆ¼ ²÷¾îÁü");
-            wedgieTime = 0f; // ½Ã°£ ÃÊ±âÈ­
-            attackSuccess = false; // °ø°İ ¼º°ø »óÅÂ ÃÊ±âÈ­
-            otherPlayer = null; // ´Ù¸¥ ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ÃÊ±âÈ­
+            Debug.Log("íŒ¬í‹° ëŠì–´ì§");
+            wedgieTime = 0f; // ì‹œê°„ ì´ˆê¸°í™”
+            attackSuccess = false; // ê³µê²© ì„±ê³µ ìƒíƒœ ì´ˆê¸°í™”
+            otherPlayer = null; // ë‹¤ë¥¸ í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ ì´ˆê¸°í™”
             GetComponent<Renderer>().material.color = Color.white;
             isAttacked = false; 
         }
