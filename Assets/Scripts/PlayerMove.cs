@@ -82,10 +82,10 @@ public class PlayerMove: MonoBehaviour
             if (SocketManager != null)
             {
 
-                string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.rotation.y}";
+                string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.eulerAngles.y}";
                 SocketManagerScript.SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
-                rotationY = transform.rotation.y; // 현재 Y축 회전 값 저장
+                rotationY = transform.eulerAngles.y; // 현재 Y축 회전 값 저장
             }
         }
 
