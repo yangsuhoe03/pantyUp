@@ -116,8 +116,17 @@ public class SocketManager : MonoBehaviour
         string attackerID = ids[0];
         string targetID = ids[1];
 
+        foreach (var kvp in playerDict)
+        {
+            Debug.Log($"[playerDict] Key: {kvp.Key}, Value: {kvp.Value.name}");
+        }
+        Debug.Log($"[Wedgie] attackerID: {attackerID}, targetID: {targetID}");
+
+
         if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//¿©±â ¾ÈµÊ
         {
+            
+
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
 
