@@ -9,7 +9,7 @@ public class CameraMove : MonoBehaviour
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked; // ¸¶¿ì½º ¼û±â±â + °íÁ¤
+        Cursor.lockState = CursorLockMode.Locked; // ï¿½ï¿½ï¿½ì½º ï¿½ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ï¿½ ì•ˆë…•
     }
 
     void Update()
@@ -17,13 +17,13 @@ public class CameraMove : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        // ¼öÁ÷ È¸Àü Á¦ÇÑ
+        // ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        // Ä«¸Þ¶ó´Â À§¾Æ·¡¸¸ È¸Àü
+        // Ä«ï¿½Þ¶ï¿½ï¿½ ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        // ÇÃ·¹ÀÌ¾î´Â ÁÂ¿ì È¸Àü
+        // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½Â¿ï¿½ È¸ï¿½ï¿½
         playerBody.Rotate(Vector3.up * mouseX);
     }
 }
