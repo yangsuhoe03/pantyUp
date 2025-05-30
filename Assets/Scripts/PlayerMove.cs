@@ -8,17 +8,17 @@ public class PlayerMove: MonoBehaviour
     private bool isGrounded;
     playerAttack playerAttack;
     GameObject SocketManager;
-    SocketManager SocketManagerScript; // SocketManager ½ºÅ©¸³Æ® ÂüÁ¶
+    SocketManager SocketManagerScript; // SocketManager ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
     private Vector3 lastSentPosition;
-    bool isAttack = false; // °ø°Ý »óÅÂ º¯¼ö
-    float rotationY = 0; // ÇöÀç YÃà È¸Àü °ª
-    bool attackSuccess = false; // °ø°Ý ¼º°ø ¿©ºÎ
+    bool isAttack = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    float rotationY = 0; // ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½
+    bool attackSuccess = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     float wedgieTime = 0;
-    int score = 0; // Á¡¼ö º¯¼ö
+    int score = 0; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     GameObject otherPlayer;
-    string otherPlayerID; // ´Ù¸¥ ÇÃ·¹ÀÌ¾îÀÇ ID
+    string otherPlayerID; // ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ID
     string attacked;
-    bool isAttacked = false; // °ø°ÝÀ» ¹Þ¾Ò´ÂÁö ¿©ºÎ
+    bool isAttacked = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Ò´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -27,7 +27,7 @@ public class PlayerMove: MonoBehaviour
         playerAttack = GetComponentInChildren<playerAttack>();
 
         lastSentPosition = transform.position;
-        
+                
     }
 
     void Update()
@@ -49,22 +49,22 @@ public class PlayerMove: MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0)) 
         {
-            if (isAttack == false && isGrounded && attackSuccess == false)// °ø°Ý »óÅÂ°¡ ¾Æ´Ï°í ¶¥¿¡ ÀÖÀ» ¶§¸¸ °ø°Ý °¡´É
+            if (isAttack == false && isGrounded && attackSuccess == false)// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             {
-                isAttack = true; // °ø°Ý ½Ã ÀÌµ¿ ¸ØÃã
-                Invoke("AttackEnd", 0.5f); // 0.5ÃÊ ÈÄ¿¡ °ø°Ý Á¾·á ÇÔ¼ö È£Ãâ
+                isAttack = true; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
+                Invoke("AttackEnd", 0.5f); // 0.5ï¿½ï¿½ ï¿½Ä¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ È£ï¿½ï¿½
                 if (playerAttack.attackTrigger == true)
                 {
-                    Debug.Log("°ø°Ý ¼º°ø");
-                    attackSuccess = true; // °ø°Ý ¼º°ø »óÅÂ·Î º¯°æ
+                    Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
+                    attackSuccess = true; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
                     GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
-                    attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // °ø°ÝÀÚ ID¿Í ´ë»ó ID¸¦ ½°Ç¥·Î ±¸ºÐÇÏ¿© ÀúÀå
-                    SocketManagerScript.SendAttack(attacked); // °ø°Ý Àü¼Û
+                    attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+                    SocketManagerScript.SendAttack(attacked); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 }
                 else
                 {
 
-                    Debug.Log("°ø°Ý ½ÇÆÐ");
+                    Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
                 }
             }
 
@@ -78,34 +78,34 @@ public class PlayerMove: MonoBehaviour
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.05f || Mathf.Abs(transform.rotation.y - rotationY) > 0.01f)
         {
-            //Debug.Log("ÇÃ·¹ÀÌ¾î À§Ä¡ Àü¼ÛµÊ: " + transform.position + ", È¸Àü: " + transform.rotation.y);
+            //Debug.Log("ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½Ûµï¿½: " + transform.position + ", È¸ï¿½ï¿½: " + transform.rotation.y);
             if (SocketManager != null)
             {
-
-                string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.rotation.y}";
+               
+                string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.eulerAngles.y}";
                 SocketManagerScript.SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
-                rotationY = transform.rotation.y; // ÇöÀç YÃà È¸Àü °ª ÀúÀå
+                rotationY = transform.eulerAngles.y; // ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
         }
 
     }
     public void IsWedgied()
     {
-        Debug.Log("°ø°Ý ¹ÞÀ½");
-        isAttacked = true; // °ø°ÝÀ» ¹Þ¾ÒÀ½À» Ç¥½Ã
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
+        isAttacked = true; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
         GetComponent<Renderer>().material.color = Color.blue; 
         
     }
 
     public void GetOtherPlayer(GameObject otherP)
     {
-        otherPlayer = otherP; // ´Ù¸¥ ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ÀúÀå
-        otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // ´Ù¸¥ ÇÃ·¹ÀÌ¾îÀÇ ID ÀúÀå
+        otherPlayer = otherP; // ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+        otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ID ï¿½ï¿½ï¿½ï¿½
     }
     void AttackEnd()
     {
-        isAttack = false; // °ø°Ý »óÅÂ¸¦ false·Î º¯°æÇÏ¿© ÀÌµ¿ °¡´ÉÇÏ°Ô ÇÔ
+        isAttack = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½
     }
 
 
@@ -138,21 +138,21 @@ public class PlayerMove: MonoBehaviour
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
-            wedgieTime = wedgieTime + Time.deltaTime; // ÆÒÆ¼ °ø°Ý ¼º°ø ½Ã ½Ã°£ Áõ°¡
-            //Debug.Log("ÆÒÆ¼ °ø°Ý ¼º°ø ½Ã°£: " + wedgieTime);
+            wedgieTime = wedgieTime + Time.deltaTime; // ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
+            //Debug.Log("ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½: " + wedgieTime);
             if(isAttacked == false)
             {
-                otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//ÇÑ¹ø¸¸½ÇÇà
+                otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 isAttacked = true;
             }
-            // ´Ù¸¥ ÇÃ·¹ÀÌ¾î¿¡°Ô °ø°Ý ¾Ë¸²
-            if (wedgieTime >= 10f) // 10ÃÊ ÀÌ»ó Áö¼ÓµÇ¸é
+            // ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½
+            if (wedgieTime >= 10f) // 10ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ÓµÇ¸ï¿½
             {
-                score += 1; // Á¡¼ö Áõ°¡
-                Debug.Log("Á¡¼ö Áõ°¡: " + score);
-                wedgieTime = 0f; // ½Ã°£ ÃÊ±âÈ­
-                attackSuccess = false; // °ø°Ý ¼º°ø »óÅÂ ÃÊ±âÈ­
-                GetComponent<Renderer>().material.color = Color.white; // »ö»ó ¿ø·¡´ë·Î º¹¿ø
+                score += 1; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: " + score);
+                wedgieTime = 0f; // ï¿½Ã°ï¿½ ï¿½Ê±ï¿½È­
+                attackSuccess = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
+                GetComponent<Renderer>().material.color = Color.white; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 isAttacked = false; 
             }
         }
@@ -161,10 +161,10 @@ public class PlayerMove: MonoBehaviour
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
-            Debug.Log("ÆÒÆ¼ ²÷¾îÁü");
-            wedgieTime = 0f; // ½Ã°£ ÃÊ±âÈ­
-            attackSuccess = false; // °ø°Ý ¼º°ø »óÅÂ ÃÊ±âÈ­
-            otherPlayer = null; // ´Ù¸¥ ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ÃÊ±âÈ­
+            Debug.Log("ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+            wedgieTime = 0f; // ï¿½Ã°ï¿½ ï¿½Ê±ï¿½È­
+            attackSuccess = false; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
+            otherPlayer = null; // ï¿½Ù¸ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ê±ï¿½È­
             GetComponent<Renderer>().material.color = Color.white;
             isAttacked = false; 
         }

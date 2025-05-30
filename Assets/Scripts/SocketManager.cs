@@ -61,7 +61,7 @@ public class SocketManager : MonoBehaviour
 #endif
     }
 
-    public void MakePlayer(string playerIDs)
+    public void MakePlayer(string playerIDs)    
     {
         string[] ids = playerIDs.Split(','); // ��ǥ�� ���� ID�� �� �� ����
 
