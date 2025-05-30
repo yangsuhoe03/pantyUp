@@ -22,8 +22,11 @@ mergeInto(LibraryManager.library, {
     });
 
     window.socket.on('ServerToAttack', function(attacks){
-      console.log("클라 받음:", attacks);
       SendMessage('SocketManager', 'Attacking', attacks);
+    });
+
+    window.socket.on('ServerToSucceseAttack', function(attacks){
+      SendMessage('SocketManager', 'SucceseAttack', attacks);
     });
   },
 
@@ -36,9 +39,13 @@ mergeInto(LibraryManager.library, {
 
   SendAttackToServer: function (attacks) {
     var ATK = UTF8ToString(attacks); 
-    console.log("공격 전송:", ATK);
     if (window.socket) {
       window.socket.emit('SendAttack', ATK);
     } 
-  }
-});
+  },
+    ScoreUp: function (attacks) {
+    var ATK = UTF8ToString(attacks); 
+      window.socket.emit('SendSucceseAttack', ATK);
+      console.log("스코어 업");
+    }
+  });

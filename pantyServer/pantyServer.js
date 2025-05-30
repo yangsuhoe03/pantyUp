@@ -64,9 +64,13 @@ io.on('connection', (socket) => {
 
   });
   socket.on('SendAttack', (attacks) => {
-    console.log("서버받음: ", attacks);
+
     
     socket.broadcast.emit('ServerToAttack', attacks);
+  });
+  
+  socket.on('SendSucceseAttack',(attacks)=>{
+    io.emit('ServerToSucceseAttack', attacks);
   });
 
 

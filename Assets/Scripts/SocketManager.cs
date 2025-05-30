@@ -23,9 +23,12 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendAttackToServer(string attacked);
 
+    [DllImport("__Internal")]
+    public static extern void ScoreUp(string scoreData);
+
     void Start()
     {
-         myPlayer.GetComponent<PlayerMove>();
+        myPlayer.GetComponent<PlayerMove>();
         //Debug.Log(gameObject.name);
         gameObject.name = "SocketManager";
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -37,6 +40,7 @@ public class SocketManager : MonoBehaviour
     public void SetMySocketID(string id)
     {
         mySocketID = id;
+        Debug.Log(mySocketID);
 
     }
 
@@ -59,21 +63,29 @@ public class SocketManager : MonoBehaviour
     SendAttackToServer(attacked);
 #endif
     }
+    public void AttackSuccess(string scoreData)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    ScoreUp(scoreData);
+#endif
+    }
+
 
     public void MakePlayer(string playerIDs)
     {
-        string[] ids = playerIDs.Split(','); 
+        string[] ids = playerIDs.Split(',');
 
         foreach (string id in ids)
         {
-            if (id == GetMySocketID()) continue; 
+            if (id == GetMySocketID()) continue;
 
             if (!playerDict.ContainsKey(id))
             {
                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
                 playerDict.Add(id, enemy);
-               
+
             }
         }
 
@@ -114,14 +126,15 @@ public class SocketManager : MonoBehaviour
         string attackerID = ids[0];
         string targetID = ids[1];
 
-        foreach (var kvp in playerDict)
+
+        if (targetID == GetMySocketID())//내가 공격을 당하면
         {
-            Debug.Log($"[playerDict] Key: {kvp.Key}, Value: {kvp.Value.name}");
+
+            myPlayer.GetComponent<PlayerMove>().IsWedgied();
+
         }
-        Debug.Log($"[Wedgie] attackerID: {attackerID}, targetID: {targetID}");
 
-
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
 
 
@@ -132,19 +145,39 @@ public class SocketManager : MonoBehaviour
             attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
             target.GetComponent<Renderer>().material.color = Color.black;
 
-            if (targetID == GetMySocketID())
-            {
 
-                myPlayer.GetComponent<PlayerMove>().IsWedgied();
-
-            }
 
         }
-        else
+    }
+    public void SucceseAttack(string attacks)
+    {
+        Debug.Log(attacks);
+        string[] ids = attacks.Split(',');
+        if (ids.Length != 2) return;
+
+        string attackerID = ids[0];
+        string targetID = ids[1];
+        if (targetID == GetMySocketID())//내가 공격을 당하면
         {
-            Debug.Log("wqwer");
-        }
 
+            Debug.Log("you died");
+
+        }
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        {
+
+
+            GameObject attacker = playerDict[attackerID];
+            GameObject target = playerDict[targetID];
+
+
+            Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
+
+
+
+        }
+        
+        
     }
 
 }
