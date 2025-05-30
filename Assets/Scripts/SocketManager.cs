@@ -12,8 +12,8 @@ public class SocketManager : MonoBehaviour
     private string mySocketID;
     public GameObject myPlayer;
     //List<string> playerList = new List<string>();
-    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//¼º´É ÀúÇÏ ½Ã ÀÌ·¸°Ô »ç¿ë
-    // JavaScript¿Í Åë½Å (JS ÇÔ¼ö Á¤ÀÇ ÇÊ¿ä)
+    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    // JavaScriptï¿½ï¿½ ï¿½ï¿½ï¿½ (JS ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½)
     [DllImport("__Internal")]
     private static extern void ConnectToSocket();
 
@@ -27,18 +27,18 @@ public class SocketManager : MonoBehaviour
     {
          myPlayer.GetComponent<PlayerMove>();
         //Debug.Log(gameObject.name);
-        gameObject.name = "SocketManager";//ÀÌ¸§ÀÌ ´Ù¸£´ë¼­ ¹Ù²ãÁÜ
+        gameObject.name = "SocketManager";//ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ï¿½ë¼­ ï¿½Ù²ï¿½ï¿½ï¿½
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
-        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//Å×½ºÆ®¿ë
+        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//ï¿½×½ï¿½Æ®ï¿½ï¿½
 
     }
 
     public void SetMySocketID(string id)
     {
         mySocketID = id;
-        Debug.Log("³» ¼ÒÄÏ ID ÀúÀåµÊ: " + mySocketID);
+        Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ID ï¿½ï¿½ï¿½ï¿½ï¿½: " + mySocketID);
     }
 
     public string GetMySocketID()
@@ -63,18 +63,18 @@ public class SocketManager : MonoBehaviour
 
     public void MakePlayer(string playerIDs)
     {
-        string[] ids = playerIDs.Split(','); // ½°Ç¥·Î ¿©·¯ ID°¡ ¿Ã ¼ö ÀÖÀ½
+        string[] ids = playerIDs.Split(','); // ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         foreach (string id in ids)
         {
-            if (id == GetMySocketID()) continue; // ÀÚ½Å Á¦¿Ü
+            if (id == GetMySocketID()) continue; // ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
             if (!playerDict.ContainsKey(id))
             {
                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
                 playerDict.Add(id, enemy);
-                Debug.Log($"»ý¼ºµÈ ÇÃ·¹ÀÌ¾î ID: {id}");
+                Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ID: {id}");
             }
         }
 
@@ -85,7 +85,7 @@ public class SocketManager : MonoBehaviour
 
     public void ReceivePos(string data)
     {
-        //Debug.Log("¹ÞÀº µ¥ÀÌÅÍ: " + data);
+        //Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: " + data);
 
         string[] PlayerData = data.Split(':');
         string playerID = PlayerData[0];
@@ -102,13 +102,13 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"ÇÃ·¹ÀÌ¾î ID {playerID}¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ID {playerID}ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
-        //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);//¸Å¹ø ÀÌ¸§À¸·Î Ã£À¸¸é ¼º´É ÀúÇÏ°¡ ½É°¢ÇÔ
+        //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);//ï¿½Å¹ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½É°ï¿½ï¿½ï¿½
 
 
     }
-    public void Attacking(string attacks)//°ø°ÝÇßÀ»¶§ µ¥ÀÌÅÍ Ã³¸®
+    public void Attacking(string attacks)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     {
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
@@ -123,22 +123,22 @@ public class SocketManager : MonoBehaviour
         Debug.Log($"[Wedgie] attackerID: {attackerID}, targetID: {targetID}");
 
 
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//¿©±â ¾ÈµÊ
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//ï¿½ï¿½ï¿½ï¿½ ï¿½Èµï¿½
         {
             
 
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
 
-            // »ö»ó º¯°æ
-            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f); // ÁÖÈ²
-            target.GetComponent<Renderer>().material.color = Color.black;               // °ËÁ¤
-            Debug.Log("»ö ¹Ù²Þ");
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f); // ï¿½ï¿½È²
+            target.GetComponent<Renderer>().material.color = Color.black;               // ï¿½ï¿½ï¿½ï¿½
+            Debug.Log("ï¿½ï¿½ ï¿½Ù²ï¿½");
             if (targetID == GetMySocketID())
             {
-                Debug.Log("³»°¡ °ø°Ý´çÇÔ¤¤ ");
-                // °ø°Ý´çÇÑ ÇÃ·¹ÀÌ¾î°¡ ÀÚ½ÅÀÎ °æ¿ì
-                myPlayer.GetComponent<PlayerMove>().IsWedgied(); // °ø°ÝÀ» ¹Þ¾ÒÀ½À» ¾Ë¸²
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ý´ï¿½ï¿½Ô¤ï¿½ ");
+                // ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+                myPlayer.GetComponent<PlayerMove>().IsWedgied(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½
 
             }
             
