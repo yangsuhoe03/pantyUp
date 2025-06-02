@@ -27,7 +27,7 @@ public class SocketManager : MonoBehaviour
     public static extern void ScoreUp(string scoreData);
 
     [DllImport("__Internal")]
-    public static extern void SendAttackToFaild(string attacked);
+    private static extern void SendAttackToFaild(string attacked);
 
     void Start()
     {

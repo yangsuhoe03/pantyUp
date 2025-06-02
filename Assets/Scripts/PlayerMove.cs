@@ -92,9 +92,9 @@ public class PlayerMove: MonoBehaviour
     }
     public void IsWedgied()
     {
-
+        Debug.Log("공격 받음");
         isAttacked = true; // 공격을 받았음을 표시
-        GetComponent<Renderer>().material.color = Color.black; 
+        GetComponent<Renderer>().material.color = Color.blue; 
         
     }
 
@@ -153,8 +153,7 @@ public class PlayerMove: MonoBehaviour
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
                 GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
-                isAttacked = false;
-                SocketManagerScript.AttackSuccess(attacked);
+                isAttacked = false; 
             }
         }
     }
