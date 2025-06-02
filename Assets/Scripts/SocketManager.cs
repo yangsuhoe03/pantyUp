@@ -27,7 +27,7 @@ public class SocketManager : MonoBehaviour
     public static extern void ScoreUp(string scoreData);
 
     [DllImport("__Internal")]
-    private static extern void SendAttackToFaild(string attacked);
+    public static extern void SendAttackToFaild(string attacked);
 
     void Start()
     {
@@ -184,7 +184,7 @@ public class SocketManager : MonoBehaviour
 
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
-            target.GetComponent<Renderer>().material.color = Color.yellow;
+            target.GetComponent<Renderer>().material.color = Color.red;
 
 
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
@@ -195,7 +195,7 @@ public class SocketManager : MonoBehaviour
         
         
     }
-        public void ReceiveFaildAttack(string attacks)
+    public void ReceiveFaildAttack(string attacks)
     {
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
@@ -215,12 +215,6 @@ public class SocketManager : MonoBehaviour
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
             Debug.Log($"{attackerID}가 공격 실패 {targetID}는 팬티 끊킴");
-
-
-
-
-
-
 
 
 
