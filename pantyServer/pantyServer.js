@@ -73,6 +73,14 @@ io.on('connection', (socket) => {
     io.emit('ServerToSucceseAttack', attacks);
   });
 
+  socket.on('SendAttackFaild', (attacks) => {
+    io.emit('ServerToFaildAttack', attacks);
+
+  });
+
+
+
+
 
   socket.on('disconnect', () => {
     console.log('클라이언트 연결 종료');

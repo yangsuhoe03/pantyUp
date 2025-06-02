@@ -26,6 +26,9 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     public static extern void ScoreUp(string scoreData);
 
+    [DllImport("__Internal")]
+    private static extern void SendAttackToFaild(string attacked);
+
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
@@ -56,6 +59,7 @@ public class SocketManager : MonoBehaviour
     SendPosToServer(pos);
 #endif
     }
+
     public void SendAttack(string attacked)
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -63,6 +67,7 @@ public class SocketManager : MonoBehaviour
     SendAttackToServer(attacked);
 #endif
     }
+
     public void AttackSuccess(string scoreData)
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -70,6 +75,16 @@ public class SocketManager : MonoBehaviour
     ScoreUp(scoreData);
 #endif
     }
+
+    public void AttackFaild(string attacked)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    SendAttackToFaild(attacked);
+#endif
+    }
+
+
 
 
     public void MakePlayer(string playerIDs)
@@ -118,7 +133,7 @@ public class SocketManager : MonoBehaviour
         //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);
 
     }
-    public void Attacking(string attacks)
+    public void ReceiveAttacking(string attacks)
     {
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
@@ -149,7 +164,7 @@ public class SocketManager : MonoBehaviour
 
         }
     }
-    public void SucceseAttack(string attacks)
+    public void ReceiveSucceseAttack(string attacks)
     {
         Debug.Log(attacks);
         string[] ids = attacks.Split(',');
@@ -169,9 +184,43 @@ public class SocketManager : MonoBehaviour
 
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
+            target.GetComponent<Renderer>().material.color = Color.yellow;
 
 
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
+
+
+
+        }
+        
+        
+    }
+        public void ReceiveFaildAttack(string attacks)
+    {
+        string[] ids = attacks.Split(',');
+        if (ids.Length != 2) return;
+
+        string attackerID = ids[0];
+        string targetID = ids[1];
+        if (targetID == GetMySocketID())//내가 공격을 당하면
+        {
+
+            Debug.Log("팬티 끊킴..!");
+
+        }
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        {
+
+
+            GameObject attacker = playerDict[attackerID];
+            GameObject target = playerDict[targetID];
+            Debug.Log($"{attackerID}가 공격 실패 {targetID}는 팬티 끊킴");
+
+
+
+
+
+
 
 
 

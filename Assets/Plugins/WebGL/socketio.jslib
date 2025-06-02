@@ -22,12 +22,17 @@ mergeInto(LibraryManager.library, {
     });
 
     window.socket.on('ServerToAttack', function(attacks){
-      SendMessage('SocketManager', 'Attacking', attacks);
+      SendMessage('SocketManager', 'ReceiveAttacking', attacks);
     });
 
     window.socket.on('ServerToSucceseAttack', function(attacks){
-      SendMessage('SocketManager', 'SucceseAttack', attacks);
+      SendMessage('SocketManager', 'ReceiveSucceseAttack', attacks);
     });
+
+    window.socket.on('ServerToFaildAttack', function(attacks){
+      SendMessage('SocketManager', 'ReceiveFaildAttack', attacks);
+    });
+
   },
 
   SendPosToServer: function (Pos) {
@@ -43,9 +48,21 @@ mergeInto(LibraryManager.library, {
       window.socket.emit('SendAttack', ATK);
     } 
   },
-    ScoreUp: function (attacks) {
+
+
+  ScoreUp: function (attacks) {
     var ATK = UTF8ToString(attacks); 
       window.socket.emit('SendSucceseAttack', ATK);
       console.log("스코어 업");
-    }
-  });
+  },
+
+  SendAttackToFaild: function (attacks) {
+    var ATK = UTF8ToString(attacks); 
+    if (window.socket) {
+      window.socket.emit('SendAttackFaild', ATK);
+    } 
+  }
+
+
+
+});
