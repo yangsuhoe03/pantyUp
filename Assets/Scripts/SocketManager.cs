@@ -24,7 +24,7 @@ public class SocketManager : MonoBehaviour
     private static extern void SendAttackToServer(string attacked);
 
     [DllImport("__Internal")]
-    public static extern void ScoreUp(string scoreData);
+    private static extern void ScoreUp(string scoreData);
 
     [DllImport("__Internal")]
     private static extern void SendAttackToFaild(string attacked);
@@ -135,38 +135,34 @@ public class SocketManager : MonoBehaviour
     }
     public void ReceiveAttacking(string attacks)
     {
+        Debug.Log($"{attacks}1 공격 성공"); 
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
         string attackerID = ids[0];
         string targetID = ids[1];
 
-
+        GameObject attacker = playerDict[attackerID];
+        GameObject target = playerDict[targetID];
         if (targetID == GetMySocketID())//내가 공격을 당하면
         {
+            Debug.Log("wedgied");
 
             myPlayer.GetComponent<PlayerMove>().IsWedgied();
+
+
 
         }
 
         if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
-
-
-            GameObject attacker = playerDict[attackerID];
-            GameObject target = playerDict[targetID];
-
-
             attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
             target.GetComponent<Renderer>().material.color = Color.black;
-
-
-
         }
     }
     public void ReceiveSucceseAttack(string attacks)
     {
-        Debug.Log(attacks);
+        Debug.Log($"{attacks}2 최종 공격 성공"); 
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
@@ -197,6 +193,7 @@ public class SocketManager : MonoBehaviour
     }
     public void ReceiveFaildAttack(string attacks)
     {
+        Debug.Log($"{attacks}3 공격 실패");
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 

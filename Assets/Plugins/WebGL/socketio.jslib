@@ -59,7 +59,7 @@ mergeInto(LibraryManager.library, {
   SendAttackToFaild: function (attacks) {
     var ATK = UTF8ToString(attacks); 
     if (window.socket) {
-      window.socket.emit('SendAttackFaild', ATK);
+      window.socket.emit('SendFaildAttack', ATK);
     } 
   }
 

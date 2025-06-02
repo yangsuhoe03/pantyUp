@@ -63,16 +63,22 @@ io.on('connection', (socket) => {
     
 
   });
-  socket.on('SendAttack', (attacks) => {
-    console.log("서버받음: ", attacks);
+  socket.on('SendAttack', (data) => {
+    console.log("서버받음: ", data);
     
-    socket.broadcast.emit('ServerToAttack', attacks);
+    io.emit('ServerToAttack', data);
+  });
+  
+  socket.on('SendSucceseAttack', (data) => {
+    io.emit('ServerToSucceseAttack', data);
   });
 
-  socket.on('SendAttackFaild', (attacks) => {
-    io.emit('ServerToFaildAttack', attacks);
+
+  socket.on('SendFaildAttack', (data) => {
+    io.emit('ServerToFaildAttack', data);
 
   });
+
 
 
 

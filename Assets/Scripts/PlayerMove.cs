@@ -154,6 +154,7 @@ public class PlayerMove: MonoBehaviour
                 attackSuccess = false; // 공격 성공 상태 초기화
                 GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
                 isAttacked = false; 
+                SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
             }
         }
     }
@@ -167,7 +168,7 @@ public class PlayerMove: MonoBehaviour
             otherPlayer = null; // 다른 플레이어 오브젝트 초기화
             GetComponent<Renderer>().material.color = Color.white;
             isAttacked = false;
-            SocketManagerScript.AttackFaild(attacked); // 공격 성공 전송 
+            SocketManagerScript.AttackFaild(attacked); // 공격 실패 전송 
         }
     }
 
