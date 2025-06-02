@@ -21,13 +21,13 @@ public class OtherPlayer : MonoBehaviour
     public void SetPosition(Vector3 pos, float rotationY)
     {
         transform.position = pos;
-        transform.rotation = Quaternion.Euler(0, rotationY, 0); // YÃà È¸Àü Àû¿ë
+        transform.rotation = Quaternion.Euler(0, rotationY, 0); // Yì¶• íšŒì „ ì ìš©
     }
     public void BeingAttacked()
     {
-        // °ø°İÀ» ¹Ş¾ÒÀ» ¶§ÀÇ ·ÎÁ÷
-        // ¿¹: »ö»ó º¯°æ, ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı µî
-        //Debug.Log("°ø°İ ¹ŞÀ½: " + playerID);
+        // ê³µê²©ì„ ë°›ì•˜ì„ ë•Œì˜ ë¡œì§
+        // ì˜ˆ: ìƒ‰ìƒ ë³€ê²½, ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ ë“±
+        //Debug.Log("ê³µê²© ë°›ìŒ: " + playerID);
         GetComponent<Renderer>().material.color = Color.black; 
     }
 

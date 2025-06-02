@@ -12,8 +12,8 @@ public class SocketManager : MonoBehaviour
     private string mySocketID;
     public GameObject myPlayer;
     //List<string> playerList = new List<string>();
-    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//���� ���� �� �̷��� ���
-    // JavaScript�� ��� (JS �Լ� ���� �ʿ�)
+    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
+
     [DllImport("__Internal")]
     private static extern void ConnectToSocket();
 
@@ -27,18 +27,17 @@ public class SocketManager : MonoBehaviour
     {
          myPlayer.GetComponent<PlayerMove>();
         //Debug.Log(gameObject.name);
-        gameObject.name = "SocketManager";//�̸��� �ٸ��뼭 �ٲ���
+        gameObject.name = "SocketManager";
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
-        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//�׽�Ʈ��
-
+        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
     }
 
     public void SetMySocketID(string id)
     {
         mySocketID = id;
-        Debug.Log("�� ���� ID �����: " + mySocketID);
+
     }
 
     public string GetMySocketID()
@@ -63,18 +62,18 @@ public class SocketManager : MonoBehaviour
 
     public void MakePlayer(string playerIDs)
     {
-        string[] ids = playerIDs.Split(','); // ��ǥ�� ���� ID�� �� �� ����
+        string[] ids = playerIDs.Split(','); 
 
         foreach (string id in ids)
         {
-            if (id == GetMySocketID()) continue; // �ڽ� ����
+            if (id == GetMySocketID()) continue; 
 
             if (!playerDict.ContainsKey(id))
             {
                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
                 playerDict.Add(id, enemy);
-                Debug.Log($"������ �÷��̾� ID: {id}");
+               
             }
         }
 
@@ -85,7 +84,7 @@ public class SocketManager : MonoBehaviour
 
     public void ReceivePos(string data)
     {
-        //Debug.Log("���� ������: " + data);
+
 
         string[] PlayerData = data.Split(':');
         string playerID = PlayerData[0];
@@ -102,13 +101,12 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"�÷��̾� ID {playerID}�� ã�� �� �����ϴ�.");
+            Debug.LogWarning($" {playerID}");
         }
-        //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);//�Ź� �̸����� ã���� ���� ���ϰ� �ɰ���
-
+        //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);
 
     }
-    public void Attacking(string attacks)//���������� ������ ó��
+    public void Attacking(string attacks)
     {
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
@@ -123,25 +121,28 @@ public class SocketManager : MonoBehaviour
         Debug.Log($"[Wedgie] attackerID: {attackerID}, targetID: {targetID}");
 
 
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//���� �ȵ�
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))
         {
-            
+
 
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
 
-            // ���� ����
-            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f); // ��Ȳ
-            target.GetComponent<Renderer>().material.color = Color.black;               // ����
-            Debug.Log("�� �ٲ�");
+
+            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+            target.GetComponent<Renderer>().material.color = Color.black;
+
             if (targetID == GetMySocketID())
             {
-                Debug.Log("���� ���ݴ��Ԥ� ");
-                // ���ݴ��� �÷��̾ �ڽ��� ���
-                myPlayer.GetComponent<PlayerMove>().IsWedgied(); // ������ �޾����� �˸�
+
+                myPlayer.GetComponent<PlayerMove>().IsWedgied();
 
             }
-            
+
+        }
+        else
+        {
+            Debug.Log("wqwer");
         }
 
     }

@@ -5,7 +5,7 @@ public class playerAttack : MonoBehaviour
     public bool attackTrigger = false;
     private GameObject targetPlayer;
     PlayerMove playerMove;
-    public GameObject Player; // ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®¸¦ ¿¡µğÅÍ¿¡¼­ ÇÒ´ç
+    public GameObject Player; // í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ë¥¼ ì—ë””í„°ì—ì„œ í• ë‹¹
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
