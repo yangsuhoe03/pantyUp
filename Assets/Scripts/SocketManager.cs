@@ -93,15 +93,24 @@ public class SocketManager : MonoBehaviour
 
         foreach (string id in ids)
         {
-            if (id == GetMySocketID()) continue;
+            
 
             if (!playerDict.ContainsKey(id))
             {
-                GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
-                enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
-                playerDict.Add(id, enemy);
-
+                if (id != GetMySocketID()){//내가 아닌 플레이어일 때
+                    GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
+                    enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
+                    playerDict.Add(id, enemy);
+                }else{//내가 플레이어일 때
+                    GameObject isMine;
+                    isMine = GameObject.Find("Player");
+                    playerDict.Add(id, isMine);
+                }
             }
+        }
+        foreach (KeyValuePair<string, GameObject> entry in playerDict)
+        {
+            Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
         }
 
         //enemy.GetComponent<OtherPlayer>().SetPlayerID(playerIDs);
@@ -219,5 +228,11 @@ public class SocketManager : MonoBehaviour
         
         
     }
+    public void ReceiveScoreUpdate(string scoreData)
+    {
+        Debug.Log($"점수 == {scoreData}");
+
+    }
+
 
 }

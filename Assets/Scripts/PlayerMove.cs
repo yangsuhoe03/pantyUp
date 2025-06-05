@@ -14,7 +14,6 @@ public class PlayerMove: MonoBehaviour
     float rotationY = 0; // 현재 Y축 회전 값
     bool attackSuccess = false; // 공격 성공 여부
     float wedgieTime = 0;
-    int score = 0; // 점수 변수
     GameObject otherPlayer;
     string otherPlayerID; // 다른 플레이어의 ID
     string attacked;
@@ -28,6 +27,13 @@ public class PlayerMove: MonoBehaviour
 
         lastSentPosition = transform.position;
         
+    }
+    public string GetMYID(){
+
+        string myID = SocketManagerScript.GetMySocketID();
+        return myID;
+        
+
     }
 
     void Update()
@@ -148,8 +154,6 @@ public class PlayerMove: MonoBehaviour
             // 다른 플레이어에게 공격 알림
             if (wedgieTime >= 10f) // 10초 이상 지속되면
             {
-                score += 1; // 점수 증가
-                Debug.Log("점수 증가: " + score);
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
                 GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원

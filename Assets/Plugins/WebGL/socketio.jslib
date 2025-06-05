@@ -32,6 +32,10 @@ mergeInto(LibraryManager.library, {
     window.socket.on('ServerToFaildAttack', function(attacks){
       SendMessage('SocketManager', 'ReceiveFaildAttack', attacks);
     });
+    window.socket.on('ServerToScoreUpdate',function(data){
+      console.log("scoreUPMessage보내기");
+      SendMessage('SocketManager', 'ReceiveScoreUpdate', data);
+    });
 
   },
 
