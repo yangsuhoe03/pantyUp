@@ -17,6 +17,12 @@ mergeInto(LibraryManager.library, {
       SendMessage('SocketManager', 'ReceivePos', data);
     });
 
+    window.socket.on('ServerToAnimNumber', function(data){
+      SendMessage('SocketManager', 'ReceiveAnim', data);
+    });
+
+
+
     window.socket.on('ServerToMakePlayers', function(players){
       SendMessage('SocketManager', 'MakePlayer', players);
     });
@@ -40,5 +46,14 @@ mergeInto(LibraryManager.library, {
     if (window.socket) {
       window.socket.emit('SendAttack', ATK);
     } 
+  },
+
+  SendAnimToServer: function (data) {
+    var animNumber = UTF8ToString(data); 
+    
+    if (window.socket) {
+      window.socket.emit('SendAnimNumber', animNumber);
+    } 
   }
+  
 });

@@ -63,6 +63,16 @@ io.on('connection', (socket) => {
     
 
   });
+    socket.on('SendAnimNumber', (data) => {
+
+
+    //console.log(2, pos);
+    socket.broadcast.emit('ServerToAnimNumber', data);
+    
+
+  });
+
+
   socket.on('SendAttack', (attacks) => {
     console.log("서버받음: ", attacks);
     
