@@ -4,8 +4,7 @@ using UnityEngine;
 idle = 0
 running = 1
 walkback = -1
-jumpup = 2
-fall = 3
+jumpup = 3
 landingon = 4
 landingoff = 5
 falling = 6
@@ -17,7 +16,7 @@ death = 11
 */
 public class player_anim : MonoBehaviour
 {
-    public SocketManager SocketManager;
+    public SocketManager socketManager;
     public Animator animator1, animator2;
     public GameObject player1, player2, player3;
 
@@ -29,9 +28,9 @@ public class player_anim : MonoBehaviour
 
     void Start()
     {
-        if (SocketManager == null)
+        if (socketManager == null)
         {
-            GameObject.Find("SocketManager").GetComponent<SocketManager>();
+            socketManager = GameObject.Find("SocketManager").GetComponent<SocketManager>();
         }
     }
 
@@ -68,7 +67,7 @@ public class player_anim : MonoBehaviour
             currentmove = "-1";
         }
         SetAnimationParameter();
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void Landing(bool grounded)
     {
@@ -79,42 +78,42 @@ public class player_anim : MonoBehaviour
             currentmove = "5";
 
         SetAnimationParameter();
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void Jumpup()
     {
         currentmove = "3";
         animator1.SetTrigger("jumpup");
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void Falling()
     {
         
         animator1.SetTrigger("falling");
         currentmove = "6";
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void Kill()
     {
         animator1.SetTrigger("kill");
         currentmove = "10";
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void Death()
     {
-        animator2.SetTrigger("death");
         player1.SetActive(false);
         player2.SetActive(true);
         player3.SetActive(true);
-        
+        animator2.SetTrigger("death");
+
         currentmove = "11";
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void GrabStart()
     {
         animator1.SetTrigger("grabstart");
         currentmove = "7";
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
     public void GrabSuccess(bool success)
     {
@@ -124,6 +123,6 @@ public class player_anim : MonoBehaviour
             currentmove = "8";
         else
             currentmove = "9";
-        SocketManager.SendPlayerPosition(currentmove);
+        //socketManager.SendPlayerMove(currentmove);
     }
 }

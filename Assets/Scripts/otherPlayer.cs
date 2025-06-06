@@ -3,17 +3,12 @@ using UnityEngine;
 public class OtherPlayer : MonoBehaviour
 {
     public string playerID;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public Animator animator1, animator2;
+    public GameObject player1, player2, player3;
+    private string currentmove;
+    //animation Parameter List
+    public bool walking, running, walkingbackward, landing, grabsuccess;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void SetPlayerID(string Id)
     {
         playerID = Id;
@@ -22,6 +17,83 @@ public class OtherPlayer : MonoBehaviour
     {
         transform.position = pos;
         transform.rotation = Quaternion.Euler(0, rotationY, 0); // Y축 회전 적용
+    }
+    public void SetAnimation(string num)
+    {
+        currentmove = num;
+        if (num == "0")
+        {
+            walking = false;
+            running = true;
+            walkingbackward = false;
+            SetAnimationParameter();
+        }
+        else if (num == "1")
+        {
+            walking = false;
+            running = false;
+            walkingbackward = false;
+            SetAnimationParameter();
+        }
+        else if (num == "-1")
+        {
+            walking = false;
+            running = false;
+            walkingbackward = true;
+            SetAnimationParameter();
+
+        }
+        else if (num == "3")
+        {
+            animator1.SetTrigger("jumpup");
+        }
+        else if (num == "4")
+        {
+            landing = true;
+            SetAnimationParameter();
+        }
+        else if (num == "5")
+        {
+            landing = false;
+            SetAnimationParameter();
+        }
+        else if (num == "6")
+        {
+            animator1.SetTrigger("falling");
+        }
+        else if (num == "7")
+        {
+            animator1.SetTrigger("grabstart");
+        }
+        else if (num == "8")
+        {
+            grabsuccess = true;
+            SetAnimationParameter();
+        }
+        else if (num == "9")
+        {
+            grabsuccess = false;
+            SetAnimationParameter();
+        }
+        else if (num == "10")
+        {
+            animator1.SetTrigger("kill");
+        }
+        else if (num == "11")
+        {
+            player1.SetActive(false);
+            player2.SetActive(true);
+            player3.SetActive(true);
+            animator2.SetTrigger("death");
+        }
+    }
+    void SetAnimationParameter()
+    {
+        animator1.SetBool("walking", walking);
+        animator1.SetBool("running", running);
+        animator1.SetBool("walkingbackward", walkingbackward);
+        animator1.SetBool("landing", landing);
+        animator1.SetBool("grabsuccess", grabsuccess);
     }
     public void BeingAttacked()
     {
