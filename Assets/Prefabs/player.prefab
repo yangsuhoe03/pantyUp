@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4658415224464009482}
   - component: {fileID: 493985851998882663}
   m_Layer: 0
-  m_Name: Player
+  m_Name: player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!65 &4658415224464009482
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -96,11 +96,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ceea0cefca578f4680237c10c661401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  socketManager: {fileID: 0}
   animator1: {fileID: 10325509699044482}
   animator2: {fileID: 8564367126933362905}
   player1: {fileID: 6741697907213272130}
   player2: {fileID: 1553691612753567493}
   player3: {fileID: 2634689454311277140}
+  walking: 0
+  running: 0
+  walkingbackward: 0
+  landing: 0
+  grabsuccess: 0
 --- !u!1001 &2859833245806486856
 PrefabInstance:
   m_ObjectHideFlags: 0

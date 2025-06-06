@@ -1563,6 +1563,61 @@ Transform:
   - {fileID: 1004076021845905155}
   m_Father: {fileID: 2567328733204590643}
   m_LocalEulerAnglesHint: {x: 19.568874, y: 1.0169084, z: 5.8917594}
+--- !u!1 &2036814010134806490
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 160154048825070056}
+  - component: {fileID: 3572954667336171097}
+  m_Layer: 0
+  m_Name: pantyDistance
+  m_TagString: pantyDistance
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &160154048825070056
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036814010134806490}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.030498266, y: 1.0088769, z: 0.4017825}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1105451563435632680}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3572954667336171097
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2036814010134806490}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3.06
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.11, z: -0.43}
 --- !u!1 &2098156230134845340
 GameObject:
   m_ObjectHideFlags: 0
@@ -3649,6 +3704,7 @@ Transform:
   - {fileID: 3798268889622545178}
   - {fileID: 1080422999227829645}
   - {fileID: 5306838519844724038}
+  - {fileID: 160154048825070056}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &353666019656435862
@@ -3677,7 +3733,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!65 &5444835407842126789
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3722,6 +3778,8 @@ MonoBehaviour:
   walkingbackward: 0
   landing: 0
   grabsuccess: 0
+  playerRightHand: {fileID: 3726769592653414967}
+  playerPanty: {fileID: 7090711740739072373}
 --- !u!1 &4617923173432736626
 GameObject:
   m_ObjectHideFlags: 0

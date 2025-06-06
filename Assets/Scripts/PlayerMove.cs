@@ -17,6 +17,7 @@ public class PlayerMove : MonoBehaviour
     bool attackSuccess = false; // 공격 성공 여부
     float wedgieTime = 0;
     GameObject otherPlayer;
+    GameObject otherPlayerPanty;
     string otherPlayerID; // 다른 플레이어의 ID
     string attacked;
     bool isAttacked = false; // 공격을 받았는지 여부
@@ -89,6 +90,9 @@ public class PlayerMove : MonoBehaviour
                     SocketManagerScript.SendAttack(attacked); // 공격 전송
 
                     player_Anim.GrabSuccess(true);
+                    
+
+                    
                 }
                 else
                 {
@@ -104,6 +108,11 @@ public class PlayerMove : MonoBehaviour
         if (isAttack == true)
         {
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+
+        }
+        if ( player_Anim.grabsuccess == true )
+        {
+            otherPlayerPanty.transform.position = playerRightHand.transform.position;
         }
 
 
@@ -132,7 +141,9 @@ public class PlayerMove : MonoBehaviour
     public void GetOtherPlayer(GameObject otherP)
     {
         otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
+        otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
         otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // 다른 플레이어의 ID 저장
+        
     }
     void AttackEnd()
     {
