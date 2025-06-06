@@ -165,7 +165,7 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"�÷��̾� ID {playerID}�� ã�� �� �����ϴ�.");
+            Debug.Log("wwqwqwqwqwqwqwqwwww");
         }
     }
 
