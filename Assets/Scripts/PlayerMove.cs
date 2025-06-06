@@ -1,6 +1,7 @@
 
+using Unity.VisualScripting;
 using UnityEngine;
-public class PlayerMove: MonoBehaviour
+public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
@@ -9,6 +10,7 @@ public class PlayerMove: MonoBehaviour
     playerAttack playerAttack;
     GameObject SocketManager;
     SocketManager SocketManagerScript; // SocketManager 스크립트 참조
+    player_anim player_Anim; //플레이어 애니메이션 스크립트
     private Vector3 lastSentPosition;
     bool isAttack = false; // 공격 상태 변수
     float rotationY = 0; // 현재 Y축 회전 값
@@ -19,6 +21,8 @@ public class PlayerMove: MonoBehaviour
     string otherPlayerID; // 다른 플레이어의 ID
     string attacked;
     bool isAttacked = false; // 공격을 받았는지 여부
+    public GameObject playerRightHand;
+    public GameObject playerPanty;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -27,7 +31,9 @@ public class PlayerMove: MonoBehaviour
         playerAttack = GetComponentInChildren<playerAttack>();
 
         lastSentPosition = transform.position;
-        
+        player_Anim = GetComponent<player_anim>();
+
+
     }
 
     void Update()
@@ -40,14 +46,29 @@ public class PlayerMove: MonoBehaviour
         Vector3 velocity = new Vector3(move.x * moveSpeed, rb.linearVelocity.y, move.z * moveSpeed);
         rb.linearVelocity = velocity;
 
+        //뛰기 애니메이션
+        if (moveZ > 0 && !player_Anim.running)
+        {
+            player_Anim.Move(moveZ);
+        }
+        else if (moveZ == 0 && (player_Anim.running || player_Anim.walkingbackward))
+        {
+            player_Anim.Move(moveZ);
+        }
+        else if (moveZ < 0)
+        {
+            player_Anim.Move(moveZ);
+        }
+
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded && isAttack == false)
         {
 
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false;  
+            isGrounded = false;
+            player_Anim.Jumpup();
         }
-        if (Input.GetMouseButtonDown(0)) 
+        if (Input.GetMouseButtonDown(0))
         {
             if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
@@ -57,15 +78,19 @@ public class PlayerMove: MonoBehaviour
                 {
                     Debug.Log("공격 성공");
                     attackSuccess = true; // 공격 성공 상태로 변경
-                    GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+                    //GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
                     attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // 공격자 ID와 대상 ID를 쉼표로 구분하여 저장
                     SocketManagerScript.SendAttack(attacked); // 공격 전송
+
+                    player_Anim.GrabSuccess(true);
                 }
                 else
                 {
-
                     Debug.Log("공격 실패");
+                    player_Anim.GrabSuccess(false);
                 }
+
+                player_Anim.GrabStart();
             }
 
 
@@ -94,8 +119,8 @@ public class PlayerMove: MonoBehaviour
     {
         Debug.Log("공격 받음");
         isAttacked = true; // 공격을 받았음을 표시
-        GetComponent<Renderer>().material.color = Color.blue; 
-        
+        GetComponent<Renderer>().material.color = Color.blue;
+
     }
 
     public void GetOtherPlayer(GameObject otherP)
@@ -114,6 +139,8 @@ public class PlayerMove: MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+
+            player_Anim.Landing(isGrounded);
         }
 
 
@@ -128,7 +155,7 @@ public class PlayerMove: MonoBehaviour
             isGrounded = true;
         }
 
-     
+
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -140,7 +167,7 @@ public class PlayerMove: MonoBehaviour
         {
             wedgieTime = wedgieTime + Time.deltaTime; // 팬티 공격 성공 시 시간 증가
             //Debug.Log("팬티 공격 성공 시간: " + wedgieTime);
-            if(isAttacked == false)
+            if (isAttacked == false)
             {
                 otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//한번만실행
                 isAttacked = true;
@@ -152,8 +179,10 @@ public class PlayerMove: MonoBehaviour
                 Debug.Log("점수 증가: " + score);
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
-                GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
-                isAttacked = false; 
+                //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
+                isAttacked = false;
+
+                player_Anim.Kill();
             }
         }
     }
@@ -165,8 +194,10 @@ public class PlayerMove: MonoBehaviour
             wedgieTime = 0f; // 시간 초기화
             attackSuccess = false; // 공격 성공 상태 초기화
             otherPlayer = null; // 다른 플레이어 오브젝트 초기화
-            GetComponent<Renderer>().material.color = Color.white;
-            isAttacked = false; 
+            //GetComponent<Renderer>().material.color = Color.white;
+            isAttacked = false;
+            
+            player_Anim.GrabSuccess(false);
         }
     }
 
@@ -175,6 +206,10 @@ public class PlayerMove: MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+
+            player_Anim.Landing(isGrounded);
+
+            if(rb.linearVelocity.y < 0)player_Anim.Falling();
         }
 
 
