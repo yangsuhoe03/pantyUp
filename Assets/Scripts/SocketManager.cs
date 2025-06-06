@@ -142,7 +142,7 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("wqwer");
+            Debug.Log("wwqwqwqwqwqwqwqwwww");
         }
 
     }
