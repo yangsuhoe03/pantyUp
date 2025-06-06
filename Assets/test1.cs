@@ -8,8 +8,5 @@ public class test1 : MonoBehaviour
         
     }
 
-    void Update()
-    {
-        Debug.Log(transform.rotation.y); 
-    }
+
 }
