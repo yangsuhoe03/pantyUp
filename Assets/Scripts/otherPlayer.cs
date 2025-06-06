@@ -8,6 +8,9 @@ public class OtherPlayer : MonoBehaviour
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
+    
+    public GameObject playerRightHand;
+    public GameObject playerPanty;
 
     public void SetPlayerID(string Id)
     {
@@ -24,14 +27,14 @@ public class OtherPlayer : MonoBehaviour
         if (num == "0")
         {
             walking = false;
-            running = true;
+            running = false;
             walkingbackward = false;
             SetAnimationParameter();
         }
         else if (num == "1")
         {
             walking = false;
-            running = false;
+            running = true;
             walkingbackward = false;
             SetAnimationParameter();
         }
