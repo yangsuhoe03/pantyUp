@@ -67,7 +67,7 @@ public class player_anim : MonoBehaviour
             currentmove = "-1";
         }
         SetAnimationParameter();
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void Landing(bool grounded)
     {
@@ -78,26 +78,26 @@ public class player_anim : MonoBehaviour
             currentmove = "5";
 
         SetAnimationParameter();
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void Jumpup()
     {
         currentmove = "3";
         animator1.SetTrigger("jumpup");
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void Falling()
     {
-        
+
         animator1.SetTrigger("falling");
         currentmove = "6";
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void Kill()
     {
         animator1.SetTrigger("kill");
         currentmove = "10";
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void Death()
     {
@@ -107,22 +107,22 @@ public class player_anim : MonoBehaviour
         animator2.SetTrigger("death");
 
         currentmove = "11";
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void GrabStart()
     {
         animator1.SetTrigger("grabstart");
         currentmove = "7";
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void GrabSuccess(bool success)
     {
         grabsuccess = success;
         SetAnimationParameter();
-        if(success)
+        if (success)
             currentmove = "8";
         else
             currentmove = "9";
-        //socketManager.SendPlayerMove(currentmove);
+        //socketManager.SendPlayerMove($"{socketManager.GetMySocketID()},{currentmove}");
     }
 }
