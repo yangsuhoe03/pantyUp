@@ -76,7 +76,7 @@ mergeInto(LibraryManager.library, {
     if (window.socket) {
       window.socket.emit('SendAnimNumber', animNumber);
     } 
-  }
+  },
   
 
   ScoreUp: function (attacks) {
