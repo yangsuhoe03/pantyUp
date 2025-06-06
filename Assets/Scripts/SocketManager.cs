@@ -15,7 +15,7 @@ public class SocketManager : MonoBehaviour
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
     [DllImport("__Internal")]
-    private static extern void ConnectToSocket();
+    private static extern void ConnectToSocket(string nickName);
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
@@ -29,13 +29,22 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendAttackToFaild(string attacked);
 
+
+    [DllImport("__Internal")]
+    private static extern void SendMyNickName(string nickName);
+
+    
+
+
+    string nickName;
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
         //Debug.Log(gameObject.name);
         gameObject.name = "SocketManager";
+        nickName = "myNickNameIssss";//이거 들어가면 설정하기(닉네임)
 #if !UNITY_EDITOR && UNITY_WEBGL
-        ConnectToSocket();
+        ConnectToSocket(nickName);
 #endif
         //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
     }
@@ -44,12 +53,21 @@ public class SocketManager : MonoBehaviour
     {
         mySocketID = id;
         Debug.Log(mySocketID);
+        
 
     }
 
     public string GetMySocketID()
     {
         return mySocketID;
+    }
+
+        public void SendMyName(string MyName)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    SendMyNickName(MyName);
+#endif
     }
 
 
@@ -87,21 +105,27 @@ public class SocketManager : MonoBehaviour
 
 
 
+
+
     public void MakePlayer(string playerIDs)
     {
         string[] ids = playerIDs.Split(',');
 
+
         foreach (string id in ids)
         {
-            
+
 
             if (!playerDict.ContainsKey(id))
             {
-                if (id != GetMySocketID()){//내가 아닌 플레이어일 때
+                if (id != GetMySocketID())
+                {//내가 아닌 플레이어일 때
                     GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
                     enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
                     playerDict.Add(id, enemy);
-                }else{//내가 플레이어일 때
+                }
+                else
+                {//내가 플레이어일 때
                     GameObject isMine;
                     isMine = GameObject.Find("Player");
                     playerDict.Add(id, isMine);
@@ -114,6 +138,11 @@ public class SocketManager : MonoBehaviour
         }
 
         //enemy.GetComponent<OtherPlayer>().SetPlayerID(playerIDs);
+        string myStatus = $"{GetMySocketID()},{nickName}";
+        SendMyName(myStatus);
+
+
+
 
 
     }
@@ -231,6 +260,7 @@ public class SocketManager : MonoBehaviour
     public void ReceiveScoreUpdate(string scoreData)
     {
         Debug.Log($"점수 == {scoreData}");
+
 
     }
 

@@ -1,11 +1,14 @@
 mergeInto(LibraryManager.library, {
-  ConnectToSocket: function () {
+  ConnectToSocket: function (nickName) {
     if (typeof io === 'undefined') {
       console.error("Socket.IO is not loaded.");
       return;
     }
 
+
     window.socket = io(); // 전역 선언
+
+
 
     window.socket.on('connect', function () {
       console.log(" Socket connected.");
@@ -37,6 +40,14 @@ mergeInto(LibraryManager.library, {
       SendMessage('SocketManager', 'ReceiveScoreUpdate', data);
     });
 
+  },
+
+
+  SendMyNickName: function (data) {
+    var nickName = UTF8ToString(data); 
+    if (window.socket) {
+      window.socket.emit('setNickName', nickName);
+    } 
   },
 
   SendPosToServer: function (Pos) {

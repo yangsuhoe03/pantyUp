@@ -39,8 +39,18 @@ app.get('/', (req, res) => {
 
 let Players = [];
 let Scores = {};
+let allPlayerStatus = {};
 io.on('connection', (socket) => {
   console.log(' Unity 클라이언트 연결됨', socket.id);
+
+  socket.on('setNickName', (playerStatus) => {
+    
+    
+
+
+
+
+  });
 
 
   socket.on('makePlayers', (PlayerID) => {
@@ -55,6 +65,7 @@ io.on('connection', (socket) => {
 
 
   });
+
 
 
   socket.on('SendPos', (pos) => {
