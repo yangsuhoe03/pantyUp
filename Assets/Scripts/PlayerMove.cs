@@ -16,7 +16,6 @@ public class PlayerMove : MonoBehaviour
     float rotationY = 0; // 현재 Y축 회전 값
     bool attackSuccess = false; // 공격 성공 여부
     float wedgieTime = 0;
-    int score = 0; // 점수 변수
     GameObject otherPlayer;
     string otherPlayerID; // 다른 플레이어의 ID
     string attacked;
@@ -33,6 +32,13 @@ public class PlayerMove : MonoBehaviour
         lastSentPosition = transform.position;
         player_Anim = GetComponent<player_anim>();
 
+
+    }
+    public string GetMYID(){
+
+        string myID = SocketManagerScript.GetMySocketID();
+        return myID;
+        
 
     }
 
@@ -119,7 +125,7 @@ public class PlayerMove : MonoBehaviour
     {
         Debug.Log("공격 받음");
         isAttacked = true; // 공격을 받았음을 표시
-        GetComponent<Renderer>().material.color = Color.blue;
+        //GetComponent<Renderer>().material.color = Color.blue;
 
     }
 
@@ -175,14 +181,14 @@ public class PlayerMove : MonoBehaviour
             // 다른 플레이어에게 공격 알림
             if (wedgieTime >= 10f) // 10초 이상 지속되면
             {
-                score += 1; // 점수 증가
-                Debug.Log("점수 증가: " + score);
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
-                //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
+
                 isAttacked = false;
 
                 player_Anim.Kill();
+                //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
+                SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
             }
         }
     }
@@ -195,9 +201,11 @@ public class PlayerMove : MonoBehaviour
             attackSuccess = false; // 공격 성공 상태 초기화
             otherPlayer = null; // 다른 플레이어 오브젝트 초기화
             //GetComponent<Renderer>().material.color = Color.white;
-            isAttacked = false;
+
             
             player_Anim.GrabSuccess(false);
+            isAttacked = false;
+            SocketManagerScript.AttackFaild(attacked); // 공격 실패 전송 
         }
     }
 

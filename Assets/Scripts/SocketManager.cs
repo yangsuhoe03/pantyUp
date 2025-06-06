@@ -15,7 +15,7 @@ public class SocketManager : MonoBehaviour
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//���� ���� �� �̷��� ���
     // JavaScript�� ��� (JS �Լ� ���� �ʿ�)
     [DllImport("__Internal")]
-    private static extern void ConnectToSocket();
+    private static extern void ConnectToSocket(string nickName);
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
@@ -25,13 +25,28 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendAnimToServer(string currentmove);
 
+    [DllImport("__Internal")]
+    private static extern void ScoreUp(string scoreData);
+
+    [DllImport("__Internal")]
+    private static extern void SendAttackToFaild(string attacked);
+
+
+    [DllImport("__Internal")]
+    private static extern void SendMyNickName(string nickName);
+
+    
+
+
+    string nickName;
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
         //Debug.Log(gameObject.name);
-        gameObject.name = "SocketManager";//�̸��� �ٸ��뼭 �ٲ���
+        gameObject.name = "SocketManager";
+        nickName = "myNickNameIssss";//이거 들어가면 설정하기(닉네임)
 #if !UNITY_EDITOR && UNITY_WEBGL
-        ConnectToSocket();
+        ConnectToSocket(nickName);
 #endif
         //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//�׽�Ʈ��
 
@@ -40,12 +55,22 @@ public class SocketManager : MonoBehaviour
     public void SetMySocketID(string id)
     {
         mySocketID = id;
-        Debug.Log("�� ���� ID �����: " + mySocketID);
+        Debug.Log(mySocketID);
+        
+
     }
 
     public string GetMySocketID()
     {
         return mySocketID;
+    }
+
+        public void SendMyName(string MyName)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    SendMyNickName(MyName);
+#endif
     }
 
 
@@ -55,6 +80,7 @@ public class SocketManager : MonoBehaviour
     SendPosToServer(pos);
 #endif
     }
+
     public void SendAttack(string attacked)
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -70,24 +96,63 @@ public class SocketManager : MonoBehaviour
 #endif
     }
 
+    public void AttackSuccess(string scoreData)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    ScoreUp(scoreData);
+#endif
+    }
+
+    public void AttackFaild(string attacked)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    SendAttackToFaild(attacked);
+#endif
+    }
+
+
+
+
+
+
     public void MakePlayer(string playerIDs)
     {
-        string[] ids = playerIDs.Split(','); // ��ǥ�� ���� ID�� �� �� ����
+        string[] ids = playerIDs.Split(',');
+
 
         foreach (string id in ids)
         {
-            if (id == GetMySocketID()) continue; // �ڽ� ����
+
 
             if (!playerDict.ContainsKey(id))
             {
-                GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
-                enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
-                playerDict.Add(id, enemy);
-                Debug.Log($"������ �÷��̾� ID: {id}");
+                if (id != GetMySocketID())
+                {//내가 아닌 플레이어일 때
+                    GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
+                    enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
+                    playerDict.Add(id, enemy);
+                }
+                else
+                {//내가 플레이어일 때
+                    GameObject isMine;
+                    isMine = GameObject.Find("Player");
+                    playerDict.Add(id, isMine);
+                }
             }
+        }
+        foreach (KeyValuePair<string, GameObject> entry in playerDict)
+        {
+            Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
         }
 
         //enemy.GetComponent<OtherPlayer>().SetPlayerID(playerIDs);
+        string myStatus = $"{GetMySocketID()},{nickName}";
+        SendMyName(myStatus);
+
+
+
 
 
     }
@@ -117,42 +182,90 @@ public class SocketManager : MonoBehaviour
 
 
     }
-    public void Attacking(string attacks)//���������� ������ ó��
+    public void ReceiveAttacking(string attacks)
     {
+        Debug.Log($"{attacks}1 공격 성공"); 
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
         string attackerID = ids[0];
         string targetID = ids[1];
 
-        foreach (var kvp in playerDict)
+        GameObject attacker = playerDict[attackerID];
+        GameObject target = playerDict[targetID];
+        if (targetID == GetMySocketID())//내가 공격을 당하면
         {
-            Debug.Log($"[playerDict] Key: {kvp.Key}, Value: {kvp.Value.name}");
+            Debug.Log("wedgied");
+
+            myPlayer.GetComponent<PlayerMove>().IsWedgied();
+
+
+
         }
-        Debug.Log($"[Wedgie] attackerID: {attackerID}, targetID: {targetID}");
 
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        {
+            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+            target.GetComponent<Renderer>().material.color = Color.black;
+        }
+    }
+    public void ReceiveSucceseAttack(string attacks)
+    {
+        Debug.Log($"{attacks}2 최종 공격 성공"); 
+        string[] ids = attacks.Split(',');
+        if (ids.Length != 2) return;
 
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//���� �ȵ�
+        string attackerID = ids[0];
+        string targetID = ids[1];
+        if (targetID == GetMySocketID())//내가 공격을 당하면
+        {
+
+            Debug.Log("you died");
+
+        }
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
 
 
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
 
-            // ���� ����
-            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f); // ��Ȳ
-            target.GetComponent<Renderer>().material.color = Color.black;               // ����
-            Debug.Log("�� �ٲ�");
-            if (targetID == GetMySocketID())
-            {
-                Debug.Log("���� ���ݴ��Ԥ� ");
-                // ���ݴ��� �÷��̾ �ڽ��� ���
-                myPlayer.GetComponent<PlayerMove>().IsWedgied(); // ������ �޾����� �˸�
 
-            }
+            Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
+
+
 
         }
+        
+        
+    }
+    public void ReceiveFaildAttack(string attacks)
+    {
+        Debug.Log($"{attacks}3 공격 실패");
+        string[] ids = attacks.Split(',');
+        if (ids.Length != 2) return;
 
+        string attackerID = ids[0];
+        string targetID = ids[1];
+        if (targetID == GetMySocketID())//내가 공격을 당하면
+        {
+
+            Debug.Log("팬티 끊킴..!");
+
+        }
+        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        {
+
+
+            GameObject attacker = playerDict[attackerID];
+            GameObject target = playerDict[targetID];
+            Debug.Log($"{attackerID}가 공격 실패 {targetID}는 팬티 끊킴");
+
+
+
+        }
+        
+        
     }
     public void ReceiveAnim(string anim)
     {
@@ -168,5 +281,12 @@ public class SocketManager : MonoBehaviour
             Debug.Log("wwqwqwqwqwqwqwqwwww");
         }
     }
+    public void ReceiveScoreUpdate(string scoreData)
+    {
+        Debug.Log($"점수 == {scoreData}");
+
+
+    }
+
 
 }
