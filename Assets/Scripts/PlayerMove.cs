@@ -196,6 +196,7 @@ public class PlayerMove : MonoBehaviour
             // 다른 플레이어에게 공격 알림
             if (wedgieTime >= 10f) // 10초 이상 지속되면
             {
+                Debug.Log("킬~~~~~~");
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
 
