@@ -12,7 +12,8 @@ public class SocketManager : MonoBehaviour
     private string mySocketID;
     public GameObject myPlayer;
     //List<string> playerList = new List<string>();
-    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//
+    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//���� ���� �� �̷��� ���
+    // JavaScript�� ��� (JS �Լ� ���� �ʿ�)
     [DllImport("__Internal")]
     private static extern void ConnectToSocket(string nickName);
 
@@ -47,7 +48,7 @@ public class SocketManager : MonoBehaviour
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket(nickName);
 #endif
-        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//테스트용
+        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//�׽�Ʈ��
 
     }
 
