@@ -112,7 +112,11 @@ public class PlayerMove : MonoBehaviour
         }
         if ( player_Anim.grabsuccess == true )
         {
-            otherPlayerPanty.transform.position = playerRightHand.transform.position;
+            if (otherPlayerPanty != null)
+            {
+                otherPlayerPanty.transform.position = playerRightHand.transform.position;                   
+            }
+
         }
 
 
@@ -210,8 +214,8 @@ public class PlayerMove : MonoBehaviour
             Debug.Log("팬티 끊어짐");
             wedgieTime = 0f; // 시간 초기화
             attackSuccess = false; // 공격 성공 상태 초기화
-            otherPlayer = null; // 다른 플레이어 오브젝트 초기화
-            //GetComponent<Renderer>().material.color = Color.white;
+            otherPlayer = null;
+            otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
 
             
             player_Anim.GrabSuccess(false);
