@@ -1,6 +1,7 @@
 
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
@@ -110,7 +111,7 @@ public class PlayerMove : MonoBehaviour
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
 
         }
-        if ( player_Anim.grabsuccess == true )
+        if ( player_Anim.grabsuccess == true && attackSuccess)
         {
             if (otherPlayerPanty != null)
             {
@@ -139,7 +140,11 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("공격 받음");
         isAttacked = true; // 공격을 받았음을 표시
         //GetComponent<Renderer>().material.color = Color.blue;
-
+    }
+    public void Death(GameObject otherp)
+    {
+        transform.position = otherp.transform.position + Vector3.forward;
+        player_Anim.Death();
     }
 
     public void GetOtherPlayer(GameObject otherP)
@@ -147,7 +152,7 @@ public class PlayerMove : MonoBehaviour
         otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
         otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
         otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // 다른 플레이어의 ID 저장
-        
+
     }
     void AttackEnd()
     {
@@ -196,13 +201,13 @@ public class PlayerMove : MonoBehaviour
             // 다른 플레이어에게 공격 알림
             if (wedgieTime >= 10f) // 10초 이상 지속되면
             {
-                Debug.Log("킬~~~~~~");
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
 
                 isAttacked = false;
 
                 player_Anim.Kill();
+                otherPlayer.GetComponent<OtherPlayer>().SetPantypos();
                 //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
                 SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
             }
@@ -212,6 +217,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
+            otherPlayer.GetComponent<OtherPlayer>().SetPantypos();
             Debug.Log("팬티 끊어짐");
             wedgieTime = 0f; // 시간 초기화
             attackSuccess = false; // 공격 성공 상태 초기화

@@ -1,3 +1,4 @@
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class OtherPlayer : MonoBehaviour
@@ -8,9 +9,14 @@ public class OtherPlayer : MonoBehaviour
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
-    
+
     public GameObject playerRightHand;
     public GameObject playerPanty;
+    Vector3 pantypos;
+    void Start()
+    {
+        pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
+    }
 
     public void SetPlayerID(string Id)
     {
@@ -89,6 +95,13 @@ public class OtherPlayer : MonoBehaviour
             player3.SetActive(true);
             animator2.SetTrigger("death");
         }
+        else if (num == "12")
+        {
+            player1.SetActive(true);
+            player2.SetActive(false);
+            player3.SetActive(false);
+            animator2.SetTrigger("respawn");
+        }
     }
     void SetAnimationParameter()
     {
@@ -105,5 +118,8 @@ public class OtherPlayer : MonoBehaviour
         //Debug.Log("공격 받음: " + playerID);
         //GetComponent<Renderer>().material.color = Color.black; 
     }
-
+    public void SetPantypos()
+    {
+        playerPanty.transform.localPosition = pantypos;
+    }
 }

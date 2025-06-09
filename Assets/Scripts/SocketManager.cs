@@ -34,7 +34,7 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendMyNickName(string nickName);
 
-    
+
 
 
     string nickName;
@@ -55,7 +55,7 @@ public class SocketManager : MonoBehaviour
     {
         mySocketID = id;
         Debug.Log(mySocketID);
-        
+
 
     }
 
@@ -64,7 +64,7 @@ public class SocketManager : MonoBehaviour
         return mySocketID;
     }
 
-        public void SendMyName(string MyName)
+    public void SendMyName(string MyName)
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
 
@@ -183,7 +183,7 @@ public class SocketManager : MonoBehaviour
     }
     public void ReceiveAttacking(string attacks)
     {
-        Debug.Log($"{attacks}1 공격 성공"); 
+        Debug.Log($"{attacks}1 공격 성공");
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
@@ -198,8 +198,6 @@ public class SocketManager : MonoBehaviour
 
             myPlayer.GetComponent<PlayerMove>().IsWedgied();
 
-
-
         }
 
         if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
@@ -210,7 +208,7 @@ public class SocketManager : MonoBehaviour
     }
     public void ReceiveSucceseAttack(string attacks)
     {
-        Debug.Log($"{attacks}2 최종 공격 성공"); 
+        Debug.Log($"{attacks}2 최종 공격 성공");
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
@@ -220,6 +218,10 @@ public class SocketManager : MonoBehaviour
         {
 
             Debug.Log("you died");
+            if (playerDict[attackerID] != null)
+            {
+                myPlayer.GetComponent<PlayerMove>().Death(playerDict[attackerID]);
+            }
 
         }
         if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
@@ -235,8 +237,8 @@ public class SocketManager : MonoBehaviour
 
 
         }
-        
-        
+
+
     }
     public void ReceiveFaildAttack(string attacks)
     {
@@ -263,8 +265,8 @@ public class SocketManager : MonoBehaviour
 
 
         }
-        
-        
+
+
     }
     public void ReceiveAnim(string anim)
     {

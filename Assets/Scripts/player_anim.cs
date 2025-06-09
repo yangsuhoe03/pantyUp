@@ -13,6 +13,7 @@ grabsuccess = 8
 grabfailed = 9
 kill = 10
 death = 11
+respawn = 12
 */
 public class player_anim : MonoBehaviour
 {
@@ -96,6 +97,8 @@ public class player_anim : MonoBehaviour
     }
     public void Kill()
     {
+        grabsuccess = false;
+        SetAnimationParameter();
         animator1.SetTrigger("kill");
         currentmove = "10";
         socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");
@@ -108,6 +111,16 @@ public class player_anim : MonoBehaviour
         animator2.SetTrigger("death");
 
         currentmove = "11";
+        socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");
+    }
+    public void Respawn()
+    {
+        player1.SetActive(true);
+        player2.SetActive(false);
+        player3.SetActive(false);
+        animator2.SetTrigger("respawn");
+
+        currentmove = "12";
         socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");
     }
     public void GrabStart()
