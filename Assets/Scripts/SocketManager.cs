@@ -11,16 +11,17 @@ public class SocketManager : MonoBehaviour
     public GameObject testObj;
     private string mySocketID;
     public GameObject myPlayer;
+    private ScoreManager scoreManager;
     //List<string> playerList = new List<string>();
-    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();//���� ���� �� �̷��� ���
-    // JavaScript�� ��� (JS �Լ� ���� �ʿ�)
+    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
+
     [DllImport("__Internal")]
     private static extern void ConnectToSocket(string nickName);
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
 
-    [DllImport("__Internal")]
+    [DllImport("__Internal")]           
     private static extern void SendAttackToServer(string attacked);
     [DllImport("__Internal")]
     private static extern void SendAnimToServer(string currentmove);
@@ -35,20 +36,25 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendMyNickName(string nickName);
 
-    
+                    
 
 
     string nickName;
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
+        scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
+        if (scoreManager == null)
+        {
+            Debug.LogError("ScoreManager를 찾을 수 없습니다!");
+        }
         //Debug.Log(gameObject.name);
         gameObject.name = "SocketManager";
-        nickName = "myNickNameIssss";//이거 들어가면 설정하기(닉네임)
+        //nickName = "myNickNameIssss";//이거 들어가면 설정하기(닉네임)
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket(nickName);
 #endif
-        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);//�׽�Ʈ��
+        //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
 
     }
 
@@ -124,8 +130,6 @@ public class SocketManager : MonoBehaviour
 
         foreach (string id in ids)
         {
-
-
             if (!playerDict.ContainsKey(id))
             {
                 if (id != GetMySocketID())
@@ -147,19 +151,16 @@ public class SocketManager : MonoBehaviour
             Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
         }
 
-        //enemy.GetComponent<OtherPlayer>().SetPlayerID(playerIDs);
         string myStatus = $"{GetMySocketID()},{nickName}";
         SendMyName(myStatus);
-
-
-
-
-
+        if (scoreManager != null)
+        {
+            scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
+        }
     }
 
     public void ReceivePos(string data)
     {
-        //Debug.Log("���� ������: " + data);
 
         string[] PlayerData = data.Split(':');
         string playerID = PlayerData[0];
@@ -176,9 +177,9 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"�÷��̾� ID {playerID}�� ã�� �� �����ϴ�.");
+            Debug.LogWarning($"ID {playerID}찾을 수 없음");
         }
-        //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);//�Ź� �̸����� ã���� ���� ���ϰ� �ɰ���
+        //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);
 
 
     }
@@ -205,8 +206,9 @@ public class SocketManager : MonoBehaviour
 
         if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
-            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
-            target.GetComponent<Renderer>().material.color = Color.black;
+            //attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+            //target.GetComponent<Renderer>().material.color = Color.black;
+            
         }
     }
     public void ReceiveSucceseAttack(string attacks)
@@ -283,10 +285,32 @@ public class SocketManager : MonoBehaviour
     }
     public void ReceiveScoreUpdate(string scoreData)
     {
-        Debug.Log($"점수 == {scoreData}");
-
-
+        Debug.Log($"점수 업데이트: {scoreData}");
+        if (scoreManager != null)
+        {
+            scoreManager.UpdateScores(scoreData);
+        }
     }
 
+    public void ReceiveNickname(string data)
+    {
+        string[] parts = data.Split(',');
+        if (parts.Length == 2)
+        {
+            string playerId = parts[0];
+            string nickname = parts[1];
+            if (scoreManager != null)
+            {
+                scoreManager.UpdatePlayerNickname(playerId, nickname);
+            }
+        }
+    }
 
+    public void SetPlayerNickname(string newNickname)
+    {
+        nickName = newNickname;
+#if !UNITY_EDITOR && UNITY_WEBGL
+        ConnectToSocket(nickName);
+#endif
+    }
 }

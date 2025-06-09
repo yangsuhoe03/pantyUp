@@ -24,7 +24,9 @@ mergeInto(LibraryManager.library, {
       SendMessage('SocketManager', 'ReceiveAnim', data);
     });
 
-
+    window.socket.on('ServerToNickname', function(data){
+      SendMessage('SocketManager', 'ReceiveNickname', data);
+    });
 
     window.socket.on('ServerToMakePlayers', function(players){
       SendMessage('SocketManager', 'MakePlayer', players);
