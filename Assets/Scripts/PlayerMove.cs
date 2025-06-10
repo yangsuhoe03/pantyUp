@@ -24,6 +24,7 @@ public class PlayerMove : MonoBehaviour
     bool isAttacked = false; // 공격을 받았는지 여부
     public GameObject playerRightHand;
     public GameObject playerPanty;
+    Vector3 pantypos;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -34,7 +35,7 @@ public class PlayerMove : MonoBehaviour
         lastSentPosition = transform.position;
         player_Anim = GetComponent<player_anim>();
 
-
+        pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
     }
     public string GetMYID(){
 
@@ -158,7 +159,10 @@ public class PlayerMove : MonoBehaviour
     {
         isAttack = false; // 공격 상태를 false로 변경하여 이동 가능하게 함
     }
-
+    public void SetPantypos()
+    {
+        playerPanty.transform.localPosition = pantypos;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {

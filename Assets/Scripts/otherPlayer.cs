@@ -12,10 +12,24 @@ public class OtherPlayer : MonoBehaviour
 
     public GameObject playerRightHand;
     public GameObject playerPanty;
+    public GameObject otherPlayerPanty;
     Vector3 pantypos;
+
+    bool isAttacked = false;
     void Start()
     {
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
+    }
+    void Update()
+    {
+        if (isAttacked && otherPlayerPanty != null)
+        {
+            Wedgie(otherPlayerPanty);
+        }
+        else if (!isAttacked && otherPlayerPanty != null)
+        {
+            otherPlayerPanty = null;
+        }
     }
 
     public void SetPlayerID(string Id)
@@ -121,5 +135,13 @@ public class OtherPlayer : MonoBehaviour
     public void SetPantypos()
     {
         playerPanty.transform.localPosition = pantypos;
+    }
+    public void SetIsAttacked(bool isAttacked)
+    {
+        this.isAttacked = isAttacked;
+    }
+    public void Wedgie(GameObject otherPlayerPanty)
+    {
+        otherPlayerPanty.transform.position = playerRightHand.transform.position;
     }
 }
