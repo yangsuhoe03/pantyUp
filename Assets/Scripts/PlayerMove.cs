@@ -25,6 +25,9 @@ public class PlayerMove : MonoBehaviour
     public GameObject playerRightHand;
     public GameObject playerPanty;
     Vector3 pantypos;
+    bool dead = false;
+    public GameObject camera;
+    CameraMove cameraMove;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -36,39 +39,21 @@ public class PlayerMove : MonoBehaviour
         player_Anim = GetComponent<player_anim>();
 
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
+        camera = Camera.main.gameObject;
+        cameraMove = camera.GetComponent<CameraMove>();
     }
-    public string GetMYID(){
+    public string GetMYID()
+    {
 
         string myID = SocketManagerScript.GetMySocketID();
         return myID;
-        
+
 
     }
 
     void Update()
     {
-
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        Vector3 velocity = new Vector3(move.x * moveSpeed, rb.linearVelocity.y, move.z * moveSpeed);
-        rb.linearVelocity = velocity;
-
-        //뛰기 애니메이션
-        if (moveZ > 0 && !player_Anim.running)
-        {
-            player_Anim.Move(moveZ);
-        }
-        else if (moveZ == 0 && (player_Anim.running || player_Anim.walkingbackward))
-        {
-            player_Anim.Move(moveZ);
-        }
-        else if (moveZ < 0)
-        {
-            player_Anim.Move(moveZ);
-        }
-
+        Move();
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded && isAttack == false)
         {
@@ -92,9 +77,9 @@ public class PlayerMove : MonoBehaviour
                     SocketManagerScript.SendAttack(attacked); // 공격 전송
 
                     player_Anim.GrabSuccess(true);
-                    
 
-                    
+
+
                 }
                 else
                 {
@@ -112,11 +97,11 @@ public class PlayerMove : MonoBehaviour
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
 
         }
-        if ( player_Anim.grabsuccess == true && attackSuccess)
+        if (player_Anim.grabsuccess == true && attackSuccess)
         {
             if (otherPlayerPanty != null)
             {
-                otherPlayerPanty.transform.position = playerRightHand.transform.position;                   
+                otherPlayerPanty.transform.position = playerRightHand.transform.position;
             }
 
         }
@@ -135,6 +120,38 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
+    }
+    public void Move()
+    {
+        if (dead)
+        {
+            return;
+        }
+        else
+        {
+            float moveX = Input.GetAxis("Horizontal");
+            float moveZ = Input.GetAxis("Vertical");
+
+            Vector3 move = transform.right * moveX + transform.forward * moveZ;
+            Vector3 velocity = new Vector3(move.x * moveSpeed, rb.linearVelocity.y, move.z * moveSpeed);
+            rb.linearVelocity = velocity;
+
+            //뛰기 애니메이션
+            if (moveZ > 0 && !player_Anim.running)
+            {
+                player_Anim.Move(moveZ);
+            }
+            else if (moveZ == 0 && (player_Anim.running || player_Anim.walkingbackward))
+            {
+                player_Anim.Move(moveZ);
+            }
+            else if (moveZ < 0)
+            {
+                player_Anim.Move(moveZ);
+            }
+
+            transform.Rotate(Vector3.up * cameraMove.mouseX);
+        }
     }
     public void IsWedgied()
     {
@@ -244,7 +261,7 @@ public class PlayerMove : MonoBehaviour
 
             player_Anim.Landing(isGrounded);
 
-            if(rb.linearVelocity.y < 0)player_Anim.Falling();
+            if (rb.linearVelocity.y < 0) player_Anim.Falling();
         }
 
 
