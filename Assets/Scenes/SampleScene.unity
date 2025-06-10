@@ -1349,6 +1349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   playerBody: {fileID: 1566898995}
+  mouseX: 0
 --- !u!1 &347754885
 GameObject:
   m_ObjectHideFlags: 0
@@ -6319,6 +6320,7 @@ MonoBehaviour:
   jumpForce: 5
   playerRightHand: {fileID: 950458573}
   playerPanty: {fileID: 1666209249}
+  camera: {fileID: 0}
 --- !u!114 &1541282051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6543,6 +6545,7 @@ MonoBehaviour:
   jumpForce: 5
   playerRightHand: {fileID: 0}
   playerPanty: {fileID: 0}
+  camera: {fileID: 0}
 --- !u!54 &1566898991
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8703,6 +8706,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   playerBody: {fileID: 1541282054}
+  mouseX: 0
 --- !u!114 &2016899815
 MonoBehaviour:
   m_ObjectHideFlags: 0
