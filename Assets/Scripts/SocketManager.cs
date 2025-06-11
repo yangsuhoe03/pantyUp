@@ -12,11 +12,13 @@ public class SocketManager : MonoBehaviour
     private string mySocketID;
     public GameObject myPlayer;
     private ScoreManager scoreManager;
+    string nickName;
+    string allPlayerStatus;
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
     [DllImport("__Internal")]
-    private static extern void ConnectToSocket(string nickName);
+    private static extern void ConnectToSocket();
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
@@ -32,14 +34,13 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendAttackToFaild(string attacked);
 
-
     [DllImport("__Internal")]
     private static extern void SendMyNickName(string nickName);
 
-                    
+    [DllImport("__Internal")]
+    private static extern void SendMakePlayers(string playerID);
 
 
-    string nickName;
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
@@ -52,7 +53,7 @@ public class SocketManager : MonoBehaviour
         gameObject.name = "SocketManager";
         //nickName = "myNickNameIssss";//이거 들어가면 설정하기(닉네임)
 #if !UNITY_EDITOR && UNITY_WEBGL
-        ConnectToSocket(nickName);
+        ConnectToSocket();
 #endif
         //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
 
@@ -62,21 +63,25 @@ public class SocketManager : MonoBehaviour
     {
         mySocketID = id;
         Debug.Log(mySocketID);
-        
 
     }
+
+    public void SetPlayerNickname(string newNickname)
+    {
+        nickName = newNickname;
+        string myStatus = $"{GetMySocketID()},{nickName}";
+#if !UNITY_EDITOR && UNITY_WEBGL
+
+    SendMyNickName(myStatus);
+#endif
+
+
+    }
+
 
     public string GetMySocketID()
     {
         return mySocketID;
-    }
-
-        public void SendMyName(string MyName)
-    {
-#if !UNITY_EDITOR && UNITY_WEBGL
-
-    SendMyNickName(MyName);
-#endif
     }
 
 
@@ -121,12 +126,9 @@ public class SocketManager : MonoBehaviour
 
 
 
-
-
     public void MakePlayer(string playerIDs)
     {
         string[] ids = playerIDs.Split(',');
-
 
         foreach (string id in ids)
         {
@@ -151,11 +153,11 @@ public class SocketManager : MonoBehaviour
             Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
         }
 
-        string myStatus = $"{GetMySocketID()},{nickName}";
-        SendMyName(myStatus);
+        //string myStatus = $"{GetMySocketID()},{nickName}";
+        //SendMyName(myStatus);
         if (scoreManager != null)
         {
-            scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
+            //scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
         }
     }
 
@@ -233,7 +235,7 @@ public class SocketManager : MonoBehaviour
             GameObject target = playerDict[targetID];
 
 
-            Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
+            Debug.Log($"{attackerID}가 팬티를 뺏음 {targetID}는 죽음");
 
 
 
@@ -283,34 +285,17 @@ public class SocketManager : MonoBehaviour
             Debug.Log("wwqwqwqwqwqwqwqwwww");
         }
     }
-    public void ReceiveScoreUpdate(string scoreData)
+
+
+    public void ReceiveUpdatePlayerStatus(string data)
     {
-        Debug.Log($"점수 업데이트: {scoreData}");
+        Debug.Log($"플레이어 상태 업데이트: {data}");
+        allPlayerStatus = data;
         if (scoreManager != null)
         {
-            scoreManager.UpdateScores(scoreData);
+            scoreManager.ReceiveUpdatePlayerStatus(data);
         }
     }
 
-    public void ReceiveNickname(string data)
-    {
-        string[] parts = data.Split(',');
-        if (parts.Length == 2)
-        {
-            string playerId = parts[0];
-            string nickname = parts[1];
-            if (scoreManager != null)
-            {
-                scoreManager.UpdatePlayerNickname(playerId, nickname);
-            }
-        }
-    }
 
-    public void SetPlayerNickname(string newNickname)
-    {
-        nickName = newNickname;
-#if !UNITY_EDITOR && UNITY_WEBGL
-        ConnectToSocket(nickName);
-#endif
-    }
 }

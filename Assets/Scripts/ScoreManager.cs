@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using System.Linq;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -18,9 +19,14 @@ public class ScoreManager : MonoBehaviour
             Debug.LogWarning("Score TextMeshProUGUI가 할당되지 않았습니다.");
         }
         GenerateRandomNickname();
-        // 닉네임 설정 UI가 활성화되어 있을 때는 마우스 커서를 표시
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        // 게임 시작 시 마우스 커서 표시
+        SetCursorState(false);
+    }
+
+    public void SetCursorState(bool locked)
+    {
+        Cursor.visible = !locked;
+        Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
     private string GenerateRandomNickname()
@@ -65,46 +71,30 @@ public class ScoreManager : MonoBehaviour
             }
 
             // 닉네임 설정이 완료되면 마우스 커서를 잠금
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            SetCursorState(true);
         }
     }
 
-    public void UpdateScores(string scoreData)
+    public void ReceiveUpdatePlayerStatus(string data)
     {
-        string[] scoreEntries = scoreData.Split(',');
-        
-        foreach (string entry in scoreEntries)
+        // 데이터 파싱
+        string[] playerEntries = data.Split('|');
+        playerScores.Clear(); // 기존 데이터 초기화
+
+        foreach (string entry in playerEntries)
         {
-            string[] parts = entry.Split(':');
-            if (parts.Length == 2)
+            string[] parts = entry.Split(',');
+            if (parts.Length == 3)
             {
                 string playerId = parts[0];
-                int score = int.Parse(parts[1]);
+                string nickname = parts[1];
+                int score = int.Parse(parts[2]);
                 
-                if (playerScores.ContainsKey(playerId))
-                {
-                    var (_, nickname) = playerScores[playerId];
-                    playerScores[playerId] = (score, nickname);
-                }
-                else
-                {
-                    playerScores.Add(playerId, (score, "Player"));
-                }
+                playerScores[playerId] = (score, nickname);
             }
         }
 
         UpdateScoreDisplay();
-    }
-
-    public void UpdatePlayerNickname(string playerId, string nickname)
-    {
-        if (playerScores.ContainsKey(playerId))
-        {
-            var (score, _) = playerScores[playerId];
-            playerScores[playerId] = (score, nickname);
-            UpdateScoreDisplay();
-        }
     }
 
     private void UpdateScoreDisplay()
@@ -112,21 +102,18 @@ public class ScoreManager : MonoBehaviour
         if (scoreText != null)
         {
             string displayText = "Score:\n";
-            foreach (var kvp in playerScores)
+            
+            // 점수를 기준으로 내림차순 정렬
+            var sortedScores = playerScores
+                .OrderByDescending(x => x.Value.score)
+                .ThenBy(x => x.Value.nickname); // 점수가 같을 경우 닉네임으로 정렬
+
+            foreach (var kvp in sortedScores)
             {
                 var (score, nickname) = kvp.Value;
                 displayText += $"{nickname}: {score}\n";
             }
             scoreText.text = displayText;
         }
-    }
-
-    public int GetPlayerScore(string playerId)
-    {
-        if (playerScores.ContainsKey(playerId))
-        {
-            return playerScores[playerId].score;
-        }
-        return 0;
     }
 } 

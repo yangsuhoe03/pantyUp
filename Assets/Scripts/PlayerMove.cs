@@ -45,13 +45,21 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        Vector3 velocity = new Vector3(move.x * moveSpeed, rb.linearVelocity.y, move.z * moveSpeed);
-        rb.linearVelocity = velocity;
+        if(Cursor.lockState == CursorLockMode.Locked)
+        {
+            Vector3 move = transform.right * moveX + transform.forward * moveZ;
+            Vector3 velocity = new Vector3(move.x * moveSpeed, rb.linearVelocity.y, move.z * moveSpeed);
+            rb.linearVelocity = velocity;
+
+        }
+
+
+
+
+
 
         //뛰기 애니메이션
         if (moveZ > 0 && !player_Anim.running)
@@ -68,14 +76,14 @@ public class PlayerMove : MonoBehaviour
         }
 
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && isAttack == false)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && isAttack == false && Cursor.lockState == CursorLockMode.Locked)//카메라 잠겼을 때
         {
 
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
             player_Anim.Jumpup();
         }
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && Cursor.lockState == CursorLockMode.Locked)
         {
             if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
