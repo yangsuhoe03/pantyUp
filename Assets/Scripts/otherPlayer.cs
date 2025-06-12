@@ -65,6 +65,13 @@ public class OtherPlayer : MonoBehaviour
             SetAnimationParameter();
 
         }
+        else if (num == "2")
+        {
+            walking = true;
+            running = false;
+            walkingbackward = false;
+            SetAnimationParameter();
+        }
         else if (num == "3")
         {
             animator1.SetTrigger("jumpup");

@@ -4,6 +4,7 @@ using UnityEngine;
 idle = 0
 running = 1
 walkback = -1
+walk = 2
 jumpup = 3
 landingon = 4
 landingoff = 5
@@ -45,9 +46,9 @@ public class player_anim : MonoBehaviour
         animator1.SetBool("landing", landing);
         animator1.SetBool("grabsuccess", grabsuccess);
     }
-    public void Move(float dir)
+    public void Move(int dir)
     {
-        if (dir > 0)
+        if (dir == 1)
         {
             walking = false;
             running = true;
@@ -61,12 +62,19 @@ public class player_anim : MonoBehaviour
             walkingbackward = false;
             currentmove = "0";
         }
-        else
+        else if(dir == -1)
         {
             walking = false;
             running = false;
             walkingbackward = true;
             currentmove = "-1";
+        }   
+        else if(dir == 2)
+        {
+            walking = true;
+            running = false;
+            walkingbackward = false;
+            currentmove = "2";
         }
         SetAnimationParameter();
         socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");

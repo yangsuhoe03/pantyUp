@@ -5,7 +5,12 @@ using UnityEngine.XR;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    public float acceleration = 10f;
+    public float deceleration = 15f;
+    Vector3 currentVelocity = Vector3.zero;
     public float jumpForce = 5f;
+    private bool jumpRequested = false;
+    private float jumpDelay = 0.5f; // 딜레이 시간 (숙이는 시간)
     private Rigidbody rb;
     private bool isGrounded;
     playerAttack playerAttack;
@@ -26,7 +31,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject playerPanty;
     Vector3 pantypos;
     bool dead = false;
-    public GameObject camera;
+    public GameObject cam;
     CameraMove cameraMove;
     void Start()
     {
@@ -39,8 +44,8 @@ public class PlayerMove : MonoBehaviour
         player_Anim = GetComponent<player_anim>();
 
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
-        camera = Camera.main.gameObject;
-        cameraMove = camera.GetComponent<CameraMove>();
+        cam = Camera.main.gameObject;
+        cameraMove = cam.GetComponent<CameraMove>();
     }
     public string GetMYID()
     {
@@ -54,47 +59,19 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         Move();
+        Jump();
+        PredictLanding();
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && isAttack == false)
-        {
-
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
-            player_Anim.Jumpup();
-        }
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !dead)
         {
             if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
                 isAttack = true; // 공격 시 이동 멈춤
                 Invoke("AttackEnd", 0.5f); // 0.5초 후에 공격 종료 함수 호출
-                if (playerAttack.attackTrigger == true)
-                {
-                    Debug.Log("공격 성공");
-                    attackSuccess = true; // 공격 성공 상태로 변경
-                    //GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
-                    attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // 공격자 ID와 대상 ID를 쉼표로 구분하여 저장
-                    SocketManagerScript.SendAttack(attacked); // 공격 전송
-
-                    player_Anim.GrabSuccess(true);
-
-
-
-                }
-                else
-                {
-                    Debug.Log("공격 실패");
-                    player_Anim.GrabSuccess(false);
-                }
-
                 player_Anim.GrabStart();
+                Invoke("AttackCheck", 0.5f);
             }
 
-
-        }
-        if (isAttack == true)
-        {
-            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
 
         }
         if (player_Anim.grabsuccess == true && attackSuccess)
@@ -121,36 +98,92 @@ public class PlayerMove : MonoBehaviour
         }
 
     }
+    public void Jump()
+    {
+        if (dead) return;
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isAttack && !jumpRequested)
+        {
+            jumpRequested = true;
+            player_Anim.Jumpup();
+            Invoke("PerformJump", jumpDelay);
+        }
+    }
+    void PerformJump()
+    {
+        if (isGrounded) // 아직도 땅에 있을 때만 점프
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
+        jumpRequested = false;
+    }
     public void Move()
     {
-        if (dead)
+        if (dead) return;
+
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        Vector3 inputDir = transform.right * moveX + transform.forward * moveZ;
+        float currentYVelocity = rb.linearVelocity.y;
+
+        Vector3 horizontalVelocity = new Vector3(currentVelocity.x, 0, currentVelocity.z);
+        Vector3 targetHorizontalVelocity = new Vector3(inputDir.x * moveSpeed, 0, inputDir.z * moveSpeed);
+
+
+        if (inputDir.magnitude > 0.01f)
         {
-            return;
+            horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetHorizontalVelocity, acceleration * Time.deltaTime);
         }
         else
         {
-            float moveX = Input.GetAxis("Horizontal");
-            float moveZ = Input.GetAxis("Vertical");
+            horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, Vector3.zero, deceleration * Time.deltaTime);
+        }
 
-            Vector3 move = transform.right * moveX + transform.forward * moveZ;
-            Vector3 velocity = new Vector3(move.x * moveSpeed, rb.linearVelocity.y, move.z * moveSpeed);
-            rb.linearVelocity = velocity;
+        currentVelocity = new Vector3(horizontalVelocity.x, currentYVelocity, horizontalVelocity.z);
+        if (isAttack)
+        {
+            currentVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            moveZ = 0;
+        }
+        rb.linearVelocity = currentVelocity;
 
-            //뛰기 애니메이션
-            if (moveZ > 0 && !player_Anim.running)
-            {
-                player_Anim.Move(moveZ);
-            }
-            else if (moveZ == 0 && (player_Anim.running || player_Anim.walkingbackward))
-            {
-                player_Anim.Move(moveZ);
-            }
-            else if (moveZ < 0)
-            {
-                player_Anim.Move(moveZ);
-            }
+        // 애니메이션 처리
+        if (moveZ > 0 && !player_Anim.running)
+        {
+            player_Anim.Move(1);
+        }
+        else if (moveZ == 0 && (player_Anim.running || player_Anim.walkingbackward || player_Anim.walking) && moveX == 0)
+        {
+            player_Anim.Move(0);
+        }
+        else if ((moveZ < 0 && !player_Anim.walkingbackward) || (moveX != 0 && moveZ == 0 && !player_Anim.walking))
+        {
+            player_Anim.Move(-1);
+        }
 
-            transform.Rotate(Vector3.up * cameraMove.mouseX);
+        transform.Rotate(Vector3.up * cameraMove.mouseX);
+    }
+    public void AttackCheck()
+    {
+        if (playerAttack.attackTrigger == true)
+        {
+            Debug.Log("공격 성공");
+            attackSuccess = true; // 공격 성공 상태로 변경
+                                  //GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+            attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // 공격자 ID와 대상 ID를 쉼표로 구분하여 저장
+            SocketManagerScript.SendAttack(attacked); // 공격 전송
+
+            player_Anim.GrabSuccess(true);
+
+
+
+        }
+        else
+        {
+            Debug.Log("공격 실패");
+            player_Anim.GrabSuccess(false);
         }
     }
     public void IsWedgied()
@@ -161,7 +194,9 @@ public class PlayerMove : MonoBehaviour
     }
     public void Death(GameObject otherp)
     {
+        dead = true;
         transform.position = otherp.transform.position + Vector3.forward;
+        transform.rotation = otherp.transform.rotation;
         player_Anim.Death();
     }
 
@@ -259,11 +294,35 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = false;
 
-            player_Anim.Landing(isGrounded);
+            //player_Anim.Landing(isGrounded);
 
-            if (rb.linearVelocity.y < 0) player_Anim.Falling();
+            //if (rb.linearVelocity.y < 0) player_Anim.Falling();
         }
 
 
+    }
+    void PredictLanding()
+    {
+        if (isGrounded || jumpRequested || rb.linearVelocity.y >= 0)
+        {
+            player_Anim.Landing(false);
+            return;
+        }
+
+        float checkDistance = 0.5f; // 땅까지의 예측 거리 (조절 가능)
+        Vector3 boxSize = new Vector3(0.5f, 0.1f, 0.5f); // 플레이어의 발 아래 영역 (플레이어 크기에 맞게 조절)
+        Vector3 origin = transform.position + Vector3.up * 0.1f; // 조금 위에서부터 캐스트 시작
+        Vector3 direction = Vector3.down;
+
+        RaycastHit hit;
+
+        if (Physics.BoxCast(origin, boxSize * 0.5f, direction, out hit, Quaternion.identity, checkDistance, LayerMask.GetMask("Ground")))
+        {
+            player_Anim.Landing(true); // 미리 착지 준비
+        }
+        else
+        {
+            //player_Anim.Falling(); // 아직 땅이 없으면 떨어지는 상태 유지
+        }
     }
 }
