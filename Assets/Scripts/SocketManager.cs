@@ -14,6 +14,7 @@ public class SocketManager : MonoBehaviour
     private ScoreManager scoreManager;
     string nickName;
     string allPlayerStatus;
+    string[] roomInPlayerIds;
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
@@ -40,7 +41,14 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendMakePlayers(string playerID);
 
+    [DllImport("__Internal")]
+    private static extern void JoinRandomRoom(string playerId);
 
+    void Awake(){
+#if !UNITY_EDITOR && UNITY_WEBGL
+        ConnectToSocket();
+#endif
+    }
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
@@ -52,9 +60,7 @@ public class SocketManager : MonoBehaviour
         //Debug.Log(gameObject.name);
         gameObject.name = "SocketManager";
         //nickName = "myNickNameIssss";//이거 들어가면 설정하기(닉네임)
-#if !UNITY_EDITOR && UNITY_WEBGL
-        ConnectToSocket();
-#endif
+
         //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
 
     }
@@ -63,7 +69,10 @@ public class SocketManager : MonoBehaviour
     {
         mySocketID = id;
         Debug.Log(mySocketID);
-
+        // 소켓 ID를 받자마자 랜덤 방 참가 요청
+#if !UNITY_EDITOR && UNITY_WEBGL
+        JoinRandomRoom(id);
+#endif
     }
 
     public void SetPlayerNickname(string newNickname)
@@ -71,12 +80,12 @@ public class SocketManager : MonoBehaviour
         nickName = newNickname;
         string myStatus = $"{GetMySocketID()},{nickName}";
 #if !UNITY_EDITOR && UNITY_WEBGL
-
-    SendMyNickName(myStatus);
+        SendMyNickName(myStatus);
 #endif
-
-
+        // 닉네임 설정 후 플레이어 생성
+        //CreatePlayers();
     }
+
 
 
     public string GetMySocketID()
@@ -123,14 +132,27 @@ public class SocketManager : MonoBehaviour
 #endif
     }
 
-
-
-
-    public void MakePlayer(string playerIDs)
+    public void OnJoinedRoom(string roomName)
     {
-        string[] ids = playerIDs.Split(',');
+        Debug.Log($"방 참가 성공: {roomName}");
 
-        foreach (string id in ids)
+    }
+    public void OnRoomPlayerList(string roomInPlayers)
+    {
+        Debug.Log($"방 플레이어 목록: {roomInPlayers}");
+        string[] newRoomPlayerIds = roomInPlayers.Split(',');
+        
+        
+        roomInPlayerIds = newRoomPlayerIds;
+        
+    }
+        private void CreatePlayers()
+    {
+        Debug.Log(roomInPlayerIds);
+        if (roomInPlayerIds == null) return;
+        
+        // 새로운 플레이어 생성
+        foreach (string id in roomInPlayerIds)
         {
             if (!playerDict.ContainsKey(id))
             {
@@ -148,18 +170,49 @@ public class SocketManager : MonoBehaviour
                 }
             }
         }
+        
+        // 디버그 로그
         foreach (KeyValuePair<string, GameObject> entry in playerDict)
         {
             Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
         }
-
-        //string myStatus = $"{GetMySocketID()},{nickName}";
-        //SendMyName(myStatus);
-        if (scoreManager != null)
-        {
-            //scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
-        }
     }
+    
+
+    // public void MakePlayer(string playerIDs)
+    // {
+    //     string[] ids = playerIDs.Split(',');
+
+    //     foreach (string id in ids)
+    //     {
+    //         if (!playerDict.ContainsKey(id))
+    //         {
+    //             if (id != GetMySocketID())
+    //             {//내가 아닌 플레이어일 때
+    //                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
+    //                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
+    //                 playerDict.Add(id, enemy);
+    //             }
+    //             else
+    //             {//내가 플레이어일 때
+    //                 GameObject isMine;
+    //                 isMine = GameObject.Find("Player");
+    //                 playerDict.Add(id, isMine);
+    //             }
+    //         }
+    //     }
+    //     foreach (KeyValuePair<string, GameObject> entry in playerDict)
+    //     {
+    //         Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
+    //     }
+
+    //     //string myStatus = $"{GetMySocketID()},{nickName}";
+    //     //SendMyName(myStatus);
+    //     if (scoreManager != null)
+    //     {
+    //         //scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
+    //     }
+    // }
 
     public void ReceivePos(string data)
     {

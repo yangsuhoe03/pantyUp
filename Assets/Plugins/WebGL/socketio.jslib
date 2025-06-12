@@ -9,8 +9,21 @@ mergeInto(LibraryManager.library, {
 
     window.socket.on('connect', function () {
       console.log(" Socket connected.");
+      
       SendMessage('SocketManager', 'SetMySocketID', window.socket.id);
     });
+
+    window.socket.on('joinedRoom', function(roomName) {
+      SendMessage('SocketManager', 'OnJoinedRoom', roomName);
+    });
+
+    window.socket.on('roomPlayerList', function(players) {
+      SendMessage('SocketManager', 'OnRoomPlayerList', players);
+    });
+    window.socket.on('ServerToMakePlayers', function(){
+      SendMessage('SocketManager', 'CreatePlayers');
+    });
+
 
     window.socket.on('ServerToPos', function(data){
       SendMessage('SocketManager', 'ReceivePos', data);
@@ -21,9 +34,7 @@ mergeInto(LibraryManager.library, {
     });
 
 
-    window.socket.on('ServerToMakePlayers', function(players){
-      SendMessage('SocketManager', 'MakePlayer', players);
-    });
+
 
     window.socket.on('ServerToAttack', function(attacks){
       SendMessage('SocketManager', 'ReceiveAttacking', attacks);
@@ -49,6 +60,15 @@ mergeInto(LibraryManager.library, {
 
 
 
+
+
+  },
+  
+  JoinRandomRoom: function (playerId) {
+    var id = UTF8ToString(playerId);
+    if (window.socket) {
+      window.socket.emit('joinRandomRoom', id);
+    }
   },
 
 
@@ -100,6 +120,8 @@ mergeInto(LibraryManager.library, {
       window.socket.emit('SendFaildAttack', ATK);
     } 
   }
+
+
 
 
 
