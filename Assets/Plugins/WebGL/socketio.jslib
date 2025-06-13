@@ -1,20 +1,29 @@
 mergeInto(LibraryManager.library, {
-  ConnectToSocket: function (nickName) {
+  ConnectToSocket: function () {
     if (typeof io === 'undefined') {
       console.error("Socket.IO is not loaded.");
       return;
     }
 
-
     window.socket = io(); // 전역 선언
-
-
 
     window.socket.on('connect', function () {
       console.log(" Socket connected.");
+      
       SendMessage('SocketManager', 'SetMySocketID', window.socket.id);
-      window.socket.emit('makePlayers', window.socket.id);
     });
+
+    window.socket.on('joinedRoom', function(roomName) {
+      SendMessage('SocketManager', 'OnJoinedRoom', roomName);
+    });
+
+    window.socket.on('roomPlayerList', function(players) {
+      SendMessage('SocketManager', 'OnRoomPlayerList', players);
+    });
+    window.socket.on('ServerToMakePlayers', function(){
+      SendMessage('SocketManager', 'CreatePlayers');
+    });
+
 
     window.socket.on('ServerToPos', function(data){
       SendMessage('SocketManager', 'ReceivePos', data);
@@ -26,9 +35,6 @@ mergeInto(LibraryManager.library, {
 
 
 
-    window.socket.on('ServerToMakePlayers', function(players){
-      SendMessage('SocketManager', 'MakePlayer', players);
-    });
 
     window.socket.on('ServerToAttack', function(attacks){
       SendMessage('SocketManager', 'ReceiveAttacking', attacks);
@@ -41,13 +47,36 @@ mergeInto(LibraryManager.library, {
     window.socket.on('ServerToFaildAttack', function(attacks){
       SendMessage('SocketManager', 'ReceiveFaildAttack', attacks);
     });
-    window.socket.on('ServerToScoreUpdate',function(data){
-      console.log("scoreUPMessage보내기");
-      SendMessage('SocketManager', 'ReceiveScoreUpdate', data);
+
+
+
+    window.socket.on('updatePlayerStatus',function(data){
+      
+      SendMessage('SocketManager', 'ReceiveUpdatePlayerStatus', data);
     });
 
+
+
+
+
+
+
+
+  },
+  
+  JoinRandomRoom: function (playerId) {
+    var id = UTF8ToString(playerId);
+    if (window.socket) {
+      window.socket.emit('joinRandomRoom', id);
+    }
   },
 
+
+  SendMakePlayers: function (playerID) {
+    if (window.socket) {
+      window.socket.emit('makePlayers', UTF8ToString(playerID));
+    }
+  },
 
   SendMyNickName: function (data) {
     var nickName = UTF8ToString(data); 
@@ -91,6 +120,8 @@ mergeInto(LibraryManager.library, {
       window.socket.emit('SendFaildAttack', ATK);
     } 
   }
+
+
 
 
 

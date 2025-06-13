@@ -271,6 +271,9 @@ public class PlayerMove : MonoBehaviour
                 
                 //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
                 SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
+                otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
+                otherPlayerID = null;
+                otherPlayer = null;
             }
         }
     }
@@ -282,8 +285,10 @@ public class PlayerMove : MonoBehaviour
             Debug.Log("팬티 끊어짐");
             wedgieTime = 0f; // 시간 초기화
             attackSuccess = false; // 공격 성공 상태 초기화
-            otherPlayer = null;
             otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
+            otherPlayerID = null;
+            otherPlayer = null;
+
 
             
             player_Anim.GrabSuccess(false);
