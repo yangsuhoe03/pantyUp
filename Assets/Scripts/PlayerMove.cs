@@ -293,14 +293,15 @@ public class PlayerMove : MonoBehaviour
 
                 isAttack = true; // 킬 도중 멈추기 위해 
                 Invoke("AttackEnd", 0.5f); // 0.5초 후에 공격 종료 함수 호출
-                
+
                 otherPlayer.GetComponent<OtherPlayer>().SetPantypos();
-                
+
                 //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
                 SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
                 otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
                 otherPlayerID = null;
                 otherPlayer = null;
+                
             }
         }
     }

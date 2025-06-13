@@ -156,7 +156,11 @@ io.on('connection', (socket) => {
     //   .map(([id, score]) => `${id}:${score}`) // 각 항목을 "id:score" 형식 문자열로 만듦
     //   .join(','); // 배열을 쉼표로 이어 붙임
     // console.log("점수 데이터:", scoreData); // 디버깅용
-
+    // 공격자와 타겟이 모두 존재하는지 확인
+    if (!allPlayerStatus[attackerID] || !allPlayerStatus[targetID]) {
+      console.log('유효하지 않은 플레이어 ID:', { attackerID, targetID });
+      return;
+    }
 
     allPlayerStatus[attackerID].score = allPlayerStatus[attackerID].score + allPlayerStatus[targetID].score;
     allPlayerStatus[targetID].score = 1;
