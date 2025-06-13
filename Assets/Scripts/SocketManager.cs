@@ -24,7 +24,7 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
 
-    [DllImport("__Internal")]           
+    [DllImport("__Internal")]
     private static extern void SendAttackToServer(string attacked);
     [DllImport("__Internal")]
     private static extern void SendAnimToServer(string currentmove);
@@ -44,7 +44,8 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void JoinRandomRoom(string playerId);
 
-    void Awake(){
+    void Awake()
+    {
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
@@ -149,16 +150,16 @@ public class SocketManager : MonoBehaviour
     {
         Debug.Log($"방 플레이어 목록: {roomInPlayers}");
         string[] newRoomPlayerIds = roomInPlayers.Split(',');
-        
-        
+
+
         roomInPlayerIds = newRoomPlayerIds;
-        
+
     }
-        private void CreatePlayers()
+    private void CreatePlayers()
     {
         Debug.Log(roomInPlayerIds);
         if (roomInPlayerIds == null) return;
-        
+
         // 새로운 플레이어 생성
         foreach (string id in roomInPlayerIds)
         {
@@ -178,14 +179,14 @@ public class SocketManager : MonoBehaviour
                 }
             }
         }
-        
+
         // 디버그 로그
         foreach (KeyValuePair<string, GameObject> entry in playerDict)
         {
             Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
         }
     }
-    
+
 
     // public void MakePlayer(string playerIDs)
     // {
@@ -240,7 +241,7 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-             //Debug.LogWarning($"ID {playerID}찾을 수 없음");
+            //Debug.LogWarning($"ID {playerID}찾을 수 없음");
         }
         //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);
 
@@ -287,19 +288,20 @@ public class SocketManager : MonoBehaviour
 
         string attackerID = ids[0];
         string targetID = ids[1];
+        GameObject attacker = playerDict[attackerID];
+        GameObject target = playerDict[targetID];
         if (targetID == GetMySocketID())//내가 공격을 당하면
         {
             Debug.Log("you died");
             if (playerDict[attackerID] != null)
             {
                 myPlayer.GetComponent<PlayerMove>().Death(playerDict[attackerID]);
-
+                attacker.GetComponent<OtherPlayer>().SetAnimation("9"); //공격실패(손 내림)
             }
         }
         else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
-            GameObject attacker = playerDict[attackerID];
-            GameObject target = playerDict[targetID];
+
 
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
 

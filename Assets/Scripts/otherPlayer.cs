@@ -157,6 +157,7 @@ public class OtherPlayer : MonoBehaviour
     }
     public void SetPantypos()
     {
+        isAttacked = false;
         StopAllCoroutines(); // 중복 호출 방지
         StartCoroutine(MovePantyToTarget(pantypos));
     }
