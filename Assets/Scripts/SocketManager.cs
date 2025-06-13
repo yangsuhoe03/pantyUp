@@ -331,6 +331,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log($"{attackerID}가 공격 실패 {targetID}는 팬티 끊킴");
 
             target.GetComponent<OtherPlayer>().SetPantypos();
+            
         }
 
 
