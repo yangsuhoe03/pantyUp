@@ -25,6 +25,7 @@ public class PlayerMove : MonoBehaviour
     float wedgieTime = 0;
     GameObject otherPlayer;
     GameObject otherPlayerPanty;
+    GameObject otherPlayerRighthand;
     string otherPlayerID; // 다른 플레이어의 ID
     string attacked;
     bool isAttacked = false; // 공격을 받았는지 여부
@@ -59,6 +60,16 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if (isAttacked && otherPlayerRighthand != null)
+        {
+            Wedgied(otherPlayerRighthand);
+        }
+        else if (!isAttacked && otherPlayerRighthand != null)
+        {
+            otherPlayerRighthand = null;
+        }
+
+
         Move();
         Jump();
         PredictLanding();
@@ -243,6 +254,12 @@ public class PlayerMove : MonoBehaviour
     {
         isAttack = false; // 공격 상태를 false로 변경하여 이동 가능하게 함
     }
+    public void Wedgied(GameObject otherPlayerRighthand)
+    {
+        this.otherPlayerRighthand = otherPlayerRighthand;
+        playerPanty.transform.position = this.otherPlayerRighthand.transform.position;
+    }
+    
     public void SetPantypos()
     {
         playerPanty.transform.localPosition = pantypos;
