@@ -240,7 +240,7 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"ID {playerID}찾을 수 없음");
+             //Debug.LogWarning($"ID {playerID}찾을 수 없음");
         }
         //GameObject.Find(playerID).GetComponent<OtherPlayer>().SetPosition(pos);
 
@@ -344,7 +344,7 @@ public class SocketManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("wwqwqwqwqwqwqwqwwww");
+            //Debug.Log("wwqwqwqwqwqwqwqwwww");
         }
     }
 
