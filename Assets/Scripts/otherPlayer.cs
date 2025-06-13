@@ -184,6 +184,7 @@ public class OtherPlayer : MonoBehaviour
 
     IEnumerator MovePantyToTarget(Vector3 targetPos)
     {
+        isAttacked = false;
         if (playerPanty == null)
         {
             Debug.LogError("MovePantyToTarget: playerPanty가 null입니다!");
