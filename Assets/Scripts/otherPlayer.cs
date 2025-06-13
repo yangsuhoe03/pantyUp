@@ -157,6 +157,7 @@ public class OtherPlayer : MonoBehaviour
     }
     public void SetPantypos()
     {
+        SetIsAttacked(false);
         isAttacked = false;
         StopAllCoroutines(); // 중복 호출 방지
         StartCoroutine(MovePantyToTarget(pantypos));
@@ -187,5 +188,6 @@ public class OtherPlayer : MonoBehaviour
     public void Wedgie(GameObject otherPlayerPanty)
     {
         otherPlayerPanty.transform.position = playerRightHand.transform.position;
+        Debug.Log("잡고 있어요!!!!!!!!");
     }
 }
