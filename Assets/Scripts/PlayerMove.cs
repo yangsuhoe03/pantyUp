@@ -251,11 +251,11 @@ public class PlayerMove : MonoBehaviour
             //Debug.Log("팬티 공격 성공 시간: " + wedgieTime);
             if (isAttacked == false)
             {
-                otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//한번만실행
+                //otherPlayer.GetComponent<OtherPlayer>().BeingAttacked();//한번만실행
                 isAttacked = true;
             }
             // 다른 플레이어에게 공격 알림
-            if (wedgieTime >= 10f) // 10초 이상 지속되면
+            if (wedgieTime >= 30f) // 10초 이상 지속되면
             {
                 wedgieTime = 0f; // 시간 초기화
                 attackSuccess = false; // 공격 성공 상태 초기화
