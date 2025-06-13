@@ -196,7 +196,7 @@ public class PlayerMove : MonoBehaviour
     public void Death(GameObject otherp)
     {
         dead = true;
-        transform.position = otherp.transform.position + Vector3.forward;
+        transform.position = otherp.transform.position + otherp.transform.forward;;
         transform.rotation = otherp.transform.rotation;
         player_Anim.Death();
         attackPointFront.SetActive(false);
