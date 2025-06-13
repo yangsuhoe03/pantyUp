@@ -2,6 +2,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
+using System.Collections;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
@@ -262,7 +263,27 @@ public class PlayerMove : MonoBehaviour
     
     public void SetPantypos()
     {
-        playerPanty.transform.localPosition = pantypos;
+        StopAllCoroutines(); // 중복 호출 방지
+        StartCoroutine(MovePantyToTarget(pantypos));
+    }
+
+    IEnumerator MovePantyToTarget(Vector3 targetPos)
+    {
+        float speed = 20f; // 이동 속도
+        float threshold = 0.01f; // 도달 판정 거리
+
+        while (Vector3.Distance(playerPanty.transform.localPosition, targetPos) > threshold)
+        {
+            playerPanty.transform.localPosition = Vector3.MoveTowards(
+                playerPanty.transform.localPosition,
+                targetPos,
+                speed * Time.deltaTime
+            );
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        // 정확히 위치 고정
+        playerPanty.transform.localPosition = targetPos;
     }
 
     private void OnCollisionEnter(Collision collision)
