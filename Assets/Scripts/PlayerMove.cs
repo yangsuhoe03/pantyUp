@@ -33,7 +33,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject playerRightHand;
     public GameObject playerPanty;
     Vector3 pantypos;
-    bool dead = false;
+    public bool dead = false;
     public GameObject cam;
     CameraMove cameraMove;
     void Start()
@@ -208,7 +208,8 @@ public class PlayerMove : MonoBehaviour
     public void Death(GameObject otherp)
     {
         dead = true;
-        transform.position = otherp.transform.position + otherp.transform.forward;;
+        isAttacked = false;
+        transform.position = otherp.transform.position + otherp.transform.forward;
         transform.rotation = otherp.transform.rotation;
         player_Anim.Death();
         attackPointFront.SetActive(false);
@@ -263,6 +264,7 @@ public class PlayerMove : MonoBehaviour
     
     public void SetPantypos()
     {
+        isAttacked = false;
         StopAllCoroutines(); // 중복 호출 방지
         StartCoroutine(MovePantyToTarget(pantypos));
     }

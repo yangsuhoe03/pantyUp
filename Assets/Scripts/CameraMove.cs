@@ -4,12 +4,19 @@ public class CameraMove : MonoBehaviour
 {
     public float mouseSensitivity = 100f;
     public Transform playerBody;
+    public GameObject player;
+    PlayerMove playerMove;
     public float mouseX;
     float xRotation = 0f;
 
     void Start()
     {
         //scoreManager = FindObjectOfType<ScoreManager>();
+        if (player == null)
+        {
+            player = GameObject.Find("Player");
+            playerMove = player.GetComponent<PlayerMove>();
+        }
     }
 
     void Update()
@@ -25,7 +32,15 @@ public class CameraMove : MonoBehaviour
 
 
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerBody.Rotate(Vector3.up * mouseX);
+            if (playerMove.dead)
+            {
+                playerBody.Rotate(Vector3.up * mouseX);
+            }
+            else
+            {
+                //카메라가 올라가는
+            }
         }
     }
+    
 }
