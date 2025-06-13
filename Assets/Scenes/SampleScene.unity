@@ -4405,7 +4405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1105451563435632680, guid: ed2b81347d17e8c4aa7cacb8d975cf85, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.57158
+      value: 11.19
       objectReference: {fileID: 0}
     - target: {fileID: 1105451563435632680, guid: ed2b81347d17e8c4aa7cacb8d975cf85, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4445,7 +4445,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4428847562279949321, guid: ed2b81347d17e8c4aa7cacb8d975cf85, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7019,10 +7019,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  acceleration: 10
+  deceleration: 15
   jumpForce: 5
   playerRightHand: {fileID: 950458573}
   playerPanty: {fileID: 1666209249}
-  camera: {fileID: 0}
+  cam: {fileID: 0}
 --- !u!114 &1541282051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7244,10 +7246,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  acceleration: 10
+  deceleration: 15
   jumpForce: 5
   playerRightHand: {fileID: 0}
   playerPanty: {fileID: 0}
-  camera: {fileID: 0}
+  cam: {fileID: 0}
 --- !u!54 &1566898991
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9130,7 +9134,7 @@ GameObject:
   - component: {fileID: 1907176871}
   - component: {fileID: 1907176870}
   - component: {fileID: 1907176869}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Ground
   m_Icon: {fileID: 0}

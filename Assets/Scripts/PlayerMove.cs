@@ -62,7 +62,7 @@ public class PlayerMove : MonoBehaviour
         Jump();
         PredictLanding();
 
-        if (Input.GetMouseButtonDown(0) && !dead)
+        if (Input.GetMouseButtonDown(0) && !dead && Cursor.lockState == CursorLockMode.Locked)
         {
             if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
@@ -100,7 +100,7 @@ public class PlayerMove : MonoBehaviour
     }
     public void Jump()
     {
-        if (dead) return;
+        if (dead || Cursor.lockState != CursorLockMode.Locked) return;
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isAttack && !jumpRequested)
         {
@@ -120,7 +120,7 @@ public class PlayerMove : MonoBehaviour
     }
     public void Move()
     {
-        if (dead) return;
+        if (dead || Cursor.lockState != CursorLockMode.Locked) return;
 
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
@@ -163,7 +163,7 @@ public class PlayerMove : MonoBehaviour
             player_Anim.Move(-1);
         }
 
-        transform.Rotate(Vector3.up * cameraMove.mouseX);
+        //transform.Rotate(Vector3.up * cameraMove.mouseX);
     }
     public void AttackCheck()
     {
@@ -328,6 +328,7 @@ public class PlayerMove : MonoBehaviour
         if (Physics.BoxCast(origin, boxSize * 0.5f, direction, out hit, Quaternion.identity, checkDistance, LayerMask.GetMask("Ground")))
         {
             player_Anim.Landing(true); // 미리 착지 준비
+            Debug.Log(true);
         }
         else
         {
