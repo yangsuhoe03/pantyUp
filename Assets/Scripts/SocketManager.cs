@@ -262,7 +262,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log("wedgied");
 
             myPlayer.GetComponent<PlayerMove>().IsWedgied();
-            myPlayer.GetComponent<PlayerMove>().wedgied = attackerOtherPlayer.playerPanty;
+            myPlayer.GetComponent<PlayerMove>().Wedgied(attacker.GetComponent<OtherPlayer>().playerRightHand);
         }
         else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
