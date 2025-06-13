@@ -21,7 +21,16 @@ public class OtherPlayer : MonoBehaviour
     bool isAttacked = false;
     void Start()
     {
-        pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
+        // 팬티의 초기 위치를 저장
+        if (playerPanty != null)
+        {
+            pantypos = playerPanty.transform.localPosition;
+            Debug.Log($"팬티 초기 위치 저장: {pantypos}");
+        }
+        else
+        {
+            Debug.LogError("playerPanty가 할당되지 않았습니다!");
+        }
     }
     void Update()
     {
@@ -157,28 +166,57 @@ public class OtherPlayer : MonoBehaviour
     }
     public void SetPantypos()
     {
+        if (playerPanty == null)
+        {
+            Debug.LogError("SetPantypos: playerPanty가 null입니다!");
+            return;
+        }
+
         isAttacked = false;
         StopAllCoroutines(); // 중복 호출 방지
+        
+        // 현재 팬티 위치와 목표 위치 로깅
+        Debug.Log($"팬티 현재 위치: {playerPanty.transform.localPosition}, 목표 위치: {pantypos}");
+        
         StartCoroutine(MovePantyToTarget(pantypos));
     }
 
     IEnumerator MovePantyToTarget(Vector3 targetPos)
     {
+        if (playerPanty == null)
+        {
+            Debug.LogError("MovePantyToTarget: playerPanty가 null입니다!");
+            yield break;
+        }
+
         float speed = 20f; // 이동 속도
         float threshold = 0.01f; // 도달 판정 거리
+        float startTime = Time.time;
+        float maxDuration = 2f; // 최대 2초 동안만 시도
 
         while (Vector3.Distance(playerPanty.transform.localPosition, targetPos) > threshold)
         {
+            if (Time.time - startTime > maxDuration)
+            {
+                Debug.LogWarning("팬티 이동 시간 초과!");
+                break;
+            }
+
             playerPanty.transform.localPosition = Vector3.MoveTowards(
                 playerPanty.transform.localPosition,
                 targetPos,
                 speed * Time.deltaTime
             );
-            yield return null; // 다음 프레임까지 대기
+
+            // 현재 위치 로깅
+            Debug.Log($"팬티 이동 중: {playerPanty.transform.localPosition}");
+            
+            yield return null;
         }
 
         // 정확히 위치 고정
         playerPanty.transform.localPosition = targetPos;
+        Debug.Log($"팬티 이동 완료: {playerPanty.transform.localPosition}");
     }
     public void SetIsAttacked(bool isAttacked)
     {
