@@ -22,9 +22,9 @@ public class CameraMove : MonoBehaviour
     void Update()
     {
         // 마우스 커서가 잠겨있을 때만 카메라 회전
-        if (Cursor.lockState == CursorLockMode.Locked)
+        if (Cursor.lockState == CursorLockMode.Locked && !playerMove.dead)
         {
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+            mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
             xRotation -= mouseY;
@@ -32,15 +32,12 @@ public class CameraMove : MonoBehaviour
 
 
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            if (playerMove.dead)
-            {
-                playerBody.Rotate(Vector3.up * mouseX);
-            }
-            else
-            {
-                //카메라가 올라가는
-            }
+            playerBody.Rotate(Vector3.up * mouseX);
+        }
+        else
+        {
+            //카메라 위로 올라감
         }
     }
-    
+
 }
