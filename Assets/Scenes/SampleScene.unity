@@ -1525,6 +1525,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   playerBody: {fileID: 1566898995}
+  player: {fileID: 0}
   mouseX: 0
 --- !u!1 &347754885
 GameObject:
@@ -7026,6 +7027,7 @@ MonoBehaviour:
   attackPointBack: {fileID: 1525056166}
   playerRightHand: {fileID: 950458573}
   playerPanty: {fileID: 1666209249}
+  dead: 0
   cam: {fileID: 0}
 --- !u!114 &1541282051
 MonoBehaviour:
@@ -7256,6 +7258,7 @@ MonoBehaviour:
   attackPointBack: {fileID: 0}
   playerRightHand: {fileID: 0}
   playerPanty: {fileID: 0}
+  dead: 0
   cam: {fileID: 0}
 --- !u!54 &1566898991
 Rigidbody:
@@ -9731,6 +9734,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   playerBody: {fileID: 1541282054}
+  player: {fileID: 0}
   mouseX: 0
 --- !u!114 &2016899815
 MonoBehaviour:
