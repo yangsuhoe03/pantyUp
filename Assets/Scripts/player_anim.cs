@@ -15,13 +15,15 @@ grabfailed = 9
 kill = 10
 death = 11
 respawn = 12
+disappear = 13
 */
 public class player_anim : MonoBehaviour
 {
 
     public SocketManager socketManager;
     public Animator animator1, animator2;
-    public GameObject player1, player2, player3;
+    public GameObject player1, player2, player3, playerdeadbody;
+
 
     //서버로 보낼 스트링들
     private string currentmove;
@@ -121,8 +123,16 @@ public class player_anim : MonoBehaviour
         currentmove = "11";
         socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");
     }
+    public void Disappear()
+    {
+        playerdeadbody.SetActive(false);
+
+        currentmove = "13";
+        socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");
+    }
     public void Respawn()
     {
+        playerdeadbody.SetActive(true);
         player1.SetActive(true);
         player2.SetActive(false);
         player3.SetActive(false);

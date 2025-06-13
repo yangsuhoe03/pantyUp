@@ -5,7 +5,7 @@ public class OtherPlayer : MonoBehaviour
 {
     public string playerID;
     public Animator animator1, animator2;
-    public GameObject player1, player2, player3;
+    public GameObject player1, player2, player3, playerdeadbody;
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
@@ -121,7 +121,13 @@ public class OtherPlayer : MonoBehaviour
             player1.SetActive(true);
             player2.SetActive(false);
             player3.SetActive(false);
+            playerdeadbody.SetActive(true);
             animator2.SetTrigger("respawn");
+        }
+        else if (num == "13")
+        {
+            playerdeadbody.SetActive(false);
+            //disappear
         }
     }
     void SetAnimationParameter()
