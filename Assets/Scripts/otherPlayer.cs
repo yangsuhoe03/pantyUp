@@ -14,6 +14,7 @@ public class OtherPlayer : MonoBehaviour
     public GameObject playerPanty;
     public GameObject otherPlayerPanty;
     Vector3 pantypos;
+    Vector3 lastSentPosition;
 
     bool isAttacked = false;
     void Start()
@@ -38,8 +39,11 @@ public class OtherPlayer : MonoBehaviour
     }
     public void SetPosition(Vector3 pos, float rotationY)
     {
-        transform.position = pos;
+        //transform.position = pos;
+        // 부드러운 움직임을 위한 보간 적용
+        transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * 10f);
         transform.rotation = Quaternion.Euler(0, rotationY, 0); // Y축 회전 적용
+        lastSentPosition = pos;
     }
     public void SetAnimation(string num)
     {
