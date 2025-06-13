@@ -38,19 +38,21 @@ app.get('/', (req, res) => {
 
 
 let Scores = {};
-let allPlayerStatus = {};
+// allPlayerStatus를 방별로 관리하도록 변경
+const RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
 const Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
 const PlayerRooms = {}; // { playerId: roomName } - 플레이어가 속한 방 정보
 let roomCount = 0;
 const MAX_PLAYERS_PER_ROOM = 6;
 
-
-function UpdatePlayerStatus(){
-  const statusStr = Object.entries(allPlayerStatus)
-  .map(([pid, info]) => `${pid},${info.nickname},${info.score}`)
-  .join('|');
+function UpdatePlayerStatus(roomName) {
+  if (!RoomPlayerStatus[roomName]) return '';
+  
+  const statusStr = Object.entries(RoomPlayerStatus[roomName])
+    .map(([pid, info]) => `${pid},${info.nickname},${info.score}`)
+    .join('|');
   return statusStr;
-} //allPlayerStatus 문자열로 바꾸는 함수
+} //방별 플레이어 상태를 문자열로 변환하는 함수
 
 io.on('connection', (socket) => {
   console.log(' Unity 클라이언트 연결됨', socket.id);
@@ -73,6 +75,7 @@ io.on('connection', (socket) => {
       roomCount++;
       joinedRoom = `room${roomCount}`;
       Rooms[joinedRoom] = [playerId];
+      RoomPlayerStatus[joinedRoom] = {}; // 새 방의 플레이어 상태 객체 초기화
     }
 
     // 플레이어의 방 정보 저장
@@ -92,28 +95,26 @@ io.on('connection', (socket) => {
     console.log("닉네임 설정 받음: ", playerStatus);
     const [id, nickname] = playerStatus.split(',');
 
-    // 플레이어 목록 및 점수 관리
-    
-    // 닉네임 및 점수 상태 관리
-    if (!allPlayerStatus[id]) {
-      allPlayerStatus[id] = {
+    // 플레이어가 속한 방 정보 가져오기
+    const playerRoom = PlayerRooms[id];
+    if (!playerRoom) return;
+
+    // 방별 플레이어 상태 관리
+    if (!RoomPlayerStatus[playerRoom][id]) {
+      RoomPlayerStatus[playerRoom][id] = {
         nickname: nickname,
         score: 1
       };
     } else {
-      allPlayerStatus[id].nickname = nickname;
+      RoomPlayerStatus[playerRoom][id].nickname = nickname;
     }
 
-    // 🔹 전체 상태 문자열 구성: "id,nickname,score|id2,nickname2,score2"
-    console.log("정보 전송: ", UpdatePlayerStatus());
+    //  전체 상태 문자열 구성: "id,nickname,score|id2,nickname2,score2"
+    console.log("정보 전송: ", UpdatePlayerStatus(playerRoom));
 
-    // 플레이어가 속한 방 정보 가져오기
-    const playerRoom = PlayerRooms[id];
-    if (playerRoom) {
-      // 해당 방의 플레이어들에게만 상태 업데이트 전송
-      io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus());
-      io.to(playerRoom).emit('ServerToMakePlayers');
-    }
+    // 해당 방의 플레이어들에게만 상태 업데이트 전송
+    io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
+    io.to(playerRoom).emit('ServerToMakePlayers');
   });
 
   socket.on('SendPos', (pos) => {
@@ -148,6 +149,21 @@ io.on('connection', (socket) => {
     // 공격 성공 처리: "공격자ID,피공격자ID" 형식의 문자열을 받아옴
     const [attackerID, targetID] = data.split(',');
 
+    // 공격자와 타겟이 같은 방에 있는지 확인
+    const attackerRoom = PlayerRooms[attackerID];
+    const targetRoom = PlayerRooms[targetID];
+
+    if (!attackerRoom || !targetRoom || attackerRoom !== targetRoom) {
+      console.log('다른 방의 플레이어를 공격할 수 없습니다:', { attackerID, targetID });
+      return;
+    }
+
+    // 공격자와 타겟이 모두 존재하는지 확인
+    if (!RoomPlayerStatus[attackerRoom][attackerID] || !RoomPlayerStatus[attackerRoom][targetID]) {
+      console.log('유효하지 않은 플레이어 ID:', { attackerID, targetID });
+      return;
+    }
+
     // 공격자 ID가 존재하고, 점수 테이블(Scores)에 해당 ID가 있으면
 
     // 전체 플레이어들의 점수를 문자열로 변환
@@ -156,24 +172,15 @@ io.on('connection', (socket) => {
     //   .map(([id, score]) => `${id}:${score}`) // 각 항목을 "id:score" 형식 문자열로 만듦
     //   .join(','); // 배열을 쉼표로 이어 붙임
     // console.log("점수 데이터:", scoreData); // 디버깅용
-    // 공격자와 타겟이 모두 존재하는지 확인
-    if (!allPlayerStatus[attackerID] || !allPlayerStatus[targetID]) {
-      console.log('유효하지 않은 플레이어 ID:', { attackerID, targetID });
-      return;
-    }
 
-    allPlayerStatus[attackerID].score = allPlayerStatus[attackerID].score + allPlayerStatus[targetID].score;
-    allPlayerStatus[targetID].score = 1;
+    RoomPlayerStatus[attackerRoom][attackerID].score = 
+      RoomPlayerStatus[attackerRoom][attackerID].score + 
+      RoomPlayerStatus[attackerRoom][targetID].score;
+    RoomPlayerStatus[attackerRoom][targetID].score = 1;
 
-    // 공격자와 타겟이 같은 방에 있는지 확인
-    const attackerRoom = PlayerRooms[attackerID];
-    const targetRoom = PlayerRooms[targetID];
-
-    if (attackerRoom && attackerRoom === targetRoom) {
-      // 같은 방의 플레이어들에게만 공격 성공 정보 전송
-      io.to(attackerRoom).emit('ServerToSucceseAttack', data);
-      io.to(attackerRoom).emit('updatePlayerStatus', UpdatePlayerStatus());
-    }
+    // 같은 방의 플레이어들에게만 공격 성공 정보 전송
+    io.to(attackerRoom).emit('ServerToSucceseAttack', data);
+    io.to(attackerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(attackerRoom));
   });
 
 
@@ -200,19 +207,27 @@ io.on('connection', (socket) => {
       // 방에서 플레이어 제거
       Rooms[playerRoom] = Rooms[playerRoom].filter(id => id !== disconnectedId);
       
-      // 방이 비었으면 삭제
+      // 플레이어 상태 제거
+      if (RoomPlayerStatus[playerRoom]) {
+        delete RoomPlayerStatus[playerRoom][disconnectedId];
+      }
+      
+      // 방이 비었으면 방 정보 완전 삭제
       if (Rooms[playerRoom].length === 0) {
         delete Rooms[playerRoom];
+        delete RoomPlayerStatus[playerRoom];
+        console.log(`방 ${playerRoom} 삭제됨`);
       } else {
         // 같은 방의 다른 플레이어들에게 업데이트된 상태 전송
-        io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus());
+        io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
         io.to(playerRoom).emit('roomPlayerList', Rooms[playerRoom].join(','));
+        console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
       }
     }
 
-    // 플레이어 정보 정리
-    delete allPlayerStatus[disconnectedId];
+    // 플레이어 정보 완전 정리
     delete PlayerRooms[disconnectedId];
+    console.log(`플레이어 ${disconnectedId} 정보 정리 완료`);
   });
 });
 
