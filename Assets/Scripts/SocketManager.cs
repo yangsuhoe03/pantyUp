@@ -306,7 +306,8 @@ public class SocketManager : MonoBehaviour
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
 
             Debug.Log($"{attackerID}가 팬티를 뺏음 {targetID}는 죽음");
-            target.GetComponent<OtherPlayer>().SetPantypos();
+            target.GetComponent<OtherPlayer>().SetPantypos();          
+                       attacker.GetComponent<OtherPlayer>().SetPantypos();
             target.GetComponent<OtherPlayer>().playerPanty.transform.localPosition = new Vector3(0, -0.1237817f, -0.07895534f);
 
 
