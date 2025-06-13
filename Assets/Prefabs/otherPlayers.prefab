@@ -3774,6 +3774,8 @@ MonoBehaviour:
   player2: {fileID: 5847616475554253514}
   player3: {fileID: 3827658488807851522}
   playerdeadbody: {fileID: 7585759810366713525}
+  attackPointFront: {fileID: 4381995599588541622}
+  attackPointBack: {fileID: 433801461996255158}
   walking: 0
   running: 0
   walkingbackward: 0

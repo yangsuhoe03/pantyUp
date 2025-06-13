@@ -7022,8 +7022,8 @@ MonoBehaviour:
   acceleration: 10
   deceleration: 15
   jumpForce: 5
-  attackPointFront: {fileID: 0}
-  attackPointBack: {fileID: 0}
+  attackPointFront: {fileID: 1423049955}
+  attackPointBack: {fileID: 1525056166}
   playerRightHand: {fileID: 950458573}
   playerPanty: {fileID: 1666209249}
   cam: {fileID: 0}
