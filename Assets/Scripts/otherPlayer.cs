@@ -6,6 +6,8 @@ public class OtherPlayer : MonoBehaviour
     public string playerID;
     public Animator animator1, animator2;
     public GameObject player1, player2, player3, playerdeadbody;
+    public GameObject attackPointFront;
+    public GameObject attackPointBack;
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
@@ -119,6 +121,8 @@ public class OtherPlayer : MonoBehaviour
             player2.SetActive(true);
             player3.SetActive(true);
             animator2.SetTrigger("death");
+            attackPointFront.SetActive(false);
+            attackPointBack.SetActive(false);
         }
         else if (num == "12")
         {
@@ -126,6 +130,8 @@ public class OtherPlayer : MonoBehaviour
             player2.SetActive(false);
             player3.SetActive(false);
             playerdeadbody.SetActive(true);
+            attackPointFront.SetActive(true);
+            attackPointBack.SetActive(true);
             animator2.SetTrigger("respawn");
         }
         else if (num == "13")

@@ -212,11 +212,14 @@ public class PlayerMove : MonoBehaviour
         player_Anim.Respawn();
         attackPointFront.SetActive(true);
         attackPointBack.SetActive(true);
+        Debug.Log("리스폰됨!!!~~~!~!~");
     }
     void RigidbodyFreeze()
-    {   
+    {
         transform.rotation = new Quaternion(0, 0, 0, 0);
         rb.freezeRotation = true;
+        Debug.Log("리지드 바디 설정!!!!!!!!!!!!@!#!#");
+        
     }
     void RigidbodyFreezeOff()
     {
@@ -225,6 +228,8 @@ public class PlayerMove : MonoBehaviour
     void Disappear()
     {
         player_Anim.Disappear();
+        
+        Debug.Log("사라짐 6^^^^^^^^^^^^^^^^^^^^^^^!!!~~~!~!~");
     }
 
     public void GetOtherPlayer(GameObject otherP)
