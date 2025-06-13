@@ -59,7 +59,6 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(rb.linearVelocity.y);
         Move();
         Jump();
         PredictLanding();
@@ -106,7 +105,6 @@ public class PlayerMove : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isAttack && !jumpRequested)
         {
-            Debug.Log("jump 했습니다~~~~~~~");
             jumpRequested = true;
             player_Anim.Jumpup();
             Invoke("PerformJump", jumpDelay);
@@ -356,7 +354,6 @@ public class PlayerMove : MonoBehaviour
         if (Physics.BoxCast(origin, boxSize * 0.5f, direction, out hit, Quaternion.identity, checkDistance, LayerMask.GetMask("Ground")))
         {
             player_Anim.Landing(true); // 미리 착지 준비
-            Debug.Log("landing 했습니다~~~~~~~");
         }
         else
         {
