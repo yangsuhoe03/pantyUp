@@ -169,6 +169,12 @@ public class OtherPlayer : MonoBehaviour
     {
         isAttacked = false;
         Debug.Log("MovePantyToTarget 실행");
+        if (playerPanty == null)
+        {
+            Debug.LogError("MovePantyToTarget: playerPanty가 null입니다!");
+            yield break;
+        }
+
         float speed = 20f; // 이동 속도
         float threshold = 0.01f; // 도달 판정 거리
 
