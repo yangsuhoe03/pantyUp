@@ -35,7 +35,7 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendMyNickName(string nickName);
 
-    
+
 
 
     string nickName;
@@ -56,7 +56,7 @@ public class SocketManager : MonoBehaviour
     {
         mySocketID = id;
         Debug.Log(mySocketID);
-        
+
 
     }
 
@@ -65,7 +65,7 @@ public class SocketManager : MonoBehaviour
         return mySocketID;
     }
 
-        public void SendMyName(string MyName)
+    public void SendMyName(string MyName)
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
 
@@ -184,7 +184,7 @@ public class SocketManager : MonoBehaviour
     }
     public void ReceiveAttacking(string attacks)
     {
-        Debug.Log($"{attacks}1 공격 성공"); 
+        Debug.Log($"{attacks}1 공격 성공");
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
@@ -199,19 +199,25 @@ public class SocketManager : MonoBehaviour
 
             myPlayer.GetComponent<PlayerMove>().IsWedgied();
 
-
-
         }
-
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
-            attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
-            target.GetComponent<Renderer>().material.color = Color.black;
+            //attacker.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+            //target.GetComponent<Renderer>().material.color = Color.black;
+
+            // 공격자의 OtherPlayer 컴포넌트에서 팬티 잡기 실행
+            OtherPlayer attackerOtherPlayer = attacker.GetComponent<OtherPlayer>();
+            if (attackerOtherPlayer != null)
+            {
+                attackerOtherPlayer.SetIsAttacked(true);
+                // 타겟의 팬티를 공격자의 손으로 이동
+                attackerOtherPlayer.otherPlayerPanty = target.GetComponent<OtherPlayer>().playerPanty;
+            }
         }
     }
     public void ReceiveSucceseAttack(string attacks)
     {
-        Debug.Log($"{attacks}2 최종 공격 성공"); 
+        Debug.Log($"{attacks}2 최종 공격 성공");
         string[] ids = attacks.Split(',');
         if (ids.Length != 2) return;
 
@@ -219,25 +225,19 @@ public class SocketManager : MonoBehaviour
         string targetID = ids[1];
         if (targetID == GetMySocketID())//내가 공격을 당하면
         {
-
             Debug.Log("you died");
-
+            if (playerDict[attackerID] != null)
+            {
+                myPlayer.GetComponent<PlayerMove>().Death(playerDict[attackerID]);
+            }
         }
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
-
-
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
 
-
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
-
-
-
         }
-        
-        
     }
     public void ReceiveFaildAttack(string attacks)
     {
@@ -249,23 +249,20 @@ public class SocketManager : MonoBehaviour
         string targetID = ids[1];
         if (targetID == GetMySocketID())//내가 공격을 당하면
         {
-
             Debug.Log("팬티 끊킴..!");
-
+            myPlayer.GetComponent<PlayerMove>().SetPantypos();
         }
-        if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
+        else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
-
 
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
             Debug.Log($"{attackerID}가 공격 실패 {targetID}는 팬티 끊킴");
 
-
-
+            target.GetComponent<OtherPlayer>().SetPantypos();
         }
-        
-        
+
+
     }
     public void ReceiveAnim(string anim)
     {

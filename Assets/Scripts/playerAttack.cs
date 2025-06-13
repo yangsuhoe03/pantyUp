@@ -23,7 +23,10 @@ public class playerAttack : MonoBehaviour
         {
             attackTrigger = true;
             targetPlayer = other.transform.root.gameObject;
-            playerMove.GetOtherPlayer(targetPlayer);
+            if(playerMove != null)
+            {
+                playerMove.GetOtherPlayer(targetPlayer);
+            }
 
         }
     }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class OtherPlayer : MonoBehaviour
 {
@@ -8,9 +9,28 @@ public class OtherPlayer : MonoBehaviour
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
-    
+
     public GameObject playerRightHand;
     public GameObject playerPanty;
+    public GameObject otherPlayerPanty;
+    Vector3 pantypos;
+
+    bool isAttacked = false;
+    void Start()
+    {
+        pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
+    }
+    void Update()
+    {
+        if (isAttacked && otherPlayerPanty != null)
+        {
+            Wedgie(otherPlayerPanty);
+        }
+        else if (!isAttacked && otherPlayerPanty != null)
+        {
+            otherPlayerPanty = null;
+        }
+    }
 
     public void SetPlayerID(string Id)
     {
@@ -45,6 +65,13 @@ public class OtherPlayer : MonoBehaviour
             walkingbackward = true;
             SetAnimationParameter();
 
+        }
+        else if (num == "2")
+        {
+            walking = true;
+            running = false;
+            walkingbackward = false;
+            SetAnimationParameter();
         }
         else if (num == "3")
         {
@@ -89,6 +116,13 @@ public class OtherPlayer : MonoBehaviour
             player3.SetActive(true);
             animator2.SetTrigger("death");
         }
+        else if (num == "12")
+        {
+            player1.SetActive(true);
+            player2.SetActive(false);
+            player3.SetActive(false);
+            animator2.SetTrigger("respawn");
+        }
     }
     void SetAnimationParameter()
     {
@@ -105,5 +139,36 @@ public class OtherPlayer : MonoBehaviour
         //Debug.Log("공격 받음: " + playerID);
         //GetComponent<Renderer>().material.color = Color.black; 
     }
+    public void SetPantypos()
+    {
+        StopAllCoroutines(); // 중복 호출 방지
+        StartCoroutine(MovePantyToTarget(pantypos));
+    }
 
+    IEnumerator MovePantyToTarget(Vector3 targetPos)
+    {
+        float speed = 20f; // 이동 속도
+        float threshold = 0.01f; // 도달 판정 거리
+
+        while (Vector3.Distance(playerPanty.transform.localPosition, targetPos) > threshold)
+        {
+            playerPanty.transform.localPosition = Vector3.MoveTowards(
+                playerPanty.transform.localPosition,
+                targetPos,
+                speed * Time.deltaTime
+            );
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        // 정확히 위치 고정
+        playerPanty.transform.localPosition = targetPos;
+    }
+    public void SetIsAttacked(bool isAttacked)
+    {
+        this.isAttacked = isAttacked;
+    }
+    public void Wedgie(GameObject otherPlayerPanty)
+    {
+        otherPlayerPanty.transform.position = playerRightHand.transform.position;
+    }
 }
