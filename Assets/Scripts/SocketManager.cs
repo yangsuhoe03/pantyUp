@@ -262,7 +262,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log("wedgied");
 
             myPlayer.GetComponent<PlayerMove>().IsWedgied();
-
+            myPlayer.GetComponent<PlayerMove>().PlayerPanty = attackerOtherPlayer.playerPanty;
         }
         else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
         {
@@ -293,6 +293,7 @@ public class SocketManager : MonoBehaviour
             if (playerDict[attackerID] != null)
             {
                 myPlayer.GetComponent<PlayerMove>().Death(playerDict[attackerID]);
+
             }
         }
         else if (playerDict.ContainsKey(attackerID) && playerDict.ContainsKey(targetID))//여기서는 공격자와 타겟 둘다 내가 아닐 때 실행(공격자면, 프론트에서 그냥 실행)
@@ -303,6 +304,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
 
             Debug.Log($"{attackerID}가 팬티를 뺏음 {targetID}는 죽음");
+            target.GetComponent<OtherPlayer>().SetPantypos();
 
 
 
