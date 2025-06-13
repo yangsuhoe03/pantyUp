@@ -14,6 +14,7 @@ public class PlayerMove : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
     playerAttack playerAttack;
+    public GameObject attackPointFront, attackPointBack;
     GameObject SocketManager;
     SocketManager SocketManagerScript; // SocketManager 스크립트 참조
     player_anim player_Anim; //플레이어 애니메이션 스크립트
@@ -198,6 +199,32 @@ public class PlayerMove : MonoBehaviour
         transform.position = otherp.transform.position + Vector3.forward;
         transform.rotation = otherp.transform.rotation;
         player_Anim.Death();
+        attackPointFront.SetActive(false);
+        attackPointBack.SetActive(false);
+        Invoke("Disappear", 3f);
+        Invoke("RigidbodyFreezeOff", 1f);
+        Invoke("Respawn", 7f);
+    }
+    public void Respawn()
+    {
+        dead = false;
+        RigidbodyFreeze();
+        player_Anim.Respawn();
+        attackPointFront.SetActive(true);
+        attackPointBack.SetActive(true);
+    }
+    void RigidbodyFreeze()
+    {   
+        transform.rotation = new Quaternion(0, 0, 0, 0);
+        rb.freezeRotation = true;
+    }
+    void RigidbodyFreezeOff()
+    {
+        rb.freezeRotation = false;
+    }
+    void Disappear()
+    {
+        player_Anim.Disappear();
     }
 
     public void GetOtherPlayer(GameObject otherP)

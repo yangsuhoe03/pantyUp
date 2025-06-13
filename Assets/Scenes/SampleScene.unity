@@ -6377,7 +6377,7 @@ Transform:
   m_GameObject: {fileID: 1423049955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.7}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -6791,7 +6791,7 @@ Transform:
   m_GameObject: {fileID: 1525056166}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.2}
+  m_LocalPosition: {x: 0, y: 0.5, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -6816,7 +6816,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.5, y: 0.8, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1533350783
 GameObject:
@@ -7022,6 +7022,8 @@ MonoBehaviour:
   acceleration: 10
   deceleration: 15
   jumpForce: 5
+  attackPointFront: {fileID: 0}
+  attackPointBack: {fileID: 0}
   playerRightHand: {fileID: 950458573}
   playerPanty: {fileID: 1666209249}
   cam: {fileID: 0}
@@ -7043,6 +7045,7 @@ MonoBehaviour:
   player1: {fileID: 1507544853}
   player2: {fileID: 79805569}
   player3: {fileID: 1345862288}
+  playerdeadbody: {fileID: 15699129}
   walking: 0
   running: 0
   walkingbackward: 0
@@ -7067,8 +7070,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 0.5, y: 1.6, z: 0.5}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!54 &1541282053
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7249,6 +7252,8 @@ MonoBehaviour:
   acceleration: 10
   deceleration: 15
   jumpForce: 5
+  attackPointFront: {fileID: 0}
+  attackPointBack: {fileID: 0}
   playerRightHand: {fileID: 0}
   playerPanty: {fileID: 0}
   cam: {fileID: 0}

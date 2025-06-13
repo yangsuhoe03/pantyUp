@@ -348,7 +348,7 @@ Transform:
   m_GameObject: {fileID: 433801461996255158}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.2}
+  m_LocalPosition: {x: 0, y: 0.5, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -373,7 +373,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.5, y: 0.8, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &453581893042435126
 GameObject:
@@ -3563,7 +3563,7 @@ Transform:
   m_GameObject: {fileID: 4381995599588541622}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.7}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -3753,8 +3753,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 0.5, y: 1.6, z: 0.5}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &6882506347606854480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3773,6 +3773,7 @@ MonoBehaviour:
   player1: {fileID: 6392785907440733992}
   player2: {fileID: 5847616475554253514}
   player3: {fileID: 3827658488807851522}
+  playerdeadbody: {fileID: 7585759810366713525}
   walking: 0
   running: 0
   walkingbackward: 0
@@ -3780,6 +3781,7 @@ MonoBehaviour:
   grabsuccess: 0
   playerRightHand: {fileID: 3726769592653414967}
   playerPanty: {fileID: 7090711740739072373}
+  otherPlayerPanty: {fileID: 0}
 --- !u!1 &4617923173432736626
 GameObject:
   m_ObjectHideFlags: 0
