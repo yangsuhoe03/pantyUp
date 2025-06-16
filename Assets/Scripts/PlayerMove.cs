@@ -247,9 +247,12 @@ public class PlayerMove : MonoBehaviour
 
     public void GetOtherPlayer(GameObject otherP)
     {
-        otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
-        otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
-        otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // 다른 플레이어의 ID 저장
+    
+        if(otherPlayer == null){
+            otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
+            otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
+            otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // 다른 플레이어의 ID 저장
+        }
 
     }
     void AttackEnd()

@@ -296,7 +296,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log("you died");
             if (playerDict[attackerID] != null)
             {
-                myPlayer.GetComponent<PlayerMove>().Death(playerDict[attackerID]);
+                myPlayer.GetComponent<PlayerMove>().Death(attacker);
                 attacker.GetComponent<OtherPlayer>().SetAnimation("9"); //공격실패(손 내림)
             }
         }
