@@ -56,5 +56,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "pantyUp.sln"
+    "dotnet.defaultSolution": "pantyUp.sln",
+    "github.copilot.chat.generateTests.codeLens": true,
+    "diffEditor.codeLens": true,
+    "javascript.referencesCodeLens.showOnAllFunctions": true
 }
