@@ -46,6 +46,7 @@ public class SocketManager : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("SocketManager Awake called");
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
