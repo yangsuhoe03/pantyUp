@@ -275,6 +275,7 @@ public class SocketManager : MonoBehaviour
             OtherPlayer attackerOtherPlayer = attacker.GetComponent<OtherPlayer>();
             if (attackerOtherPlayer != null)
             {
+                Debug.Log("이게 계속 실행되고 있다며 이부분이 문제인 것이다~~~~~"); // 이 부분은 문제가 아니었음!!!!!!!!!!!!!
                 attackerOtherPlayer.SetIsAttacked(true);
                 // 타겟의 팬티를 공격자의 손으로 이동
                 attackerOtherPlayer.otherPlayerPanty = target.GetComponent<OtherPlayer>().playerPanty;
@@ -296,7 +297,7 @@ public class SocketManager : MonoBehaviour
             Debug.Log("you died");
             if (playerDict[attackerID] != null)
             {
-                myPlayer.GetComponent<PlayerMove>().Death(playerDict[attackerID]);
+                myPlayer.GetComponent<PlayerMove>().Death(attacker);
                 attacker.GetComponent<OtherPlayer>().SetAnimation("9"); //공격실패(손 내림)
             }
         }
@@ -307,12 +308,8 @@ public class SocketManager : MonoBehaviour
             Debug.Log($"{attackerID}가 점수를 1 얻음 {targetID}는 죽음");
 
             Debug.Log($"{attackerID}가 팬티를 뺏음 {targetID}는 죽음");
+            target.GetComponent<OtherPlayer>().SetIsAttacked(false);
             target.GetComponent<OtherPlayer>().SetPantypos();
-            attacker.GetComponent<OtherPlayer>().SetPantypos();
-            target.GetComponent<OtherPlayer>().playerPanty.transform.localPosition = new Vector3(0, -0.1237817f, -0.07895534f);
-
-
-
         }
     }
     public void ReceiveFaildAttack(string attacks)
@@ -334,7 +331,7 @@ public class SocketManager : MonoBehaviour
             GameObject attacker = playerDict[attackerID];
             GameObject target = playerDict[targetID];
             Debug.Log($"{attackerID}가 공격 실패 {targetID}는 팬티 끊킴");
-
+            target.GetComponent<OtherPlayer>().SetIsAttacked(false);
             target.GetComponent<OtherPlayer>().SetPantypos();
             
         }

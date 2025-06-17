@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
 public class OtherPlayer : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class OtherPlayer : MonoBehaviour
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
+    public bool isdead = false;
+    public bool pantymoving =false;
 
     public GameObject playerRightHand;
     public GameObject playerPanty;
@@ -25,11 +28,10 @@ public class OtherPlayer : MonoBehaviour
     }
     void Update()
     {
-        Debug.Log("isAttacked: " + isAttacked);
-        Debug.Log("otherPlayerPanty: " + otherPlayerPanty);
-        if (isAttacked && otherPlayerPanty != null)
+        if (isAttacked && otherPlayerPanty != null && otherPlayerPanty.GetComponentInParent<OtherPlayer>().isdead == false && pantymoving == false)
         {
             Wedgie(otherPlayerPanty);
+            Debug.Log("지금 잡고 있는 중이다.");
         }
         else if (!isAttacked && otherPlayerPanty != null)
         {
@@ -112,10 +114,14 @@ public class OtherPlayer : MonoBehaviour
         {
             grabsuccess = false;
             SetAnimationParameter();
+            isAttacked = false;
         }
         else if (num == "10")
         {
             animator1.SetTrigger("kill");
+            grabsuccess = false;
+            SetAnimationParameter();
+            isAttacked = false;
         }
         else if (num == "11")
         {
@@ -125,6 +131,7 @@ public class OtherPlayer : MonoBehaviour
             animator2.SetTrigger("death");
             attackPointFront.SetActive(false);
             attackPointBack.SetActive(false);
+            isdead = true;
         }
         else if (num == "12")
         {
@@ -135,6 +142,7 @@ public class OtherPlayer : MonoBehaviour
             attackPointFront.SetActive(true);
             attackPointBack.SetActive(true);
             animator2.SetTrigger("respawn");
+            isdead = false;
         }
         else if (num == "13")
         {
@@ -163,6 +171,7 @@ public class OtherPlayer : MonoBehaviour
         isAttacked = false;
         StopAllCoroutines(); // 중복 호출 방지
         StartCoroutine(MovePantyToTarget(pantypos));
+        pantymoving = true;
     }
 
     IEnumerator MovePantyToTarget(Vector3 targetPos)
@@ -191,6 +200,7 @@ public class OtherPlayer : MonoBehaviour
         // 정확히 위치 고정
         playerPanty.transform.localPosition = targetPos;
         Debug.Log($"팬티 이동 완료: {playerPanty.transform.localPosition}");
+        pantymoving = false;
     }
     public void SetIsAttacked(bool isAttacked)
     {
