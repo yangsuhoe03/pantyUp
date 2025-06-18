@@ -9,10 +9,12 @@ public class UIManager : MonoBehaviour
 
     public GameObject pausePanel;
     public GameObject customPanel;
+    public GameObject settingPanel;
 
     public TextMeshProUGUI usernameText;
 
     public Button customizeButton;
+    public Button settingButton;
 
     public ScoreManager scoreManager;
     public CameraManager cameraManager;
@@ -31,6 +33,14 @@ public class UIManager : MonoBehaviour
         {
             customizeButton.onClick.AddListener(CustomPanel);
         }
+        if (settingPanel != null)
+        {
+            settingPanel.GetComponent<Button>().onClick.AddListener(CloseSettingPanel);
+        }
+        if (settingButton != null)
+        {
+            settingButton.onClick.AddListener(SettingPanel);
+        }
         if (scoreManager == null)
         {
             scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
@@ -48,6 +58,10 @@ public class UIManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Escape) && customPanel.activeSelf)
         {
             CloseCustomPanel();
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape) && settingPanel.activeSelf)
+        {
+            CloseSettingPanel();
         }
     }
 
@@ -86,6 +100,16 @@ public class UIManager : MonoBehaviour
         }
         pausePanel.SetActive(false);
         SetCursorState(true);
+    }
+
+    public void SettingPanel()
+    {
+        settingPanel.SetActive(true);
+    }
+
+    public void CloseSettingPanel()
+    {
+        settingPanel.SetActive(false);
     }
 
     public void SetCursorState(bool locked)
