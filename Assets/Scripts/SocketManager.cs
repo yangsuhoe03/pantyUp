@@ -275,11 +275,11 @@ public class SocketManager : MonoBehaviour
             OtherPlayer attackerOtherPlayer = attacker.GetComponent<OtherPlayer>();
             if (attackerOtherPlayer != null)
             {
-                Debug.Log("이게 계속 실행되고 있다며 이부분이 문제인 것이다~~~~~"); // 이 부분은 문제가 아니었음!!!!!!!!!!!!!
                 attackerOtherPlayer.SetIsAttacked(true);
                 // 타겟의 팬티를 공격자의 손으로 이동
                 attackerOtherPlayer.otherPlayerPanty = target.GetComponent<OtherPlayer>().playerPanty;
             }
+            target.GetComponent<OtherPlayer>().isWedgied = true;
         }
     }
     public void ReceiveSucceseAttack(string attacks)

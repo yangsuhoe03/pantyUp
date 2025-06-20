@@ -7,29 +7,39 @@ using System.Linq;
 public class ScoreManager : MonoBehaviour
 {
     private Dictionary<string, (int score, string nickname)> playerScores = new Dictionary<string, (int score, string nickname)>();
-    public TextMeshProUGUI scoreText; // UI용 TextMeshPro
+    //public TextMeshProUGUI scoreText; // UI용 TextMeshPro
+    public TextMeshProUGUI[] rankTexts;
+    public TextMeshProUGUI[] rankTexts2;
+    public TextMeshProUGUI[] rankTexts3;
+    public TextMeshProUGUI myRankText;
     public TMP_InputField nicknameInput; // 닉네임 입력 필드
     public TextMeshProUGUI randomNicknameText; // 랜덤 닉네임 표시 텍스트
     public string userName = null;
+    public SocketManager socketManager;
+    public int myRank;
 
     private void Start()
     {
+        socketManager = GameObject.Find("SocketManager").GetComponent<SocketManager>();
+
+        /*
         if (scoreText == null)
         {
             Debug.LogWarning("Score TextMeshProUGUI가 할당되지 않았습니다.");
         }
+        */
         // 게임 시작 시 마우스 커서 표시
         //SetCursorState(false);
-        if (userName == "")
+        if (string.IsNullOrEmpty(userName))
         {
             userName = GenerateRandomNickname();
-            GameObject socketManager = GameObject.Find("SocketManager");
             if (socketManager != null)
             {
-                socketManager.GetComponent<SocketManager>().SetPlayerNickname(userName);
+                socketManager.SetPlayerNickname(userName);
             }
         }
         nicknameInput.text = userName;
+        UpdateScoreDisplay();
     }
 
     public void SetCursorState(bool locked)
@@ -52,7 +62,6 @@ public class ScoreManager : MonoBehaviour
             {
                 nicknameInput.text = randomNick;
             }
-            GenerateRandomNickname(); // 새로운 랜덤 닉네임 생성
         }
     }
 
@@ -70,11 +79,9 @@ public class ScoreManager : MonoBehaviour
                 userName = nickname;
             }
 
-            // SocketManager에 닉네임 전달
-            GameObject socketManager = GameObject.Find("SocketManager");
             if (socketManager != null)
             {
-                socketManager.GetComponent<SocketManager>().SetPlayerNickname(nickname);
+                socketManager.SetPlayerNickname(nickname);
             }
 
             /*
@@ -87,6 +94,14 @@ public class ScoreManager : MonoBehaviour
 
             // 닉네임 설정이 완료되면 마우스 커서를 잠금
             //SetCursorState(true);
+        }
+        else
+        {
+            userName = GenerateRandomNickname();
+            if (socketManager != null)
+            {
+                socketManager.SetPlayerNickname(userName);
+            }
         }
     }
 
@@ -114,21 +129,82 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateScoreDisplay()
     {
-        if (scoreText != null)
+        // 점수를 기준으로 내림차순 정렬
+        /*
+        var sortedScores = playerScores
+            .OrderByDescending(x => x.Value.score)
+            .ThenBy(x => x.Value.nickname); // 점수가 같을 경우 닉네임으로 정렬
+            */
+
+        var sortedScores = playerScores
+            .OrderByDescending(x => x.Value.score)
+            .ThenBy(x => x.Value.nickname)
+            .ToList();
+
+        string myId = socketManager.GetMySocketID();
+        int myIndex = sortedScores.FindIndex(x => x.Key == myId);
+
+        myRank = myIndex + 1;
+
+        myRankText.text = $"your rank : {myRank}";
+
+        foreach (var text in rankTexts)
         {
-            string displayText = "Score:\n";
-
-            // 점수를 기준으로 내림차순 정렬
-            var sortedScores = playerScores
-                .OrderByDescending(x => x.Value.score)
-                .ThenBy(x => x.Value.nickname); // 점수가 같을 경우 닉네임으로 정렬
-
-            foreach (var kvp in sortedScores)
-            {
-                var (score, nickname) = kvp.Value;
-                displayText += $"{nickname}: {score}\n";
-            }
-            scoreText.text = displayText;
+            text.text = "";
         }
+        foreach (var text in rankTexts2)
+        {
+            text.text = "";
+        }
+        foreach (var text in rankTexts3)
+        {
+            text.text = "";
+        }
+
+        if (myIndex < 6)
+        {
+            for (int i = 0; i < Mathf.Min(6, sortedScores.Count); i++)
+            {
+                var (score, nickname) = sortedScores[i].Value;
+                bool isMe = sortedScores[i].Key == myId;
+                rankTexts[i].text = isMe ?
+                    $"<color=#FFD700><b>{nickname} </b></color>" :
+                    $"{nickname}";
+                rankTexts2[i].text = isMe ?
+                    $"<color=#FFD700><b>{i + 1}</b></color>" :
+                    $"{i + 1}";
+                rankTexts3[i].text = isMe ?
+                    $"<color=#FFD700><b>{score}</b></color>" :
+                    $"{score}";
+            }
+        }
+        else
+        {
+            // 상위 5명 + 내 순위
+            for (int i = 0; i < Mathf.Min(5, sortedScores.Count); i++)
+            {
+                var (score, nickname) = sortedScores[i].Value;
+                rankTexts[i].text = $"{nickname}";
+                rankTexts2[i].text = $"{i + 1}";
+                rankTexts3[i].text = $"{score}";
+            }
+
+            // 내 순위는 마지막에
+            if (myIndex >= 0 && myIndex < sortedScores.Count)
+            {
+                var (score, nickname) = sortedScores[myIndex].Value;
+                rankTexts[5].text = $"<color=#FFD700><b>{nickname}</b></color>";
+                rankTexts2[5].text = $"<color=#FFD700><b>{myIndex + 1}</b></color>";
+                rankTexts3[5].text = $"<color=#FFD700><b>{score}</b></color>";
+            }
+        }
+        /*
+        foreach (var kvp in sortedScores)
+        {
+            var (score, nickname) = kvp.Value;
+            displayText += $"{nickname}: {score}\n";
+        }
+        */
+
     }
 }
