@@ -201,7 +201,7 @@ public class PlayerMove : MonoBehaviour
 
         // 방향 기준을 월드가 아닌 "캐릭터 기준"으로 변환
         Vector3 worldDir = transform.TransformDirection(inputDir);
-        transform.position += worldDir * moveSpeed * Time.deltaTime;
+        transform.position += worldDir * moveSpeed * Time.fixedDeltaTime;
 
         // 애니메이션 처리
         if (moveZ > 0 && !player_Anim.running)
@@ -481,17 +481,15 @@ public class PlayerMove : MonoBehaviour
     }
     void GroundCheck()
     {
-        isGrounded = player_ground.isGrounded;
-        if (isGrounded && !player_Anim.landing)
+        if (isGrounded && !player_Anim.landing && isGrounded != player_ground.isGrounded)
         {
-            Debug.Log("착지함");
             player_Anim.Landing(true);
         }
-        else if(!isGrounded && player_Anim.landing)
+        else if(!isGrounded && player_Anim.landing && isGrounded != player_ground.isGrounded)
         {
             player_Anim.Landing(false);
         }
-
+        isGrounded = player_ground.isGrounded;
     }
     void PredictLanding()
     {

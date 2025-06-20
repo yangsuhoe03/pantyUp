@@ -17,6 +17,10 @@ public class UIManager : MonoBehaviour
     public GameObject youdiedPanel;
     public GameObject invincibleShieldPanel;
 
+    public GameObject CurtainLeft;
+    public GameObject CurtainRight;
+    public GameObject RewardPlayer;
+
     public TextMeshProUGUI usernameText;
     public TextMeshProUGUI respawnTimeText;
     public TextMeshProUGUI invincibleShieldText;
@@ -132,7 +136,7 @@ public class UIManager : MonoBehaviour
         {
             cameraManager.SwitchCamera(0);
         }
-        else if(!gameStarted && !youdied)
+        else if (!gameStarted && !youdied)
         {
             cameraManager.SwitchCamera(0); //일단은 메인카메라로 돌아가게 함 게임 시작여부가 나오면 그 때 바꾸도록
         }
@@ -175,6 +179,7 @@ public class UIManager : MonoBehaviour
     {
         gameStarted = false;
         playTimerText.text = "00:00";
+        StartCoroutine(RewardCamera());
     }
     public IEnumerator YouDied()
     {
@@ -214,6 +219,74 @@ public class UIManager : MonoBehaviour
             cameraManager.subCamera2.transform.rotation = Quaternion.Slerp(cameraManager.subCamera2.transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
             yield return null;
         }
+    }
+    IEnumerator RewardCamera()
+    {
+        Vector3 curtainLeftStartPos = CurtainLeft.transform.position;
+        Vector3 curtainRightStartPos = CurtainRight.transform.position;
+        cameraManager.SwitchCamera(3);
+        float duration1 = 3f;
+        float timer = 0f;
+        Vector3 startPos = cameraManager.subCamera3.transform.position;
+        Vector3 targetPos = cameraManager.subCamera3.transform.position + new Vector3(7f, 0, 0);
+        cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1f);
+
+        while (timer < duration1)
+        {
+            timer += Time.deltaTime;
+            float t = timer / duration1;
+            cameraManager.subCamera3.transform.position = Vector3.Lerp(startPos, targetPos, t);
+            CurtainLeft.transform.position = Vector3.Lerp(curtainLeftStartPos, curtainLeftStartPos + new Vector3(0, 0, 5f), t);
+            CurtainRight.transform.position = Vector3.Lerp(curtainRightStartPos, curtainRightStartPos + new Vector3(0, 0, -5f), t);
+            yield return null;
+        }
+        float duration2 = 3f;
+        timer = 0f;
+        float radiusNear = 1f;
+        float heightNear = 0.7f;
+        while (timer < duration2)
+        {
+            timer += Time.deltaTime;
+            float angle = timer / duration2 * 100f + 0.25f;
+
+            Vector3 offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad)) * radiusNear;
+            offset.y = heightNear;
+
+            cameraManager.subCamera3.transform.position = RewardPlayer.transform.position + offset;
+            cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1.5f);
+            yield return null;
+        }
+        timer = 0f;
+        radiusNear = 2f;
+        heightNear = 1.8f;
+        while (timer < duration2)
+        {
+            timer += Time.deltaTime;
+            float angle = -timer / duration2 * 100f + 0.8f;
+
+            Vector3 offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad)) * radiusNear;
+            offset.y = -heightNear;
+
+            cameraManager.subCamera3.transform.position = RewardPlayer.transform.position - offset;
+            cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1.5f);
+            yield return null;
+        }
+        duration1 = 7f;
+        timer = 0f;
+        while (timer < duration1)
+        {
+            timer += Time.deltaTime;
+            float t = timer / duration1;
+            cameraManager.subCamera3.transform.position = Vector3.Lerp(targetPos, targetPos - new Vector3(0, 0, 3f), t);
+            cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1f);   
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(3f);
+        CurtainLeft.transform.position = curtainLeftStartPos;
+        CurtainRight.transform.position = curtainRightStartPos;
+        cameraManager.subCamera3.transform.position = cameraManager.subCamera3originalPos.position;
+        cameraManager.SwitchCamera(0);
     }
     public void Respawn()
     {

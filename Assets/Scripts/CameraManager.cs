@@ -6,8 +6,13 @@ public class CameraManager : MonoBehaviour
     public Camera subCamera;
     public Camera subCamera2;
     public Camera subCamera3;
+    public Transform subCamera3originalPos;
     public float subcamrotationSpeed = 5f;
 
+    void Start()
+    {
+        subCamera3originalPos = subCamera3.transform;
+    }
     void Update()
     {
         if(subCamera.enabled)
