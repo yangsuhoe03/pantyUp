@@ -72,8 +72,6 @@ public class UIManager : MonoBehaviour
         cameraManager = GetComponent<CameraManager>();
         usernameText.text = scoreManager.userName;
         playerMove = GameObject.Find("Player").GetComponent<PlayerMove>();
-
-        GameStart(10); //테스트용
     }
 
     void Update()
@@ -102,19 +100,6 @@ public class UIManager : MonoBehaviour
         else
         {
             rankingPanel.SetActive(false);
-        }
-
-        if (gameStarted) //게임 시작시 타이머 시작
-        {
-            if (playTimer > 0)
-            {
-                playTimer -= Time.deltaTime;
-                UpdateTimerDisplay(playTimer);
-            }
-            else
-            {
-                GameEnd();
-            }
         }
     }
 
@@ -179,12 +164,6 @@ public class UIManager : MonoBehaviour
     {
         Cursor.visible = !locked;
         Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
-    }
-    public void GameStart(int timer)
-    {
-        gameStarted = true;
-        playTimer = timer;
-        playTimerText.text = playTimer.ToString();
     }
     public void UpdateTimerDisplay(float time)
     {

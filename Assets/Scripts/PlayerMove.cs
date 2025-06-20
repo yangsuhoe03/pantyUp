@@ -427,7 +427,7 @@ public class PlayerMove : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        Debug.Log("충돌 감지됨: " + collision.gameObject.tag);
+       //Debug.Log("충돌 감지됨: " + collision.gameObject.tag);
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;

@@ -17,6 +17,7 @@ public class SocketManager : MonoBehaviour
     float gameTimer = 600.0f;
     string allPlayerStatus;
     string[] roomInPlayerIds;
+    private GameObject uiManager;
 
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
@@ -58,6 +59,9 @@ public class SocketManager : MonoBehaviour
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
+        
+        uiManager = GameObject.Find("UIManager");
+        
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
         if (scoreManager == null)
         {
@@ -235,6 +239,7 @@ public class SocketManager : MonoBehaviour
         Debug.Log($"타이머 동기화: {time}");
         gameTimer = float.Parse(time);
         Debug.Log(gameTimer);
+        uiManager.GetComponent<UIManager>().UpdateTimerDisplay(gameTimer);
     }
     public void ReceivePos(string data)
     {
