@@ -76,6 +76,7 @@ io.on('connection', (socket) => {
       joinedRoom = `room${roomCount}`;
       Rooms[joinedRoom] = [playerId];
       RoomPlayerStatus[joinedRoom] = {}; // 새 방의 플레이어 상태 객체 초기화
+      socket.emit('startGame');
     }
 
     // 플레이어의 방 정보 저장
@@ -85,7 +86,6 @@ io.on('connection', (socket) => {
     socket.join(joinedRoom);
 
     console.log(`${playerId} joined ${joinedRoom}`);
-    socket.emit('joinedRoom', joinedRoom); // 클라이언트에게 알림
 
     // 같은 방 모든 유저에게 방 참가 정보 전송
     io.to(joinedRoom).emit('roomPlayerList', Rooms[joinedRoom].join(','));
