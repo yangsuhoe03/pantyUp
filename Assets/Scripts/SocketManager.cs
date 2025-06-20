@@ -13,14 +13,18 @@ public class SocketManager : MonoBehaviour
     public GameObject myPlayer;
     private ScoreManager scoreManager;
     string nickName;
-    public float timeLeft = 600.0f;
+    string myRoomName;
+    float gameTimer = 600.0f;
     string allPlayerStatus;
     string[] roomInPlayerIds;
+    private GameObject uiManager;
+
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
     [DllImport("__Internal")]
     private static extern void ConnectToSocket();
+
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
@@ -55,6 +59,9 @@ public class SocketManager : MonoBehaviour
     void Start()
     {
         myPlayer.GetComponent<PlayerMove>();
+        
+        uiManager = GameObject.Find("UIManager");
+        
         scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
         if (scoreManager == null)
         {
@@ -67,7 +74,6 @@ public class SocketManager : MonoBehaviour
         //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
 
     }
-
     public void SetMySocketID(string id)
     {
         mySocketID = id;
@@ -103,6 +109,7 @@ public class SocketManager : MonoBehaviour
     SendMyNickName(MyName);
 #endif
     }
+
 
 
     public void SendPlayerPosition(string pos)
@@ -143,6 +150,11 @@ public class SocketManager : MonoBehaviour
 #endif
     }
 
+    public void OnJoinedRoom(string roomName)
+    {
+        Debug.Log($"방 참가 성공: {roomName}");
+        myRoomName = roomName;
+    }
     public void OnRoomPlayerList(string roomInPlayers)
     {
         Debug.Log($"방 플레이어 목록: {roomInPlayers}");
@@ -152,13 +164,10 @@ public class SocketManager : MonoBehaviour
         roomInPlayerIds = newRoomPlayerIds;
 
     }
-    public void startGame()
-    {
-        Debug.Log("클라 게임 시작");
-
-    }
     private void CreatePlayers()
     {
+        //타이머 정보 보내기
+    
         Debug.Log(roomInPlayerIds);
         if (roomInPlayerIds == null) return;
 
@@ -190,6 +199,92 @@ public class SocketManager : MonoBehaviour
     }
 
 
+    // public void MakePlayer(string playerIDs)
+    // {
+    //     string[] ids = playerIDs.Split(',');
+
+    //     foreach (string id in ids)
+    //     {
+    //         if (!playerDict.ContainsKey(id))
+    //         {
+    //             if (id != GetMySocketID())
+    //             {//내가 아닌 플레이어일 때
+    //                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
+    //                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
+    //                 playerDict.Add(id, enemy);
+    //             }
+    //             else
+    //             {//내가 플레이어일 때
+    //                 GameObject isMine;
+    //                 isMine = GameObject.Find("Player");
+    //                 playerDict.Add(id, isMine);
+    //             }
+    //         }
+    //     }
+    //     foreach (KeyValuePair<string, GameObject> entry in playerDict)
+    //     {
+    //         Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
+    //     }
+
+    //     //string myStatus = $"{GetMySocketID()},{nickName}";
+    //     //SendMyName(myStatus);
+    //     if (scoreManager != null)
+    //     {
+    //         //scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
+    //     }
+    // }
+    // void Update(){
+    //     GameObject sun = GameObject.Find("Sun");
+    //     if (sun != null)
+    //     {
+    //         // gameTimer가 600에서 0으로 줄어들 때 x축 각도가 180도에서 0도로 회전하도록 설정
+    //         float startAngle = 180f;
+    //         float endAngle = 0f;
+    //         float totalTime = 600f;
+    //         float t = Mathf.Clamp01(gameTimer / totalTime); // 600~0 -> 1~0
+    //         float sunAngle = Mathf.Lerp(startAngle, endAngle, 1 - t); // 600일 때 180, 0일 때 0
+
+    //         sun.transform.rotation = Quaternion.Euler(
+    //             sunAngle, // x축 각도
+    //             0f,       // y축 각도(고정)
+    //             0f        // z축 각도(고정)
+    //         );
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("Sun 오브젝트를 찾을 수 없습니다. Directional Light의 이름이 'Sun'인지 확인하세요.");
+    //     }
+    // }
+
+    public void ReceiveTimeSync(string time)
+    {
+        Debug.Log($"타이머 동기화: {time}");
+        gameTimer = float.Parse(time);
+        Debug.Log(gameTimer);
+        uiManager.GetComponent<UIManager>().UpdateTimerDisplay(gameTimer);
+        // 햇빛 방향(주광) 바꾸기 기능 추가
+        // "Sun"이라는 이름의 Directional Light 오브젝트가 있다고 가정
+GameObject sun = GameObject.Find("Sun");
+        if (sun != null)
+        {
+            // gameTimer가 600에서 0으로 줄어들 때 x축 각도가 180도에서 0도로 회전하도록 설정
+            float startAngle = 180f;
+            float endAngle = 0f;
+            float totalTime = 600f;
+            float t = Mathf.Clamp01(gameTimer / totalTime); // 600~0 -> 1~0
+            float sunAngle = Mathf.Lerp(startAngle, endAngle, 1 - t); // 600일 때 180, 0일 때 0
+
+            sun.transform.rotation = Quaternion.Euler(
+                sunAngle, // x축 각도
+                0f,       // y축 각도(고정)
+                0f        // z축 각도(고정)
+            );
+        }
+        else
+        {
+            Debug.LogWarning("Sun 오브젝트를 찾을 수 없습니다. Directional Light의 이름이 'Sun'인지 확인하세요.");
+        }
+    }
     public void ReceivePos(string data)
     {
 

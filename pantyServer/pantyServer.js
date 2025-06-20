@@ -31,19 +31,21 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname)));
 
-
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-
 let Scores = {};
-// allPlayerStatus를 방별로 관리하도록 변경
 const RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
 const Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
 const PlayerRooms = {}; // { playerId: roomName } - 플레이어가 속한 방 정보
 let roomCount = 0;
 const MAX_PLAYERS_PER_ROOM = 6;
+
+// ✅ 방별 타이머 관리 시스템
+const roomStartTime = {}; // { roomName: 시작시간 } - 각 방의 게임 시작 시간을 저장
+const roomTimers = {};    // { roomName: setInterval 핸들 } - 각 방의 타이머 인터벌을 저장
+const GAME_DURATION = 10 * 60 * 1000; // 10분 (밀리초 단위) - 게임 지속 시간
 
 function UpdatePlayerStatus(roomName) {
   if (!RoomPlayerStatus[roomName]) return '';
@@ -52,16 +54,21 @@ function UpdatePlayerStatus(roomName) {
     .map(([pid, info]) => `${pid},${info.nickname},${info.score}`)
     .join('|');
   return statusStr;
-} //방별 플레이어 상태를 문자열로 변환하는 함수
+}
+
+// ✅ 타이머 핵심 함수: 특정 방의 남은 시간을 계산
+function getRemainingTime(roomName) {
+  const now = Date.now(); // 현재 시간
+  const elapsed = now - roomStartTime[roomName]; // 경과 시간 계산
+  return Math.max(0, Math.floor((GAME_DURATION - elapsed) / 1000)); // 남은 시간을 초 단위로 반환 (최소 0초)
+}
 
 io.on('connection', (socket) => {
   console.log(' Unity 클라이언트 연결됨', socket.id);
 
-  // 방 자동 입장
   socket.on('joinRandomRoom', (playerId) => {
     let joinedRoom = null;
 
-    // 방들 중 인원 미달인 방 탐색
     for (const roomName in Rooms) {
       if (Rooms[roomName].length < MAX_PLAYERS_PER_ROOM) {
         Rooms[roomName].push(playerId);
@@ -70,36 +77,51 @@ io.on('connection', (socket) => {
       }
     }
 
-    // 적절한 방이 없으면 새 방 생성
     if (!joinedRoom) {
       roomCount++;
+      console.log("방 생성: ", roomCount);
       joinedRoom = `room${roomCount}`;
       Rooms[joinedRoom] = [playerId];
-      RoomPlayerStatus[joinedRoom] = {}; // 새 방의 플레이어 상태 객체 초기화
-      socket.emit('startGame');
+      RoomPlayerStatus[joinedRoom] = {};
     }
 
-    // 플레이어의 방 정보 저장
     PlayerRooms[playerId] = joinedRoom;
-
-    // 소켓도 해당 방에 join
     socket.join(joinedRoom);
 
     console.log(`${playerId} joined ${joinedRoom}`);
-
-    // 같은 방 모든 유저에게 방 참가 정보 전송
+    socket.emit('joinedRoom', joinedRoom);
     io.to(joinedRoom).emit('roomPlayerList', Rooms[joinedRoom].join(','));
+
+    // ✅ 방 입장 시 타이머 관리 로직
+    if (!roomStartTime[joinedRoom]) {
+      // 🔹 새로 생성된 방인 경우: 타이머 시작
+      roomStartTime[joinedRoom] = Date.now(); // 방의 시작 시간 기록
+
+      // 🔹 방별 독립 타이머 생성 (1초마다 실행)
+      roomTimers[joinedRoom] = setInterval(() => {
+        const remaining = getRemainingTime(joinedRoom); // 남은 시간 계산
+        io.to(joinedRoom).emit('ServerToTimeSync', remaining); // 방의 모든 플레이어에게 남은 시간 전송
+
+        // 🔹 타이머 종료 조건: 남은 시간이 0초 이하일 때
+        if (remaining <= 0) {
+          io.to(joinedRoom).emit('GameOver'); // 게임 종료 이벤트 전송
+          clearInterval(roomTimers[joinedRoom]); // 타이머 인터벌 정리
+          delete roomStartTime[joinedRoom]; // 시작 시간 정보 삭제
+          delete roomTimers[joinedRoom]; // 타이머 핸들 삭제
+        }
+      }, 1000); // 1초(1000ms) 간격으로 실행
+    } else {
+      // 🔹 기존 방에 입장한 경우: 현재 남은 시간만 전송
+      socket.emit('ServerToTimeSync', getRemainingTime(joinedRoom));
+    }
   });
 
   socket.on('setNickName', (playerStatus) => {
     console.log("닉네임 설정 받음: ", playerStatus);
     const [id, nickname] = playerStatus.split(',');
-
-    // 플레이어가 속한 방 정보 가져오기
     const playerRoom = PlayerRooms[id];
     if (!playerRoom) return;
 
-    // 방별 플레이어 상태 관리
     if (!RoomPlayerStatus[playerRoom][id]) {
       RoomPlayerStatus[playerRoom][id] = {
         nickname: nickname,
@@ -109,18 +131,13 @@ io.on('connection', (socket) => {
       RoomPlayerStatus[playerRoom][id].nickname = nickname;
     }
 
-    //  전체 상태 문자열 구성: "id,nickname,score|id2,nickname2,score2"
     console.log("정보 전송: ", UpdatePlayerStatus(playerRoom));
-
-    // 해당 방의 플레이어들에게만 상태 업데이트 전송
     io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
     io.to(playerRoom).emit('ServerToMakePlayers');
   });
 
   socket.on('SendPos', (pos) => {
     const data = `${socket.id}:${pos}`;
-    //console.log(2, pos);
-    // 같은 방의 다른 플레이어들에게만 위치 정보 전송
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
       socket.to(playerRoom).emit('ServerToPos', data);
@@ -128,8 +145,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('SendAnimNumber', (data) => {
-    //console.log(2, pos);
-    // 같은 방의 다른 플레이어들에게만 애니메이션 정보 전송
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
       socket.to(playerRoom).emit('ServerToAnimNumber', data);
@@ -138,7 +153,6 @@ io.on('connection', (socket) => {
 
   socket.on('SendAttack', (attacks) => {
     console.log("서버받음: ", attacks);
-    // 같은 방의 플레이어들에게만 공격 정보 전송
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
       io.to(playerRoom).emit('ServerToAttack', attacks);
@@ -146,10 +160,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('SendSucceseAttack', (data) => {
-    // 공격 성공 처리: "공격자ID,피공격자ID" 형식의 문자열을 받아옴
     const [attackerID, targetID] = data.split(',');
-
-    // 공격자와 타겟이 같은 방에 있는지 확인
     const attackerRoom = PlayerRooms[attackerID];
     const targetRoom = PlayerRooms[targetID];
 
@@ -158,74 +169,55 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // 공격자와 타겟이 모두 존재하는지 확인
     if (!RoomPlayerStatus[attackerRoom][attackerID] || !RoomPlayerStatus[attackerRoom][targetID]) {
       console.log('유효하지 않은 플레이어 ID:', { attackerID, targetID });
       return;
     }
 
-    // 공격자 ID가 존재하고, 점수 테이블(Scores)에 해당 ID가 있으면
-
-    // 전체 플레이어들의 점수를 문자열로 변환
-    // 예: {id1: 3, id2: 0} → "id1:3,id2:0"
-    // const scoreData = Object.entries(Scores) // [ [id1, 3], [id2, 0], ... ]
-    //   .map(([id, score]) => `${id}:${score}`) // 각 항목을 "id:score" 형식 문자열로 만듦
-    //   .join(','); // 배열을 쉼표로 이어 붙임
-    // console.log("점수 데이터:", scoreData); // 디버깅용
-
-    RoomPlayerStatus[attackerRoom][attackerID].score = 
-      RoomPlayerStatus[attackerRoom][attackerID].score + 
-      RoomPlayerStatus[attackerRoom][targetID].score;
+    RoomPlayerStatus[attackerRoom][attackerID].score += RoomPlayerStatus[attackerRoom][targetID].score;
     RoomPlayerStatus[attackerRoom][targetID].score = 1;
 
-    // 같은 방의 플레이어들에게만 공격 성공 정보 전송
     io.to(attackerRoom).emit('ServerToSucceseAttack', data);
     io.to(attackerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(attackerRoom));
   });
 
-
   socket.on('SendFaildAttack', (data) => {
-    // 같은 방의 플레이어들에게만 공격 실패 정보 전송
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
       io.to(playerRoom).emit('ServerToFaildAttack', data);
     }
   });
 
-
-
-
-
-
   socket.on('disconnect', () => {
     console.log('클라이언트 연결 종료');
     const disconnectedId = socket.id;
-    
-    // 플레이어가 속한 방 정보 가져오기
     const playerRoom = PlayerRooms[disconnectedId];
+
     if (playerRoom) {
-      // 방에서 플레이어 제거
       Rooms[playerRoom] = Rooms[playerRoom].filter(id => id !== disconnectedId);
-      
-      // 플레이어 상태 제거
       if (RoomPlayerStatus[playerRoom]) {
         delete RoomPlayerStatus[playerRoom][disconnectedId];
       }
-      
-      // 방이 비었으면 방 정보 완전 삭제
+
       if (Rooms[playerRoom].length === 0) {
         delete Rooms[playerRoom];
         delete RoomPlayerStatus[playerRoom];
+
+        // ✅ 방이 비었을 경우 타이머도 정리
+        if (roomTimers[playerRoom]) {
+          clearInterval(roomTimers[playerRoom]); // 타이머 인터벌 정지
+          delete roomTimers[playerRoom]; // 타이머 핸들 삭제
+        }
+        delete roomStartTime[playerRoom]; // 시작 시간 정보 삭제
+
         console.log(`방 ${playerRoom} 삭제됨`);
       } else {
-        // 같은 방의 다른 플레이어들에게 업데이트된 상태 전송
         io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
         io.to(playerRoom).emit('roomPlayerList', Rooms[playerRoom].join(','));
         console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
       }
     }
 
-    // 플레이어 정보 완전 정리
     delete PlayerRooms[disconnectedId];
     console.log(`플레이어 ${disconnectedId} 정보 정리 완료`);
   });
@@ -236,4 +228,3 @@ server.listen(PORT, () => {
   console.log('🚀 서버 실행 중');
 });
 //<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-
