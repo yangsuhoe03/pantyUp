@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 1647169176166154155}
   - component: {fileID: 1318253834426151184}
   - component: {fileID: 975905461155585189}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,9 +117,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1333164791380796231}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: block
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -196,6 +196,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: a6dd224b5412fe245a8f68ac956f2ab1, type: 3}
       propertyPath: m_Name
       value: slanted (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a6dd224b5412fe245a8f68ac956f2ab1, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a6dd224b5412fe245a8f68ac956f2ab1, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

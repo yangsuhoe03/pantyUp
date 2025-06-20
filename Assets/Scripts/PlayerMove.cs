@@ -5,13 +5,13 @@ using UnityEngine.XR;
 using System.Collections;
 public class PlayerMove : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+    public float moveSpeed = 4f;
     public float acceleration = 10f;
     public float deceleration = 15f;
     Vector3 currentVelocity = Vector3.zero;
     public float jumpForce = 5f;
     private bool jumpRequested = false;
-    private float jumpDelay = 0.5f; // 딜레이 시간 (숙이는 시간)
+    private float jumpDelay = 0.0f; // 딜레이 시간 (숙이는 시간)
     private Rigidbody rb;
     private bool isGrounded;
     playerAttack playerAttack;
@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
     GameObject SocketManager;
     SocketManager SocketManagerScript; // SocketManager 스크립트 참조
     UIManager UIManagerScript;
+    player_Ground player_ground;
     player_anim player_Anim; //플레이어 애니메이션 스크립트
     private Vector3 lastSentPosition;
     bool isAttack = false; // 공격 상태 변수
@@ -63,6 +64,7 @@ public class PlayerMove : MonoBehaviour
         cam = Camera.main.gameObject;
         cameraMove = cam.GetComponent<CameraMove>();
         UIManagerScript = GameObject.Find("UIManager").GetComponent<UIManager>();
+        player_ground = GetComponentInChildren<player_Ground>();
 
         UIManagerScript.Invincible();
     }
@@ -74,7 +76,10 @@ public class PlayerMove : MonoBehaviour
 
 
     }
-
+    void FixedUpdate()
+    {
+        Move();
+    }
     void Update()
     {
         //디버깅용 키
@@ -92,8 +97,7 @@ public class PlayerMove : MonoBehaviour
             otherPlayerRighthand = null;
         }
 
-
-        Move();
+        GroundCheck();
         Jump();
         PredictLanding();
         HandleOtherPlayerHealth();
@@ -159,8 +163,8 @@ public class PlayerMove : MonoBehaviour
     {
         if (dead || Cursor.lockState != CursorLockMode.Locked) return;
 
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
 
         /*
         Vector3 inputDir = transform.right * moveX + transform.forward * moveZ;
@@ -187,18 +191,17 @@ public class PlayerMove : MonoBehaviour
         }
         rb.linearVelocity = currentVelocity;
         */
-        Vector3 inputDir = (transform.right * moveX + transform.forward * moveZ).normalized;
+        Vector3 inputDir = new Vector3(moveX, 0, moveZ).normalized;
 
-        if (isAttack)
+        if (isAttack || inputDir == Vector3.zero)
         {
-            // 공격 중이거나 입력이 없으면 이동 안함
-            rb.linearVelocity = Vector3.zero;
+            player_Anim.Move(0);
             return;
         }
 
-        Vector3 moveDelta = inputDir * moveSpeed * Time.fixedDeltaTime;
-        Vector3 newPosition = rb.position + moveDelta;
-        rb.MovePosition(newPosition);
+        // 방향 기준을 월드가 아닌 "캐릭터 기준"으로 변환
+        Vector3 worldDir = transform.TransformDirection(inputDir);
+        transform.position += worldDir * moveSpeed * Time.deltaTime;
 
         // 애니메이션 처리
         if (moveZ > 0 && !player_Anim.running)
@@ -412,33 +415,6 @@ public class PlayerMove : MonoBehaviour
         // 정확히 위치 고정
         playerPanty.transform.localPosition = targetPos;
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-
-
-    }
-
-
-
-    private void OnCollisionStay(Collision collision)
-    {
-        Debug.Log("충돌 감지됨: " + collision.gameObject.tag);
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-
-
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-
-    }
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
@@ -503,23 +479,23 @@ public class PlayerMove : MonoBehaviour
             SocketManagerScript.AttackFaild(attacked); // 공격 실패 전송 
         }
     }
-
-    private void OnCollisionExit(Collision collision)
+    void GroundCheck()
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        isGrounded = player_ground.isGrounded;
+        if (isGrounded && !player_Anim.landing)
         {
-            isGrounded = false;
-
-            //player_Anim.Landing(isGrounded);
-
-            //if (rb.linearVelocity.y < 0) player_Anim.Falling();
+            Debug.Log("착지함");
+            player_Anim.Landing(true);
         }
-
+        else if(!isGrounded && player_Anim.landing)
+        {
+            player_Anim.Landing(false);
+        }
 
     }
     void PredictLanding()
     {
-        if (isGrounded || jumpRequested || rb.linearVelocity.y > -0.01f)
+        if ((isGrounded && !player_Anim.landing) || jumpRequested || rb.linearVelocity.y > -0.01f)
         {
             player_Anim.Landing(false);
             return;
