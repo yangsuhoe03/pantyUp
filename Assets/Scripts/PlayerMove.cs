@@ -484,7 +484,7 @@ public class PlayerMove : MonoBehaviour
         isGrounded = player_ground.isGrounded;
         if (isGrounded && !player_Anim.landing)
         {
-            Debug.Log("착지함");
+        
             player_Anim.Landing(true);
         }
         else if(!isGrounded && player_Anim.landing)

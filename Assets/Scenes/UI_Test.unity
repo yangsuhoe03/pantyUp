@@ -20712,7 +20712,7 @@ MonoBehaviour:
   mainCamera: {fileID: 2016899817}
   subCamera: {fileID: 726307732}
   subCamera2: {fileID: 430893183}
-  subCamera3: {fileID: 0}
+  subCamera3: {fileID: 1487884347}
   subcamrotationSpeed: 5
 --- !u!1 &1291079487
 GameObject:
@@ -31663,7 +31663,8 @@ MonoBehaviour:
   otherPlayer: {fileID: 4428847562279949321, guid: ed2b81347d17e8c4aa7cacb8d975cf85, type: 3}
   testObj: {fileID: 7407529496036218076, guid: 96ed95c6ddc5db848a93cfcea560efa4, type: 3}
   myPlayer: {fileID: 1541282049}
-  timeLeft: 600
+  itemPoints: []
+  itemPrefab: {fileID: 0}
 --- !u!4 &2020345484
 Transform:
   m_ObjectHideFlags: 0

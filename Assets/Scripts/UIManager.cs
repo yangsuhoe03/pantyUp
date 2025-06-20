@@ -175,6 +175,7 @@ public class UIManager : MonoBehaviour
     {
         gameStarted = false;
         playTimerText.text = "00:00";
+        
     }
     public IEnumerator YouDied()
     {

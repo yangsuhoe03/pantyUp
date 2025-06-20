@@ -19,6 +19,9 @@ public class SocketManager : MonoBehaviour
     string[] roomInPlayerIds;
     private GameObject uiManager;
 
+    public GameObject[] itemPoints; //아이템 스폰 위치
+    public GameObject itemPrefab; //아이템 프리팹
+
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
@@ -31,6 +34,7 @@ public class SocketManager : MonoBehaviour
 
     [DllImport("__Internal")]
     private static extern void SendAttackToServer(string attacked);
+
     [DllImport("__Internal")]
     private static extern void SendAnimToServer(string currentmove);
 
@@ -49,15 +53,22 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void JoinRandomRoom(string playerId);
 
+    [DllImport("__Internal")]
+    private static extern void SendPlayerGetItem(string mySocketID);
+
+    private float itemTestTimer = 0f;
+    private float itemTestInterval = 10f; // 10초
+
     void Awake()
     {
-        Debug.Log("SocketManager Awake called");
+        //Debug.Log("SocketManager Awake called");
 #if !UNITY_EDITOR && UNITY_WEBGL
         ConnectToSocket();
 #endif
     }
     void Start()
     {
+        
         myPlayer.GetComponent<PlayerMove>();
         
         uiManager = GameObject.Find("UIManager");
@@ -111,6 +122,13 @@ public class SocketManager : MonoBehaviour
     }
 
 
+    public void SendGetItem(string mySocketID)
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+        SendPlayerGetItem(mySocketID);
+#endif
+    
+    }
 
     public void SendPlayerPosition(string pos)
     {
@@ -264,7 +282,7 @@ public class SocketManager : MonoBehaviour
         uiManager.GetComponent<UIManager>().UpdateTimerDisplay(gameTimer);
         // 햇빛 방향(주광) 바꾸기 기능 추가
         // "Sun"이라는 이름의 Directional Light 오브젝트가 있다고 가정
-GameObject sun = GameObject.Find("Sun");
+        GameObject sun = GameObject.Find("Sun");
         if (sun != null)
         {
             // gameTimer가 600에서 0으로 줄어들 때 x축 각도가 180도에서 0도로 회전하도록 설정
@@ -425,5 +443,39 @@ GameObject sun = GameObject.Find("Sun");
         }
     }
 
+    public void ReceiveItemSpawn(string spawnString)
+    {
+        Debug.Log($"아이템 스폰: {spawnString}");
+        // "0,1,0,0,1,0" → int 배열로 변환
+        int[] spawnArray = Array.ConvertAll(spawnString.Split(','), int.Parse);
+        Debug.Log($"아이템 스폰 배열: {spawnArray}");
+        // spawnArray[0]~[5]를 보고 1인 곳에만 아이템 스폰
+        for (int i = 0; i < 6; i++)
+        {
+            if (spawnArray[i] == 1)
+            {
+                if (itemPoints[i].GetComponent<isActive>().isItemActive == false){//중복방지
+                    GameObject item = Instantiate(itemPrefab, itemPoints[i].transform.position, Quaternion.identity);
+                    item.GetComponent<ScoreUpItem>().spawnPoint = itemPoints[i];
+                    itemPoints[i].GetComponent<isActive>().isItemActive = true;
+                }
+    
+
+            }
+        }
+    }
+
+    public void ReceiveGameOver()
+    {
+        Debug.Log("게임 종료");
+        uiManager.GetComponent<UIManager>().GameEnd();
+    }
+
+    void Update()
+    {
+        
+            //ReceiveItemSpawn("1,1,1,1,1,1");
+
+    }
 
 }
