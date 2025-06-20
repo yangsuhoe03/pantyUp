@@ -13,6 +13,7 @@ public class SocketManager : MonoBehaviour
     public GameObject myPlayer;
     private ScoreManager scoreManager;
     string nickName;
+    public float timeLeft = 600.0f;
     string allPlayerStatus;
     string[] roomInPlayerIds;
     //List<string> playerList = new List<string>();
@@ -142,11 +143,6 @@ public class SocketManager : MonoBehaviour
 #endif
     }
 
-    public void OnJoinedRoom(string roomName)
-    {
-        Debug.Log($"방 참가 성공: {roomName}");
-
-    }
     public void OnRoomPlayerList(string roomInPlayers)
     {
         Debug.Log($"방 플레이어 목록: {roomInPlayers}");
@@ -154,6 +150,11 @@ public class SocketManager : MonoBehaviour
 
 
         roomInPlayerIds = newRoomPlayerIds;
+
+    }
+    public void startGame()
+    {
+        Debug.Log("클라 게임 시작");
 
     }
     private void CreatePlayers()
@@ -188,41 +189,6 @@ public class SocketManager : MonoBehaviour
         }
     }
 
-
-    // public void MakePlayer(string playerIDs)
-    // {
-    //     string[] ids = playerIDs.Split(',');
-
-    //     foreach (string id in ids)
-    //     {
-    //         if (!playerDict.ContainsKey(id))
-    //         {
-    //             if (id != GetMySocketID())
-    //             {//내가 아닌 플레이어일 때
-    //                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
-    //                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
-    //                 playerDict.Add(id, enemy);
-    //             }
-    //             else
-    //             {//내가 플레이어일 때
-    //                 GameObject isMine;
-    //                 isMine = GameObject.Find("Player");
-    //                 playerDict.Add(id, isMine);
-    //             }
-    //         }
-    //     }
-    //     foreach (KeyValuePair<string, GameObject> entry in playerDict)
-    //     {
-    //         Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
-    //     }
-
-    //     //string myStatus = $"{GetMySocketID()},{nickName}";
-    //     //SendMyName(myStatus);
-    //     if (scoreManager != null)
-    //     {
-    //         //scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
-    //     }
-    // }
 
     public void ReceivePos(string data)
     {
