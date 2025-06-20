@@ -5,6 +5,7 @@ public class CameraManager : MonoBehaviour
     public Camera mainCamera;
     public Camera subCamera;
     public Camera subCamera2;
+    public Camera subCamera3;
     public float subcamrotationSpeed = 5f;
 
     void Update()
@@ -22,18 +23,28 @@ public class CameraManager : MonoBehaviour
             mainCamera.enabled = true;
             subCamera.enabled = false;
             subCamera2.enabled = false;
+            subCamera3.enabled = false;
         }
         else if(mode == 1)
         {
             mainCamera.enabled = false;
             subCamera.enabled = true;
             subCamera2.enabled = false;
+            subCamera3.enabled = false;
         }
         else if(mode == 2)
         {
             mainCamera.enabled = false;
             subCamera.enabled = false;
             subCamera2.enabled = true;
+            subCamera3.enabled = false;
+        }
+        else if(mode == 3)
+        {
+            mainCamera.enabled = false;
+            subCamera.enabled = false;
+            subCamera2.enabled = false;
+            subCamera3.enabled = true;
         }
     }
 }
