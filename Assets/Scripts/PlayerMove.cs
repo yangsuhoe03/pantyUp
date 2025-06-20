@@ -162,6 +162,7 @@ public class PlayerMove : MonoBehaviour
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
+        /*
         Vector3 inputDir = transform.right * moveX + transform.forward * moveZ;
         float currentYVelocity = rb.linearVelocity.y;
 
@@ -185,6 +186,19 @@ public class PlayerMove : MonoBehaviour
             moveZ = 0;
         }
         rb.linearVelocity = currentVelocity;
+        */
+        Vector3 inputDir = (transform.right * moveX + transform.forward * moveZ).normalized;
+
+        if (isAttack)
+        {
+            // 공격 중이거나 입력이 없으면 이동 안함
+            rb.linearVelocity = Vector3.zero;
+            return;
+        }
+
+        Vector3 moveDelta = inputDir * moveSpeed * Time.fixedDeltaTime;
+        Vector3 newPosition = rb.position + moveDelta;
+        rb.MovePosition(newPosition);
 
         // 애니메이션 처리
         if (moveZ > 0 && !player_Anim.running)
@@ -334,7 +348,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (isWedging)
         {
-            if(otherPlayer.GetComponent<OtherPlayer>().isWedgied == false)
+            if (otherPlayer.GetComponent<OtherPlayer>().isWedgied == false)
             {
                 otherPlayer.GetComponent<OtherPlayer>().isWedgied = true;
             }
@@ -466,10 +480,10 @@ public class PlayerMove : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.CompareTag("pantyDistance"))
+        if (other.gameObject.CompareTag("pantyDistance"))
         {
             isWedging = false;
-            if(otherPlayer != null)
+            if (otherPlayer != null)
             {
                 otherPlayer.GetComponent<OtherPlayer>().isWedgied = false;
             }
