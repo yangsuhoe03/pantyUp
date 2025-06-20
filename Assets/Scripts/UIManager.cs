@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
     public float playTimer = 0;
     public TextMeshProUGUI playTimerText;
     public bool youdied = false;
-
+    public bool rewarding = false;
     void Start()
     {
         if (pausePanel != null)
@@ -109,7 +109,7 @@ public class UIManager : MonoBehaviour
 
     public void PauseGame()
     {
-        if (!gameStarted && !youdied)
+        if (!gameStarted && !youdied && !rewarding)
         {
             cameraManager.SwitchCamera(0); //일단은 메인으로 돌리고 나중에 조건 나오면 그때 수정하기로
         }
@@ -132,11 +132,11 @@ public class UIManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        if (gameStarted && !youdied)
+        if (gameStarted && !youdied && !rewarding)
         {
             cameraManager.SwitchCamera(0);
         }
-        else if (!gameStarted && !youdied)
+        else if (!gameStarted && !youdied && !rewarding)
         {
             cameraManager.SwitchCamera(0); //일단은 메인카메라로 돌아가게 함 게임 시작여부가 나오면 그 때 바꾸도록
         }
@@ -222,6 +222,7 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator RewardCamera()
     {
+        rewarding = true;
         Vector3 curtainLeftStartPos = CurtainLeft.transform.position;
         Vector3 curtainRightStartPos = CurtainRight.transform.position;
         cameraManager.SwitchCamera(3);
@@ -282,11 +283,12 @@ public class UIManager : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
         CurtainLeft.transform.position = curtainLeftStartPos;
         CurtainRight.transform.position = curtainRightStartPos;
-        cameraManager.subCamera3.transform.position = cameraManager.subCamera3originalPos.position;
+        cameraManager.subCamera3.transform.position = startPos;
         cameraManager.SwitchCamera(0);
+        rewarding = false;
     }
     public void Respawn()
     {

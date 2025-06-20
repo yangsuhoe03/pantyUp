@@ -87,6 +87,10 @@ public class PlayerMove : MonoBehaviour
         {
             Death(GameObject.Find("Player"));
         }
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            UIManagerScript.GameEnd();
+        }
 
         if (isAttacked && otherPlayerRighthand != null)
         {
