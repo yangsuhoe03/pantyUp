@@ -13,10 +13,9 @@ mergeInto(LibraryManager.library, {
       SendMessage('SocketManager', 'SetMySocketID', window.socket.id);
     });
 
-    window.socket.on('startGame'),function(){
-      console.log("gameStart");
-      SendMessage('SocketManager', 'startGame');
-    }
+    window.socket.on('joinedRoom', function(roomName) {
+      SendMessage('SocketManager', 'OnJoinedRoom', roomName);
+    });
 
     window.socket.on('roomPlayerList', function(players) {
       SendMessage('SocketManager', 'OnRoomPlayerList', players);
