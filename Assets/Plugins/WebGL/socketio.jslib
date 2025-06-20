@@ -17,9 +17,15 @@ mergeInto(LibraryManager.library, {
       SendMessage('SocketManager', 'OnJoinedRoom', roomName);
     });
 
+
     window.socket.on('roomPlayerList', function(players) {
       SendMessage('SocketManager', 'OnRoomPlayerList', players);
     });
+
+    window.socket.on('ServerToTimeSync', function(time){
+      SendMessage('SocketManager', 'ReceiveTimeSync', time.toString());
+    });
+
     window.socket.on('ServerToMakePlayers', function(){
       SendMessage('SocketManager', 'CreatePlayers');
     });
@@ -57,11 +63,6 @@ mergeInto(LibraryManager.library, {
 
 
 
-
-
-
-
-
   },
   
   JoinRandomRoom: function (playerId) {
@@ -70,6 +71,7 @@ mergeInto(LibraryManager.library, {
       window.socket.emit('joinRandomRoom', id);
     }
   },
+
 
 
   SendMakePlayers: function (playerID) {

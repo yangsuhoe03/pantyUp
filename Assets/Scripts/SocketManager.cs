@@ -14,13 +14,16 @@ public class SocketManager : MonoBehaviour
     private ScoreManager scoreManager;
     string nickName;
     string myRoomName;
+    float gameTimer = 600.0f;
     string allPlayerStatus;
     string[] roomInPlayerIds;
+
     //List<string> playerList = new List<string>();
     Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
     [DllImport("__Internal")]
     private static extern void ConnectToSocket();
+
 
     [DllImport("__Internal")]
     private static extern void SendPosToServer(string pos);
@@ -67,7 +70,6 @@ public class SocketManager : MonoBehaviour
         //Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
 
     }
-
     public void SetMySocketID(string id)
     {
         mySocketID = id;
@@ -103,6 +105,7 @@ public class SocketManager : MonoBehaviour
     SendMyNickName(MyName);
 #endif
     }
+
 
 
     public void SendPlayerPosition(string pos)
@@ -159,6 +162,8 @@ public class SocketManager : MonoBehaviour
     }
     private void CreatePlayers()
     {
+        //타이머 정보 보내기
+    
         Debug.Log(roomInPlayerIds);
         if (roomInPlayerIds == null) return;
 
@@ -225,6 +230,12 @@ public class SocketManager : MonoBehaviour
     //     }
     // }
 
+    public void ReceiveTimeSync(string time)
+    {
+        Debug.Log($"타이머 동기화: {time}");
+        gameTimer = float.Parse(time);
+        Debug.Log(gameTimer);
+    }
     public void ReceivePos(string data)
     {
 
