@@ -9,22 +9,29 @@ public class OtherPlayer : MonoBehaviour
     public GameObject player1, player2, player3, playerdeadbody;
     public GameObject attackPointFront;
     public GameObject attackPointBack;
+    public GameObject invincibleShield;
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
     public bool isdead = false;
-    public bool pantymoving =false;
+    public bool pantymoving = false;
 
     public GameObject playerRightHand;
     public GameObject playerPanty;
     public GameObject otherPlayerPanty;
     Vector3 pantypos;
     Vector3 lastSentPosition;
+    public float maxWedgieHealth = 10f;
+    public float currentWedgieHealth = 10f;
+    public bool isWedgied;
+    public float lastWedgieTime = -999f;
+    public float wedgieCooldown = 5f;
 
     bool isAttacked = false;
     void Start()
     {
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
+        StartCoroutine(InvincibleShield());
     }
     void Update()
     {
@@ -37,6 +44,7 @@ public class OtherPlayer : MonoBehaviour
         {
             otherPlayerPanty = null;
         }
+        HandleWedgieHealth();
     }
 
     public void SetPlayerID(string Id)
@@ -132,6 +140,7 @@ public class OtherPlayer : MonoBehaviour
             attackPointFront.SetActive(false);
             attackPointBack.SetActive(false);
             isdead = true;
+            isWedgied = false;
         }
         else if (num == "12")
         {
@@ -143,6 +152,11 @@ public class OtherPlayer : MonoBehaviour
             attackPointBack.SetActive(true);
             animator2.SetTrigger("respawn");
             isdead = false;
+            
+            isWedgied = false;
+            currentWedgieHealth = maxWedgieHealth;
+
+            StartCoroutine(InvincibleShield());
         }
         else if (num == "13")
         {
@@ -172,6 +186,32 @@ public class OtherPlayer : MonoBehaviour
         StopAllCoroutines(); // 중복 호출 방지
         StartCoroutine(MovePantyToTarget(pantypos));
         pantymoving = true;
+        isWedgied = false;
+    }
+    public void HandleWedgieHealth()
+    {
+        if(isWedgied)
+        {
+            currentWedgieHealth -= 1f * Time.deltaTime;
+            lastWedgieTime = Time.time;
+
+            if (currentWedgieHealth <= 0f)
+            {
+                currentWedgieHealth = 0f;
+                isWedgied = false;
+            }
+        }
+        else if (!isWedgied)
+        {
+            if (Time.time - lastWedgieTime > wedgieCooldown)
+            {
+                if (currentWedgieHealth < maxWedgieHealth)
+                {
+                    currentWedgieHealth += 0.5f * Time.deltaTime;
+                    currentWedgieHealth = Mathf.Min(currentWedgieHealth, maxWedgieHealth);
+                }
+            }
+        }
     }
 
     IEnumerator MovePantyToTarget(Vector3 targetPos)
@@ -209,5 +249,22 @@ public class OtherPlayer : MonoBehaviour
     public void Wedgie(GameObject otherPlayerPanty)
     {
         otherPlayerPanty.transform.position = playerRightHand.transform.position;
+    }
+    IEnumerator InvincibleShield()
+    {
+        invincibleShield.SetActive(true);
+        attackPointBack.SetActive(false);
+
+        float duration = 3f;
+        float remaining = duration;
+
+        while (remaining > 0f)
+        {
+            yield return null;
+            remaining -= Time.deltaTime;
+        }
+
+        attackPointBack.SetActive(true);
+        invincibleShield.SetActive(false);
     }
 }

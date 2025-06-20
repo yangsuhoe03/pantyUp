@@ -18,6 +18,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject attackPointFront, attackPointBack;
     GameObject SocketManager;
     SocketManager SocketManagerScript; // SocketManager 스크립트 참조
+    UIManager UIManagerScript;
     player_anim player_Anim; //플레이어 애니메이션 스크립트
     private Vector3 lastSentPosition;
     bool isAttack = false; // 공격 상태 변수
@@ -36,6 +37,18 @@ public class PlayerMove : MonoBehaviour
     public bool dead = false;
     public GameObject cam;
     CameraMove cameraMove;
+    public float respawnTime = 5f;
+    public Transform[] randomRespawnPoint;
+
+    public bool isWedging = false;
+    public bool isWedgied = false;
+    public float lastWedgieTime = -999f;
+    public float wedgieCooldown = 5f;
+    public float maxWedgieHealth = 10f;
+    public float currentWedgieHealth = 10f;
+
+    public GameObject invincibleShield;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -49,6 +62,9 @@ public class PlayerMove : MonoBehaviour
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
         cam = Camera.main.gameObject;
         cameraMove = cam.GetComponent<CameraMove>();
+        UIManagerScript = GameObject.Find("UIManager").GetComponent<UIManager>();
+
+        UIManagerScript.Invincible();
     }
     public string GetMYID()
     {
@@ -61,6 +77,12 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        //디버깅용 키
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Death(GameObject.Find("Player"));
+        }
+
         if (isAttacked && otherPlayerRighthand != null)
         {
             Wedgied(otherPlayerRighthand);
@@ -74,6 +96,8 @@ public class PlayerMove : MonoBehaviour
         Move();
         Jump();
         PredictLanding();
+        HandleOtherPlayerHealth();
+        HandleWedgieHealth();
 
         if (Input.GetMouseButtonDown(0) && !dead && Cursor.lockState == CursorLockMode.Locked)
         {
@@ -203,6 +227,7 @@ public class PlayerMove : MonoBehaviour
     {
         Debug.Log("공격 받음");
         isAttacked = true; // 공격을 받았음을 표시
+        isWedgied = true;
         //GetComponent<Renderer>().material.color = Color.blue;
     }
     public void Death(GameObject otherp)
@@ -214,25 +239,38 @@ public class PlayerMove : MonoBehaviour
         player_Anim.Death();
         attackPointFront.SetActive(false);
         attackPointBack.SetActive(false);
-        Invoke("Disappear", 3f);
+        Invoke("Disappear", respawnTime);
         Invoke("RigidbodyFreezeOff", 1f);
-        Invoke("Respawn", 7f);
+        Invoke("Respawn", respawnTime);
+        UIManagerScript.StartCoroutine(UIManagerScript.YouDied());
+        currentWedgieHealth = 0f;
+        SetPantypos();
     }
     public void Respawn()
     {
+        if (randomRespawnPoint.Length > 0)
+        {
+            int randomIndex = Random.Range(0, randomRespawnPoint.Length);
+            transform.position = randomRespawnPoint[randomIndex].position;
+            transform.rotation = randomRespawnPoint[randomIndex].rotation;
+        }
         dead = false;
         RigidbodyFreeze();
         player_Anim.Respawn();
         attackPointFront.SetActive(true);
         attackPointBack.SetActive(true);
         Debug.Log("리스폰됨!!!~~~!~!~");
+        currentWedgieHealth = maxWedgieHealth;
+        UIManagerScript.UpdateWedgieHealthBar(currentWedgieHealth / maxWedgieHealth);
+        UIManagerScript.Invincible();
+        UIManagerScript.Respawn();
     }
     void RigidbodyFreeze()
     {
         transform.rotation = new Quaternion(0, 0, 0, 0);
         rb.freezeRotation = true;
         Debug.Log("리지드 바디 설정!!!!!!!!!!!!@!#!#");
-        
+
     }
     void RigidbodyFreezeOff()
     {
@@ -241,14 +279,15 @@ public class PlayerMove : MonoBehaviour
     void Disappear()
     {
         player_Anim.Disappear();
-        
+
         Debug.Log("사라짐 6^^^^^^^^^^^^^^^^^^^^^^^!!!~~~!~!~");
     }
 
     public void GetOtherPlayer(GameObject otherP)
     {
-    
-        if(otherPlayer == null){
+
+        if (otherPlayer == null)
+        {
             otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
             otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
             otherPlayerID = otherP.GetComponent<OtherPlayer>().playerID; // 다른 플레이어의 ID 저장
@@ -264,10 +303,79 @@ public class PlayerMove : MonoBehaviour
         this.otherPlayerRighthand = otherPlayerRighthand;
         playerPanty.transform.position = this.otherPlayerRighthand.transform.position;
     }
-    
+    public void HandleWedgieHealth()
+    {
+        if (isWedgied)
+        {
+            currentWedgieHealth -= 1f * Time.deltaTime;
+            lastWedgieTime = Time.time;
+            UIManagerScript.UpdateWedgieHealthBar(currentWedgieHealth / maxWedgieHealth);
+
+            if (currentWedgieHealth <= 0f)
+            {
+                currentWedgieHealth = 0f;
+                isWedgied = false;
+            }
+        }
+        else if (!isWedgied && !dead)
+        {
+            if (Time.time - lastWedgieTime > wedgieCooldown)
+            {
+                if (currentWedgieHealth < maxWedgieHealth)
+                {
+                    currentWedgieHealth += 0.5f * Time.deltaTime;
+                    currentWedgieHealth = Mathf.Min(currentWedgieHealth, maxWedgieHealth);
+                    UIManagerScript.UpdateWedgieHealthBar(currentWedgieHealth / maxWedgieHealth);
+                }
+            }
+        }
+    }
+    void HandleOtherPlayerHealth()
+    {
+        if (isWedging)
+        {
+            if(otherPlayer.GetComponent<OtherPlayer>().isWedgied == false)
+            {
+                otherPlayer.GetComponent<OtherPlayer>().isWedgied = true;
+            }
+
+            if (otherPlayer.GetComponent<OtherPlayer>().currentWedgieHealth <= 0f)
+            {
+                otherPlayer.GetComponent<OtherPlayer>().currentWedgieHealth = 0f;
+                isWedging = false;
+
+                // 죽음 처리
+                attackSuccess = false; // 공격 성공 상태 초기화
+
+                isAttacked = false;
+
+                player_Anim.Kill();
+
+                isAttack = true; // 킬 도중 멈추기 위해 w
+                Invoke("AttackEnd", 0.5f); // 0.5초 후에 공격 종료 함수 호출
+
+                otherPlayer.GetComponent<OtherPlayer>().SetPantypos();
+
+                //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
+                SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
+                otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
+                otherPlayerID = null;
+                otherPlayer = null;
+            }
+        }
+        else
+        {
+
+        }
+
+        // UI 같은 거 있다면 여기서 체력 반영 가능
+        // UIManagerScript.UpdateWedgieHealthBar(currentWedgieHealth / maxWedgieHealth);
+    }
+
     public void SetPantypos()
     {
         isAttacked = false;
+        isWedgied = false;
         StopAllCoroutines(); // 중복 호출 방지
         StartCoroutine(MovePantyToTarget(pantypos));
     }
@@ -321,6 +429,8 @@ public class PlayerMove : MonoBehaviour
     {
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
+            isWedging = true;
+
             wedgieTime = wedgieTime + Time.deltaTime; // 팬티 공격 성공 시 시간 증가
             //Debug.Log("팬티 공격 성공 시간: " + wedgieTime);
             if (isAttacked == false)
@@ -329,6 +439,7 @@ public class PlayerMove : MonoBehaviour
                 isAttacked = true;
             }
             // 다른 플레이어에게 공격 알림
+            /*
             if (wedgieTime >= 30f) // 10초 이상 지속되면
             {
                 wedgieTime = 0f; // 시간 초기화
@@ -348,12 +459,21 @@ public class PlayerMove : MonoBehaviour
                 otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
                 otherPlayerID = null;
                 otherPlayer = null;
-                
+
             }
+            */
         }
     }
     private void OnTriggerExit(Collider other)
     {
+        if(other.gameObject.CompareTag("pantyDistance"))
+        {
+            isWedging = false;
+            if(otherPlayer != null)
+            {
+                otherPlayer.GetComponent<OtherPlayer>().isWedgied = false;
+            }
+        }
         if (other.gameObject.CompareTag("pantyDistance") && attackSuccess == true)
         {
             otherPlayer.GetComponent<OtherPlayer>().SetPantypos();
@@ -364,8 +484,6 @@ public class PlayerMove : MonoBehaviour
             otherPlayerID = null;
             otherPlayer = null;
 
-
-            
             player_Anim.GrabSuccess(false);
             isAttacked = false;
             SocketManagerScript.AttackFaild(attacked); // 공격 실패 전송 
