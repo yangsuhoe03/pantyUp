@@ -56,8 +56,6 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendPlayerGetItem(string mySocketID);
 
-    private float itemTestTimer = 0f;
-    private float itemTestInterval = 10f; // 10초
 
     void Awake()
     {
