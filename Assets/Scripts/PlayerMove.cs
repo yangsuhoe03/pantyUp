@@ -487,6 +487,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (isGrounded && !player_Anim.landing && isGrounded != player_ground.isGrounded)
         {
+        
             player_Anim.Landing(true);
         }
         else if(!isGrounded && player_Anim.landing && isGrounded != player_ground.isGrounded)

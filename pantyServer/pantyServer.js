@@ -47,6 +47,8 @@ const roomStartTime = {}; // { roomName: 시작시간 } - 각 방의 게임 시�
 const roomTimers = {};    // { roomName: setInterval 핸들 } - 각 방의 타이머 인터벌을 저장
 const GAME_DURATION = 10 * 60 * 1000; // 10분 (밀리초 단위) - 게임 지속 시간
 
+const itemSpawnTimers = {}; // { roomName: setInterval 핸들 }
+
 function UpdatePlayerStatus(roomName) {
   if (!RoomPlayerStatus[roomName]) return '';
   
@@ -83,6 +85,16 @@ io.on('connection', (socket) => {
       joinedRoom = `room${roomCount}`;
       Rooms[joinedRoom] = [playerId];
       RoomPlayerStatus[joinedRoom] = {};
+
+      if (!itemSpawnTimers[joinedRoom]) {
+        itemSpawnTimers[joinedRoom] = setInterval(() => {
+          // 6개 스폰포인트에 대해 30% 확률로 1, 아니면 0
+          const spawnArray = Array.from({length: 6}, () => Math.random() < 0.1 ? 1 : 0);
+          // 배열을 문자열로 변환: "0,1,0,0,1,0"
+          const spawnString = spawnArray.join(',');
+          io.to(joinedRoom).emit('ServerToItemSpawn', spawnString);
+        }, 10000); // 10초
+      }
     }
 
     PlayerRooms[playerId] = joinedRoom;
@@ -151,6 +163,14 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('SendItemGet', (playerId) => {
+    const playerRoom = PlayerRooms[playerId];
+    if (playerRoom && RoomPlayerStatus[playerRoom][playerId]) {
+      RoomPlayerStatus[playerRoom][playerId].score += 1;
+      io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
+    }
+  });
+
   socket.on('SendAttack', (attacks) => {
     console.log("서버받음: ", attacks);
     const playerRoom = PlayerRooms[socket.id];
@@ -215,6 +235,10 @@ io.on('connection', (socket) => {
         io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
         io.to(playerRoom).emit('roomPlayerList', Rooms[playerRoom].join(','));
         console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
+      }
+      if (itemSpawnTimers[playerRoom]) {
+        clearInterval(itemSpawnTimers[playerRoom]);
+        delete itemSpawnTimers[playerRoom];
       }
     }
 

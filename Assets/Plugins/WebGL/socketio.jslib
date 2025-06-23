@@ -39,7 +39,11 @@ mergeInto(LibraryManager.library, {
       SendMessage('SocketManager', 'ReceiveAnim', data);
     });
 
+    window.socket.on('ServerToItemSpawn', function(data){
+      SendMessage('SocketManager', 'ReceiveItemSpawn', data);
+    });
 
+    
 
 
     window.socket.on('ServerToAttack', function(attacks){
@@ -56,9 +60,14 @@ mergeInto(LibraryManager.library, {
 
 
 
+
     window.socket.on('updatePlayerStatus',function(data){
       
       SendMessage('SocketManager', 'ReceiveUpdatePlayerStatus', data);
+    });
+
+    window.socket.on('GameOver', function(){
+      SendMessage('SocketManager', 'ReceiveGameOver');
     });
 
 
@@ -114,6 +123,13 @@ mergeInto(LibraryManager.library, {
     var ATK = UTF8ToString(attacks); 
       window.socket.emit('SendSucceseAttack', ATK);
       console.log("스코어 업");
+  },
+
+  SendPlayerGetItem: function (data) {
+    var itemGet = UTF8ToString(data); 
+    if (window.socket) {
+      window.socket.emit('SendItemGet', itemGet);
+    } 
   },
 
   SendAttackToFaild: function (attacks) {
