@@ -29,12 +29,15 @@ public class OtherPlayer : MonoBehaviour
     public bool isWedgied;
     public float lastWedgieTime = -999f;
     public float wedgieCooldown = 5f;
+    public Rigidbody rb;
 
     bool isAttacked = false;
     void Start()
     {
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
         StartCoroutine(InvincibleShield());
+        rb = GetComponent<Rigidbody>();
+        //rb.freezeRotation = false;
     }
     void Update()
     {
@@ -166,6 +169,8 @@ public class OtherPlayer : MonoBehaviour
             attackPointBack.SetActive(false);
             isdead = true;
             isWedgied = false;
+
+
         }
         else if (num == "12")
         {

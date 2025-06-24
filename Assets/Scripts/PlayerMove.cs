@@ -233,11 +233,11 @@ public class PlayerMove : MonoBehaviour
     }
     public void AttackCheck()
     {
-        if (playerAttack.attackTrigger == true)
+        if (playerAttack.attackTrigger == true && otherPlayer.GetComponent<OtherPlayer>().isWedgied == false)
         {
             Debug.Log("공격 성공");
             attackSuccess = true; // 공격 성공 상태로 변경
-                                  //GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
+            //GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0f);
             attacked = $"{SocketManagerScript.GetMySocketID()},{otherPlayerID}"; // 공격자 ID와 대상 ID를 쉼표로 구분하여 저장
             SocketManagerScript.SendAttack(attacked); // 공격 전송
 
@@ -339,7 +339,7 @@ public class PlayerMove : MonoBehaviour
     public void GetOtherPlayer(GameObject otherP)
     {
 
-        if (otherPlayer == null)
+        if (otherPlayer == null )
         {
             otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
             otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
@@ -411,6 +411,7 @@ public class PlayerMove : MonoBehaviour
 
                 //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
                 SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
+                //otherPlayer.GetComponent<OtherPlayer>().rb.freezeRotation = false; // 리지드바디 회전 해제
                 otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
                 otherPlayerID = null;
                 otherPlayer = null;

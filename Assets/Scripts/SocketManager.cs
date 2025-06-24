@@ -56,8 +56,6 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendPlayerGetItem(string mySocketID);
 
-    private float itemTestTimer = 0f;
-    private float itemTestInterval = 10f; // 10초
 
     void Awake()
     {
@@ -198,6 +196,7 @@ public class SocketManager : MonoBehaviour
                 {//내가 아닌 플레이어일 때
                     GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
                     enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
+                    //enemy.GetComponent<OtherPlayer>().rb.freezeRotation = true; // Rigidbody의 freezeRotation 설정
                     playerDict.Add(id, enemy);
                 }
                 else
