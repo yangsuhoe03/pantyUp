@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 using System.Collections;
+using System.Collections.Generic;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 4f;
@@ -39,6 +40,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject cam;
     CameraMove cameraMove;
     public float respawnTime = 5f;
+    public GameObject spawnPoint;
     public Transform[] randomRespawnPoint;
 
     public bool isWedging = false;
@@ -67,6 +69,8 @@ public class PlayerMove : MonoBehaviour
         player_ground = GetComponentInChildren<player_Ground>();
 
         UIManagerScript.Invincible();
+        SetRandomRespawnPoint();
+        SetStartPosition();
     }
     public string GetMYID()
     {
@@ -90,6 +94,10 @@ public class PlayerMove : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.G))
         {
             UIManagerScript.GameEnd();
+        }
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            Respawn();
         }
 
         if (isAttacked && otherPlayerRighthand != null)
@@ -285,6 +293,30 @@ public class PlayerMove : MonoBehaviour
         UIManagerScript.UpdateWedgieHealthBar(currentWedgieHealth / maxWedgieHealth);
         UIManagerScript.Invincible();
         UIManagerScript.Respawn();
+    }
+    void SetRandomRespawnPoint()
+    {
+        if (spawnPoint.transform.childCount == 0)
+        {
+            Debug.LogWarning("자식 오브젝트가 없습니다.");
+            return;
+        }
+        List<Transform> tempList = new List<Transform>();
+
+        foreach (Transform child in spawnPoint.transform)
+        {
+            tempList.Add(child);
+        }
+        randomRespawnPoint = tempList.ToArray();
+    }
+    void SetStartPosition()
+    {
+        if (randomRespawnPoint.Length > 0)
+        {
+            int randomIndex = Random.Range(0, randomRespawnPoint.Length);
+            transform.position = randomRespawnPoint[randomIndex].position;
+            transform.rotation = randomRespawnPoint[randomIndex].rotation;
+        }
     }
     void RigidbodyFreeze()
     {

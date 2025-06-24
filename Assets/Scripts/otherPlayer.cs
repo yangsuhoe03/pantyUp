@@ -1,10 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using TMPro;
 
 public class OtherPlayer : MonoBehaviour
 {
     public string playerID;
+    public string mynickName = "";
+    public TextMeshPro mynickNameText;
     public Animator animator1, animator2;
     public GameObject player1, player2, player3, playerdeadbody;
     public GameObject attackPointFront;
@@ -46,6 +49,10 @@ public class OtherPlayer : MonoBehaviour
         }
         HandleWedgieHealth();
     }
+    void LateUpdate()
+    {
+        LookPlayer();
+    }
 
     public void SetPlayerID(string Id)
     {
@@ -58,6 +65,24 @@ public class OtherPlayer : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * 10f);
         transform.rotation = Quaternion.Euler(0, rotationY, 0); // Y축 회전 적용
         lastSentPosition = pos;
+    }
+    public void LookPlayer()
+    {
+        Vector3 camPos = Camera.main.transform.position;
+
+        // 수평 방향으로만 바라보도록 Y축 고정
+        Vector3 direction = transform.position - camPos;
+        direction.y = 0f; // 위아래 각도 제거
+
+        if (direction != Vector3.zero)
+        {
+            mynickNameText.transform.rotation = Quaternion.LookRotation(direction);
+        }
+    }
+    public void SetNickname(string nickname)
+    {
+        mynickName = nickname;
+        mynickNameText.text = mynickName;
     }
     public void SetAnimation(string num)
     {
@@ -152,7 +177,7 @@ public class OtherPlayer : MonoBehaviour
             attackPointBack.SetActive(true);
             animator2.SetTrigger("respawn");
             isdead = false;
-            
+
             isWedgied = false;
             currentWedgieHealth = maxWedgieHealth;
 
@@ -190,7 +215,7 @@ public class OtherPlayer : MonoBehaviour
     }
     public void HandleWedgieHealth()
     {
-        if(isWedgied)
+        if (isWedgied)
         {
             currentWedgieHealth -= 1f * Time.deltaTime;
             lastWedgieTime = Time.time;

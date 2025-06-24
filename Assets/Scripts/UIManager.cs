@@ -39,6 +39,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI playTimerText;
     public bool youdied = false;
     public bool rewarding = false;
+
+    public TextMeshPro rewardPlayerText;
     void Start()
     {
         if (pausePanel != null)
@@ -106,7 +108,23 @@ public class UIManager : MonoBehaviour
             rankingPanel.SetActive(false);
         }
     }
+    void LateUpdate()
+    {
+        if (rewarding)
+        {
 
+            Vector3 camPos = cameraManager.subCamera3.transform.position;
+
+            // 수평 방향으로만 바라보도록 Y축 고정
+            Vector3 direction = RewardPlayer.transform.position - camPos;
+            direction.y = 0f; // 위아래 각도 제거
+
+            if (direction != Vector3.zero)
+            {
+                rewardPlayerText.transform.rotation = Quaternion.LookRotation(direction);
+            }
+        }
+    }
     public void PauseGame()
     {
         if (!gameStarted && !youdied && !rewarding)
@@ -223,6 +241,7 @@ public class UIManager : MonoBehaviour
     IEnumerator RewardCamera()
     {
         rewarding = true;
+        rewardPlayerText.text = scoreManager.GetTopPlayerNickname();
         Vector3 curtainLeftStartPos = CurtainLeft.transform.position;
         Vector3 curtainRightStartPos = CurtainRight.transform.position;
         cameraManager.SwitchCamera(3);
@@ -279,7 +298,7 @@ public class UIManager : MonoBehaviour
             timer += Time.deltaTime;
             float t = timer / duration1;
             cameraManager.subCamera3.transform.position = Vector3.Lerp(targetPos, targetPos - new Vector3(0, 0, 3f), t);
-            cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1f);   
+            cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1f);
             yield return null;
         }
 

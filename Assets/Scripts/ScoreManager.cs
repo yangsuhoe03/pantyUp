@@ -121,6 +121,11 @@ public class ScoreManager : MonoBehaviour
                 int score = int.Parse(parts[2]);
 
                 playerScores[playerId] = (score, nickname);
+
+                if (playerId != socketManager.GetMySocketID())
+                {
+                    socketManager.playerDict[playerId].GetComponent<OtherPlayer>().SetNickname(nickname);
+                }
             }
         }
 
@@ -205,6 +210,16 @@ public class ScoreManager : MonoBehaviour
             displayText += $"{nickname}: {score}\n";
         }
         */
-
     }
+    public string GetTopPlayerNickname()
+        {
+            if (playerScores.Count == 0) return "";
+
+            var sorted = playerScores
+                .OrderByDescending(x => x.Value.score)
+                .ThenBy(x => x.Value.nickname)
+                .ToList();
+
+            return sorted[0].Value.nickname;
+        }
 }

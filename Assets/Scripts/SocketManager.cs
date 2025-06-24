@@ -23,7 +23,7 @@ public class SocketManager : MonoBehaviour
     public GameObject itemPrefab; //아이템 프리팹
 
     //List<string> playerList = new List<string>();
-    Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> playerDict = new Dictionary<string, GameObject>();
 
     [DllImport("__Internal")]
     private static extern void ConnectToSocket();
