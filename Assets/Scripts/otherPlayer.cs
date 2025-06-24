@@ -26,7 +26,7 @@ public class OtherPlayer : MonoBehaviour
     public bool isWedgied;
     public float lastWedgieTime = -999f;
     public float wedgieCooldown = 5f;
-    Rigidbody rb;
+    public Rigidbody rb;
 
     bool isAttacked = false;
     void Start()
@@ -144,7 +144,7 @@ public class OtherPlayer : MonoBehaviour
             attackPointBack.SetActive(false);
             isdead = true;
             isWedgied = false;
-            rb.freezeRotation = false;// Rigidbody의 X축 회전 고정 해제
+
 
         }
         else if (num == "12")

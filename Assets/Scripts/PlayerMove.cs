@@ -379,6 +379,7 @@ public class PlayerMove : MonoBehaviour
 
                 //GetComponent<Renderer>().material.color = Color.white; // 색상 원래대로 복원
                 SocketManagerScript.AttackSuccess(attacked); // 공격 성공 전송
+                //otherPlayer.GetComponent<OtherPlayer>().rb.freezeRotation = false; // 리지드바디 회전 해제
                 otherPlayerPanty = null; // 다른 플레이어 오브젝트 초기화
                 otherPlayerID = null;
                 otherPlayer = null;

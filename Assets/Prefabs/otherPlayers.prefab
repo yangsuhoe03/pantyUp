@@ -3680,6 +3680,7 @@ GameObject:
   - component: {fileID: 353666019656435862}
   - component: {fileID: 5444835407842126789}
   - component: {fileID: 6882506347606854480}
+  - component: {fileID: 227640486734018634}
   m_Layer: 0
   m_Name: otherPlayers
   m_TagString: Player
@@ -3752,7 +3753,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.5, y: 1.6, z: 0.5}
   m_Center: {x: 0, y: 0.8, z: 0}
@@ -3793,6 +3794,30 @@ MonoBehaviour:
   isWedgied: 0
   lastWedgieTime: -999
   wedgieCooldown: 5
+  rb: {fileID: 0}
+--- !u!136 &227640486734018634
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4428847562279949321}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.32
+  m_Height: 1.72
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.86, z: 0}
 --- !u!1 &4617923173432736626
 GameObject:
   m_ObjectHideFlags: 0
