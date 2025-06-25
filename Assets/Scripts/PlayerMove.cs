@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 4f;
@@ -14,7 +15,7 @@ public class PlayerMove : MonoBehaviour
     private bool jumpRequested = false;
     private float jumpDelay = 0.0f; // 딜레이 시간 (숙이는 시간)
     private Rigidbody rb;
-    private bool isGrounded;
+    public bool isGrounded;
     playerAttack playerAttack;
     public GameObject attackPointFront, attackPointBack;
     GameObject SocketManager;
@@ -51,13 +52,14 @@ public class PlayerMove : MonoBehaviour
     public float currentWedgieHealth = 10f;
 
     public GameObject invincibleShield;
-
+    PlayerSoundManager playerSoundManager;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         SocketManager = GameObject.Find("SocketManager");
         SocketManagerScript = SocketManager.GetComponent<SocketManager>();
         playerAttack = GetComponentInChildren<playerAttack>();
+        playerSoundManager = GetComponent<PlayerSoundManager>();
 
         lastSentPosition = transform.position;
         player_Anim = GetComponent<player_anim>();
@@ -150,6 +152,7 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
+        SoundPlayer();
     }
     public void Jump()
     {
@@ -518,14 +521,13 @@ public class PlayerMove : MonoBehaviour
     }
     void GroundCheck()
     {
-        if (isGrounded && !player_Anim.landing && isGrounded != player_ground.isGrounded)
-        {
-        
-            player_Anim.Landing(true);
-        }
-        else if(!isGrounded && player_Anim.landing && isGrounded != player_ground.isGrounded)
+        if (isGrounded && !player_Anim.landing && isGrounded != player_ground.isGrounded )
         {
             player_Anim.Landing(false);
+        }
+        else if((!isGrounded || !player_Anim.landing) && isGrounded != player_ground.isGrounded)
+        {
+            player_Anim.Landing(true);
         }
         isGrounded = player_ground.isGrounded;
     }
@@ -551,6 +553,13 @@ public class PlayerMove : MonoBehaviour
         else
         {
             //player_Anim.Falling(); // 아직 땅이 없으면 떨어지는 상태 유지
+        }
+    }
+    void SoundPlayer()
+    {
+        if(player_Anim.running && isGrounded)
+        {
+            playerSoundManager.PlayFootstep();
         }
     }
 }

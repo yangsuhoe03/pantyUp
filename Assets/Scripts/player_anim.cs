@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 /*
 idle = 0
@@ -24,6 +25,8 @@ public class player_anim : MonoBehaviour
     public Animator animator1, animator2;
     public GameObject player1, player2, player3, playerdeadbody;
 
+    PlayerSoundManager playerSoundManager;
+
 
     //서버로 보낼 스트링들
     private string currentmove;
@@ -37,8 +40,8 @@ public class player_anim : MonoBehaviour
         {
             socketManager = GameObject.Find("SocketManager").GetComponent<SocketManager>();
         }
+        playerSoundManager = GetComponent<PlayerSoundManager>();
     }
-
 
     void SetAnimationParameter()
     {
