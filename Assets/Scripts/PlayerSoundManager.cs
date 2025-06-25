@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerSoundManager : MonoBehaviour
 {
     public AudioSource audioSource;
+    public AudioSource WedgieaudioSource;
 
     [Header("Footstep Sounds")]
     public AudioClip[] footstepClips;
@@ -13,10 +14,15 @@ public class PlayerSoundManager : MonoBehaviour
     public AudioClip jumpClip;
     public AudioClip landClip;
 
-    void Start()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
+    [Header("Attack & Death")]
+    public AudioClip grabstartClip;
+    public AudioClip grabSuccessClip;
+    public AudioClip pantyStretchedClip;
+    public AudioClip pantySetPosClip;
+    public AudioClip KillClip;
+    public AudioClip DeathClip;
+
+    public AudioClip clapClip;
 
     public void PlayFootstep()
     {
@@ -42,5 +48,38 @@ public class PlayerSoundManager : MonoBehaviour
     public void PlayLand()
     {
         audioSource.PlayOneShot(landClip);
+    }
+    public void PlayGrabstart()
+    {
+        WedgieaudioSource.PlayOneShot(grabstartClip);
+    }
+    public void PlayGrabSuccess()
+    {
+        WedgieaudioSource.PlayOneShot(grabSuccessClip);
+    }
+    public void PlayStretching()
+    {
+        WedgieaudioSource.Stop();
+        WedgieaudioSource.PlayOneShot(pantyStretchedClip);
+    }
+    public void PlaySetPos()
+    {
+        WedgieaudioSource.Stop();
+        WedgieaudioSource.PlayOneShot(pantySetPosClip);
+    }
+    public void PlayKill()
+    {
+        WedgieaudioSource.Stop();
+        WedgieaudioSource.PlayOneShot(KillClip);
+    }
+    public void PlayDeath()
+    {
+        WedgieaudioSource.Stop();
+        WedgieaudioSource.PlayOneShot(DeathClip);
+    }
+    public void PlayClap()
+    {
+        WedgieaudioSource.Stop();
+        WedgieaudioSource.PlayOneShot(clapClip);
     }
 }

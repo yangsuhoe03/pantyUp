@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     public GameObject tutorialPanel;
     public GameObject youdiedPanel;
     public GameObject invincibleShieldPanel;
+    public GameObject restartPanel;
 
     public GameObject CurtainLeft;
     public GameObject CurtainRight;
@@ -28,6 +29,7 @@ public class UIManager : MonoBehaviour
     public Button customizeButton;
     public Button settingButton;
     public Button tutorialButton;
+    public Button restartButton;
 
     public Image wedgieHealthBar;
 
@@ -41,6 +43,7 @@ public class UIManager : MonoBehaviour
     public bool rewarding = false;
     SocketManager socketManager;
     public TextMeshPro rewardPlayerText;
+    public PlayerSoundManager playerSoundManager;
     void Start()
     {
         socketManager = GameObject.Find("SocketManager").GetComponent<SocketManager>();
@@ -75,6 +78,10 @@ public class UIManager : MonoBehaviour
         if (scoreManager == null)
         {
             scoreManager = GameObject.Find("ScoreManager").GetComponent<ScoreManager>();
+        }
+        if (restartButton != null)
+        {
+            restartButton.onClick.AddListener(GameSet);
         }
         cameraManager = GetComponent<CameraManager>();
         usernameText.text = scoreManager.userName;
@@ -220,7 +227,10 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator DeathCamera()
     {
-        cameraManager.SwitchCamera(2);
+        if (!rewarding)
+        {
+            cameraManager.SwitchCamera(2);
+        }
         cameraManager.subCamera2.transform.position = cameraManager.mainCamera.transform.position;
         cameraManager.subCamera2.transform.rotation = cameraManager.mainCamera.transform.rotation;
         Vector3 startPos = cameraManager.subCamera2.transform.position;
@@ -251,6 +261,8 @@ public class UIManager : MonoBehaviour
         Vector3 startPos = cameraManager.subCamera3.transform.position;
         Vector3 targetPos = cameraManager.subCamera3.transform.position + new Vector3(7f, 0, 0);
         cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1f);
+
+        playerSoundManager.PlayClap();
 
         while (timer < duration1)
         {
@@ -292,6 +304,9 @@ public class UIManager : MonoBehaviour
             cameraManager.subCamera3.transform.LookAt(RewardPlayer.transform.position + Vector3.up * 1.5f);
             yield return null;
         }
+
+        playerSoundManager.PlayClap();
+
         duration1 = 7f;
         timer = 0f;
         while (timer < duration1)
@@ -307,12 +322,18 @@ public class UIManager : MonoBehaviour
         CurtainLeft.transform.position = curtainLeftStartPos;
         CurtainRight.transform.position = curtainRightStartPos;
         cameraManager.subCamera3.transform.position = startPos;
+
+        PauseGame();
+        restartPanel.SetActive(true);
         cameraManager.SwitchCamera(0);
         rewarding = false;
     }
     public void Respawn()
     {
-        cameraManager.SwitchCamera(0);
+        if (!rewarding)
+        {
+            cameraManager.SwitchCamera(0);
+        }
     }
     public void UpdateWedgieHealthBar(float currenthealth)
     {
@@ -342,8 +363,10 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(InvincibleShield());
     }
-    public void gameSet(){
-        socketManager.Gamerestart(socketManager.mySocketID);    
+    public void GameSet()
+    {
+        restartPanel.SetActive(false);
+        socketManager.Gamerestart(socketManager.mySocketID);
     }
 
 }

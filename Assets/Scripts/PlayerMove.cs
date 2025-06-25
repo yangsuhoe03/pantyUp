@@ -84,7 +84,10 @@ public class PlayerMove : MonoBehaviour
     }
     void FixedUpdate()
     {
-        Move();
+        if (!UIManagerScript.rewarding)
+        {
+            Move();
+        }
     }
     void Update()
     {
@@ -93,11 +96,11 @@ public class PlayerMove : MonoBehaviour
         {
             Death(GameObject.Find("Player"));
         }
-        if(Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G))
         {
             UIManagerScript.GameEnd();
         }
-        if(Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             Respawn();
         }
@@ -117,7 +120,7 @@ public class PlayerMove : MonoBehaviour
         HandleOtherPlayerHealth();
         HandleWedgieHealth();
 
-        if (Input.GetMouseButtonDown(0) && !dead && Cursor.lockState == CursorLockMode.Locked)
+        if (Input.GetMouseButtonDown(0) && !dead && Cursor.lockState == CursorLockMode.Locked )
         {
             if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
@@ -125,6 +128,7 @@ public class PlayerMove : MonoBehaviour
                 Invoke("AttackEnd", 0.5f); // 0.5초 후에 공격 종료 함수 호출
                 player_Anim.GrabStart();
                 Invoke("AttackCheck", 0.5f);
+                playerSoundManager.PlayGrabstart();
             }
 
 
@@ -156,13 +160,15 @@ public class PlayerMove : MonoBehaviour
     }
     public void Jump()
     {
-        if (dead || Cursor.lockState != CursorLockMode.Locked) return;
+        if (dead || Cursor.lockState != CursorLockMode.Locked || UIManagerScript.rewarding)  return;
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isAttack && !jumpRequested)
         {
             jumpRequested = true;
             player_Anim.Jumpup();
             Invoke("PerformJump", jumpDelay);
+
+            playerSoundManager.PlayJump();
         }
     }
     void PerformJump()
@@ -260,6 +266,7 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("공격 받음");
         isAttacked = true; // 공격을 받았음을 표시
         isWedgied = true;
+        playerSoundManager.PlayStretching();
         //GetComponent<Renderer>().material.color = Color.blue;
     }
     public void Death(GameObject otherp)
@@ -277,6 +284,8 @@ public class PlayerMove : MonoBehaviour
         UIManagerScript.StartCoroutine(UIManagerScript.YouDied());
         currentWedgieHealth = 0f;
         SetPantypos();
+        playerSoundManager.PlayKill();
+        Invoke("PlayDeathSound", 2f);
     }
     public void Respawn()
     {
@@ -342,7 +351,7 @@ public class PlayerMove : MonoBehaviour
     public void GetOtherPlayer(GameObject otherP)
     {
 
-        if (otherPlayer == null )
+        if (otherPlayer == null)
         {
             otherPlayer = otherP; // 다른 플레이어 오브젝트 저장
             otherPlayerPanty = otherPlayer.GetComponent<OtherPlayer>().playerPanty;
@@ -406,6 +415,7 @@ public class PlayerMove : MonoBehaviour
                 isAttacked = false;
 
                 player_Anim.Kill();
+                playerSoundManager.PlayKill();
 
                 isAttack = true; // 킬 도중 멈추기 위해 w
                 Invoke("AttackEnd", 0.5f); // 0.5초 후에 공격 종료 함수 호출
@@ -454,6 +464,9 @@ public class PlayerMove : MonoBehaviour
 
         // 정확히 위치 고정
         playerPanty.transform.localPosition = targetPos;
+        if (dead!)
+        { playerSoundManager.PlaySetPos(); }
+        
     }
     private void OnTriggerStay(Collider other)
     {
@@ -521,13 +534,14 @@ public class PlayerMove : MonoBehaviour
     }
     void GroundCheck()
     {
-        if (isGrounded && !player_Anim.landing && isGrounded != player_ground.isGrounded )
+        if (isGrounded && !player_Anim.landing && isGrounded != player_ground.isGrounded)
         {
             player_Anim.Landing(false);
         }
-        else if((!isGrounded || !player_Anim.landing) && isGrounded != player_ground.isGrounded)
+        else if ((!isGrounded || !player_Anim.landing) && isGrounded != player_ground.isGrounded)
         {
             player_Anim.Landing(true);
+            playerSoundManager.PlayLand();
         }
         isGrounded = player_ground.isGrounded;
     }
@@ -557,9 +571,13 @@ public class PlayerMove : MonoBehaviour
     }
     void SoundPlayer()
     {
-        if(player_Anim.running && isGrounded)
+        if (player_Anim.animator1.GetCurrentAnimatorStateInfo(0).IsName("Player|Fastrun") || player_Anim.animator1.GetCurrentAnimatorStateInfo(0).IsName("Player|walk_backward"))
         {
             playerSoundManager.PlayFootstep();
         }
+    }
+    void PlayDeathSound()
+    {
+        playerSoundManager.PlayDeath();
     }
 }

@@ -9,6 +9,7 @@ public class OtherPlayer : MonoBehaviour
     public string mynickName = "";
     public TextMeshPro mynickNameText;
     public Animator animator1, animator2;
+    public PlayerSoundManager playerSoundManager;
     public GameObject player1, player2, player3, playerdeadbody;
     public GameObject attackPointFront;
     public GameObject attackPointBack;
@@ -37,6 +38,7 @@ public class OtherPlayer : MonoBehaviour
         pantypos = new Vector3(0, -0.1237817f, -0.07895534f);
         StartCoroutine(InvincibleShield());
         rb = GetComponent<Rigidbody>();
+        playerSoundManager = GetComponent<PlayerSoundManager>();
         //rb.freezeRotation = false;
     }
     void Update()
@@ -51,6 +53,8 @@ public class OtherPlayer : MonoBehaviour
             otherPlayerPanty = null;
         }
         HandleWedgieHealth();
+
+        SoundPlayer();
     }
     void LateUpdate()
     {
@@ -122,10 +126,12 @@ public class OtherPlayer : MonoBehaviour
         else if (num == "3")
         {
             animator1.SetTrigger("jumpup");
+            playerSoundManager.PlayJump();
         }
         else if (num == "4")
         {
             landing = true;
+            playerSoundManager.PlayLand();
             SetAnimationParameter();
         }
         else if (num == "5")
@@ -140,6 +146,7 @@ public class OtherPlayer : MonoBehaviour
         else if (num == "7")
         {
             animator1.SetTrigger("grabstart");
+            playerSoundManager.PlayGrabstart();
         }
         else if (num == "8")
         {
@@ -169,8 +176,6 @@ public class OtherPlayer : MonoBehaviour
             attackPointBack.SetActive(false);
             isdead = true;
             isWedgied = false;
-
-
         }
         else if (num == "12")
         {
@@ -268,6 +273,7 @@ public class OtherPlayer : MonoBehaviour
         }
 
         // 정확히 위치 고정
+        playerSoundManager.PlaySetPos();
         playerPanty.transform.localPosition = targetPos;
         Debug.Log($"팬티 이동 완료: {playerPanty.transform.localPosition}");
         pantymoving = false;
@@ -275,6 +281,10 @@ public class OtherPlayer : MonoBehaviour
     public void SetIsAttacked(bool isAttacked)
     {
         this.isAttacked = isAttacked;
+        if (isAttacked)
+        {
+            playerSoundManager.PlayStretching();
+        }
     }
     public void Wedgie(GameObject otherPlayerPanty)
     {
@@ -296,5 +306,12 @@ public class OtherPlayer : MonoBehaviour
 
         attackPointBack.SetActive(true);
         invincibleShield.SetActive(false);
+    }
+    void SoundPlayer()
+    {
+        if (animator1.GetCurrentAnimatorStateInfo(0).IsName("Player|Fastrun") || animator1.GetCurrentAnimatorStateInfo(0).IsName("Player|walk_backward"))
+        {
+            playerSoundManager.PlayFootstep();
+        }
     }
 }

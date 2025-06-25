@@ -429,13 +429,4 @@ public class SocketManager : MonoBehaviour
 
     }
 
-
-
-    void Update()
-    {
-        
-            //ReceiveItemSpawn("1,1,1,1,1,1");
-
-    }
-
 }
