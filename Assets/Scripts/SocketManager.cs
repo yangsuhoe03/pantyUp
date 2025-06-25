@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; // 씬 관리 추가
 
 public class SocketManager : MonoBehaviour
 {
 
     public GameObject otherPlayer;
     public GameObject testObj;
-    private string mySocketID;
+    public string mySocketID;
     public GameObject myPlayer;
     private ScoreManager scoreManager;
     string nickName;
@@ -56,6 +57,9 @@ public class SocketManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void SendPlayerGetItem(string mySocketID);
 
+    [DllImport("__Internal")]
+    private static extern void GameRestart(string mySocketID);
+
 
     void Awake()
     {
@@ -95,6 +99,7 @@ public class SocketManager : MonoBehaviour
 
     public void SetPlayerNickname(string newNickname)
     {
+        Debug.Log("닉네임 보냄: " + newNickname);
         nickName = newNickname;
         string myStatus = $"{GetMySocketID()},{nickName}";
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -166,6 +171,15 @@ public class SocketManager : MonoBehaviour
 #endif
     }
 
+
+    public void Gamerestart(string mySocketID)
+    {
+        Debug.Log("게임 리스타트 요청");
+#if !UNITY_EDITOR && UNITY_WEBGL
+        GameRestart(mySocketID);
+#endif
+    }
+
     public void OnJoinedRoom(string roomName)
     {
         Debug.Log($"방 참가 성공: {roomName}");
@@ -216,68 +230,12 @@ public class SocketManager : MonoBehaviour
     }
 
 
-    // public void MakePlayer(string playerIDs)
-    // {
-    //     string[] ids = playerIDs.Split(',');
-
-    //     foreach (string id in ids)
-    //     {
-    //         if (!playerDict.ContainsKey(id))
-    //         {
-    //             if (id != GetMySocketID())
-    //             {//내가 아닌 플레이어일 때
-    //                 GameObject enemy = Instantiate(otherPlayer, new Vector3(1, 1, 1), Quaternion.identity);
-    //                 enemy.GetComponent<OtherPlayer>().SetPlayerID(id);
-    //                 playerDict.Add(id, enemy);
-    //             }
-    //             else
-    //             {//내가 플레이어일 때
-    //                 GameObject isMine;
-    //                 isMine = GameObject.Find("Player");
-    //                 playerDict.Add(id, isMine);
-    //             }
-    //         }
-    //     }
-    //     foreach (KeyValuePair<string, GameObject> entry in playerDict)
-    //     {
-    //         Debug.Log($"[playerDict] ID: {entry.Key}, Object Name: {entry.Value.name}");
-    //     }
-
-    //     //string myStatus = $"{GetMySocketID()},{nickName}";
-    //     //SendMyName(myStatus);
-    //     if (scoreManager != null)
-    //     {
-    //         //scoreManager.UpdatePlayerNickname(GetMySocketID(), nickName);
-    //     }
-    // }
-    // void Update(){
-    //     GameObject sun = GameObject.Find("Sun");
-    //     if (sun != null)
-    //     {
-    //         // gameTimer가 600에서 0으로 줄어들 때 x축 각도가 180도에서 0도로 회전하도록 설정
-    //         float startAngle = 180f;
-    //         float endAngle = 0f;
-    //         float totalTime = 600f;
-    //         float t = Mathf.Clamp01(gameTimer / totalTime); // 600~0 -> 1~0
-    //         float sunAngle = Mathf.Lerp(startAngle, endAngle, 1 - t); // 600일 때 180, 0일 때 0
-
-    //         sun.transform.rotation = Quaternion.Euler(
-    //             sunAngle, // x축 각도
-    //             0f,       // y축 각도(고정)
-    //             0f        // z축 각도(고정)
-    //         );
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning("Sun 오브젝트를 찾을 수 없습니다. Directional Light의 이름이 'Sun'인지 확인하세요.");
-    //     }
-    // }
 
     public void ReceiveTimeSync(string time)
     {
-        Debug.Log($"타이머 동기화: {time}");
+        //Debug.Log($"타이머 동기화: {time}");
         gameTimer = float.Parse(time);
-        Debug.Log(gameTimer);
+        //Debug.Log(gameTimer);
         uiManager.GetComponent<UIManager>().UpdateTimerDisplay(gameTimer);
         // 햇빛 방향(주광) 바꾸기 기능 추가
         // "Sun"이라는 이름의 Directional Light 오브젝트가 있다고 가정
@@ -468,7 +426,10 @@ public class SocketManager : MonoBehaviour
     {
         Debug.Log("게임 종료");
         uiManager.GetComponent<UIManager>().GameEnd();
+
     }
+
+
 
     void Update()
     {

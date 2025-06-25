@@ -39,10 +39,11 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI playTimerText;
     public bool youdied = false;
     public bool rewarding = false;
-
+    SocketManager socketManager;
     public TextMeshPro rewardPlayerText;
     void Start()
     {
+        socketManager = GameObject.Find("SocketManager").GetComponent<SocketManager>();
         if (pausePanel != null)
         {
             pausePanel.GetComponent<Button>().onClick.AddListener(ResumeGame);
@@ -341,4 +342,8 @@ public class UIManager : MonoBehaviour
     {
         StartCoroutine(InvincibleShield());
     }
+    public void gameSet(){
+        socketManager.Gamerestart(socketManager.mySocketID);    
+    }
+
 }

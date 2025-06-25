@@ -108,25 +108,25 @@ public class ScoreManager : MonoBehaviour
     public void ReceiveUpdatePlayerStatus(string data)
     {
         // 데이터 파싱
+        Debug.Log("Received player status update: " + data);
         string[] playerEntries = data.Split('|');
         playerScores.Clear(); // 기존 데이터 초기화
 
         foreach (string entry in playerEntries)
         {
             string[] parts = entry.Split(',');
-            if (parts.Length == 3)
+
+            string playerId = parts[0];
+            string nickname = parts[1];
+            int score = int.Parse(parts[2]);
+
+            playerScores[playerId] = (score, nickname);
+
+            if (playerId != socketManager.GetMySocketID())
             {
-                string playerId = parts[0];
-                string nickname = parts[1];
-                int score = int.Parse(parts[2]);
-
-                playerScores[playerId] = (score, nickname);
-
-                if (playerId != socketManager.GetMySocketID())
-                {
-                    socketManager.playerDict[playerId].GetComponent<OtherPlayer>().SetNickname(nickname);
-                }
+                socketManager.playerDict[playerId].GetComponent<OtherPlayer>().SetNickname(nickname);
             }
+            
         }
 
         UpdateScoreDisplay();
@@ -141,6 +141,7 @@ public class ScoreManager : MonoBehaviour
             .ThenBy(x => x.Value.nickname); // 점수가 같을 경우 닉네임으로 정렬
             */
 
+        Debug.Log("Updating score display...");
         var sortedScores = playerScores
             .OrderByDescending(x => x.Value.score)
             .ThenBy(x => x.Value.nickname)
