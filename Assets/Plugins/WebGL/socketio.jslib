@@ -137,10 +137,14 @@ mergeInto(LibraryManager.library, {
     if (window.socket) {
       window.socket.emit('SendFaildAttack', ATK);
     } 
+  },
+
+  GameRestart: function (id) {
+    // var data = UTF8ToString(id); 
+    // if (window.socket) {
+    //   window.socket.emit('SendFaildAttack', data);
+    // } 
+    location.reload();
   }
-
-
-
-
 
 });

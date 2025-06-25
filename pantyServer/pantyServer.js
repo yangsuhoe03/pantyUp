@@ -45,7 +45,7 @@ const MAX_PLAYERS_PER_ROOM = 6;
 // ✅ 방별 타이머 관리 시스템
 const roomStartTime = {}; // { roomName: 시작시간 } - 각 방의 게임 시작 시간을 저장
 const roomTimers = {};    // { roomName: setInterval 핸들 } - 각 방의 타이머 인터벌을 저장
-const GAME_DURATION = 10 * 60 * 1000; // 10분 (밀리초 단위) - 게임 지속 시간
+const GAME_DURATION = 10 * 60 * 10000; // 10분 (밀리초 단위) - 게임 지속 시간
 
 const itemSpawnTimers = {}; // { roomName: setInterval 핸들 }
 
@@ -101,8 +101,12 @@ io.on('connection', (socket) => {
     socket.join(joinedRoom);
 
     console.log(`${playerId} joined ${joinedRoom}`);
+
     socket.emit('joinedRoom', joinedRoom);
     io.to(joinedRoom).emit('roomPlayerList', Rooms[joinedRoom].join(','));
+    console.log(`방 ${joinedRoom} 플레이어 목록: `, Rooms[joinedRoom]);
+    // 방 입장 시 바로 플레이어 상태 업데이트 전송
+    //io.to(joinedRoom).emit('updatePlayerStatus', UpdatePlayerStatus(joinedRoom));
 
     // ✅ 방 입장 시 타이머 관리 로직
     if (!roomStartTime[joinedRoom]) {
@@ -114,12 +118,35 @@ io.on('connection', (socket) => {
         const remaining = getRemainingTime(joinedRoom); // 남은 시간 계산
         io.to(joinedRoom).emit('ServerToTimeSync', remaining); // 방의 모든 플레이어에게 남은 시간 전송
 
-        // 🔹 타이머 종료 조건: 남은 시간이 0초 이하일 때
-        if (remaining <= 0) {
+        // 🔹 score 10점 이상인 플레이어가 있는지 체크
+        let isScoreOver = false;
+        if (RoomPlayerStatus[joinedRoom]) {
+          for (const pid in RoomPlayerStatus[joinedRoom]) {
+            if (RoomPlayerStatus[joinedRoom][pid].score >= 3) {
+              isScoreOver = true;
+              break;
+            }
+          }
+        }
+
+        // 🔹 타이머 종료 조건: 남은 시간이 0초 이하이거나, 3점 이상인 플레이어가 있을 때
+        if (remaining <= 0 || isScoreOver) {
           io.to(joinedRoom).emit('GameOver'); // 게임 종료 이벤트 전송
-          clearInterval(roomTimers[joinedRoom]); // 타이머 인터벌 정리
-          delete roomStartTime[joinedRoom]; // 시작 시간 정보 삭제
-          delete roomTimers[joinedRoom]; // 타이머 핸들 삭제
+          // 방 정보, 상태, 타이머 즉시 삭제
+          if (roomTimers[joinedRoom]) {
+            clearInterval(roomTimers[joinedRoom]);
+            delete roomTimers[joinedRoom];
+          }
+          if (itemSpawnTimers[joinedRoom]) {
+            clearInterval(itemSpawnTimers[joinedRoom]);
+            delete itemSpawnTimers[joinedRoom];
+          }
+          if(Rooms[joinedRoom] != null){
+            delete Rooms[joinedRoom];
+             delete RoomPlayerStatus[joinedRoom];
+             delete roomStartTime[joinedRoom];
+             roomCount--;
+          }
         }
       }, 1000); // 1초(1000ms) 간격으로 실행
     } else {
@@ -213,7 +240,7 @@ io.on('connection', (socket) => {
     const disconnectedId = socket.id;
     const playerRoom = PlayerRooms[disconnectedId];
 
-    if (playerRoom) {
+    if (playerRoom && Rooms[playerRoom]) {
       Rooms[playerRoom] = Rooms[playerRoom].filter(id => id !== disconnectedId);
       if (RoomPlayerStatus[playerRoom]) {
         delete RoomPlayerStatus[playerRoom][disconnectedId];
@@ -223,6 +250,9 @@ io.on('connection', (socket) => {
         delete Rooms[playerRoom];
         delete RoomPlayerStatus[playerRoom];
 
+        roomCount--;
+
+        
         // ✅ 방이 비었을 경우 타이머도 정리
         if (roomTimers[playerRoom]) {
           clearInterval(roomTimers[playerRoom]); // 타이머 인터벌 정지
