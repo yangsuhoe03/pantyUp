@@ -35,6 +35,27 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// ✅ 트래픽 제한 로직 (socket.id 기반)
+const socketRequestMap = {}; // { socket.id: [timestamps] }
+function isRateLimited(socket, limit = 20, windowMs = 1000) {
+  const now = Date.now();
+  if (!socketRequestMap[socket.id]) socketRequestMap[socket.id] = [];
+  socketRequestMap[socket.id] = socketRequestMap[socket.id].filter((t) => now - t < windowMs);
+  if (socketRequestMap[socket.id].length >= limit) return true;
+  socketRequestMap[socket.id].push(now);
+  return false;
+}
+// 🔁 정기적으로 오래된 기록 정리 (메모리 누수 방지)
+setInterval(() => {
+  const now = Date.now();
+  for (const id in socketRequestMap) {
+    socketRequestMap[id] = socketRequestMap[id].filter((t) => now - t < 5000);
+    if (socketRequestMap[id].length === 0) delete socketRequestMap[id];
+  }
+}, 600000); // 10분 간격
+
+
+
 let Scores = {};
 const RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
 const Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
@@ -176,6 +197,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('SendPos', (pos) => {
+      // if (isRateLimited(socket, 10, 1000)) {
+      //   console.log(`\u274C ${socket.id} 과도한 이동 요청`);
+      //   socket.disconnect(true);
+      //   return; // 과도한 요청은 무시
+      // }
     const data = `${socket.id}:${pos}`;
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
@@ -191,6 +217,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('SendItemGet', (playerId) => {
+      if (isRateLimited(socket, 10, 1000)) {
+        console.log(`\u274C ${socket.id} 과도한 아이템 획득 요청`);
+        socket.disconnect(true);
+        return; // 과도한 요청은 무시
+      }
     const playerRoom = PlayerRooms[playerId];
     if (playerRoom && RoomPlayerStatus[playerRoom][playerId]) {
       RoomPlayerStatus[playerRoom][playerId].score += 1;
@@ -199,6 +230,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('SendAttack', (attacks) => {
+      if (isRateLimited(socket, 10, 1000)) {
+        console.log(`\u274C ${socket.id} 과도한 공격 요청`);
+        socket.disconnect(true);
+        return; // 과도한 요청은 무시
+      }
     console.log("서버받음: ", attacks);
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
@@ -207,6 +243,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('SendSucceseAttack', (data) => {
+      if (isRateLimited(socket, 10, 1000)) {
+        console.log(`\u274C ${socket.id} 과도한 공격성공 요청`);
+        socket.disconnect(true);
+        return; // 과도한 요청은 무시
+      }
     const [attackerID, targetID] = data.split(',');
     const attackerRoom = PlayerRooms[attackerID];
     const targetRoom = PlayerRooms[targetID];
@@ -278,7 +319,7 @@ io.on('connection', (socket) => {
 });
 
 // 🔹 서버 실행
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 서버 실행 중');
 });
 //<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
