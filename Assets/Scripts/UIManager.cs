@@ -214,7 +214,6 @@ public class UIManager : MonoBehaviour
         youdied = true;
 
         float countdown = playerMove.respawnTime;
-        Debug.Log(countdown);
         youdiedPanel.SetActive(true);
 
 
