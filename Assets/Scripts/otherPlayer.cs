@@ -64,7 +64,8 @@ public class OtherPlayer : MonoBehaviour
     }
     void FixedUpdate()
     {
-        transform.position = Vector3.Lerp(transform.position, otherPos, Time.deltaTime * 10f);
+
+        transform.position = Vector3.Lerp(transform.position, otherPos, Time.deltaTime * 3f);
         transform.rotation = Quaternion.Euler(0, otherRotationY, 0); // Y축 회전 적용
     }
     void LateUpdate()

@@ -145,13 +145,20 @@ public class PlayerMove : MonoBehaviour
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.5f || Mathf.Abs(transform.rotation.y - rotationY) > 0.08f)
         {
+
             if (SocketManager != null)
             {
+                GameObject otherPlayer = GameObject.Find("otherPlayers");
+                Vector3 poqs = transform.position + new Vector3(3, 0, 0); // Y축을 약간 올려서 위치 보정
+                otherPlayer.GetComponent<OtherPlayer>().SetPosition(poqs,rotationY);
+
+
 
                 string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.eulerAngles.y}";
                 SocketManagerScript.SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
                 rotationY = transform.rotation.y; // 현재 Y축 회전 값 저장
+
             }
         }
 

@@ -66,7 +66,7 @@ const MAX_PLAYERS_PER_ROOM = 6;
 // ✅ 방별 타이머 관리 시스템
 const roomStartTime = {}; // { roomName: 시작시간 } - 각 방의 게임 시작 시간을 저장
 const roomTimers = {};    // { roomName: setInterval 핸들 } - 각 방의 타이머 인터벌을 저장
-const GAME_DURATION = 10 * 60 * 10000; // 10분 (밀리초 단위) - 게임 지속 시간
+const GAME_DURATION = 10 * 60 * 1000; // 10분 (밀리초 단위) - 게임 지속 시간
 
 const itemSpawnTimers = {}; // { roomName: setInterval 핸들 }
 
