@@ -110,7 +110,7 @@ io.on('connection', (socket) => {
       if (!itemSpawnTimers[joinedRoom]) {
         itemSpawnTimers[joinedRoom] = setInterval(() => {
           // 6개 스폰포인트에 대해 30% 확률로 1, 아니면 0
-          const spawnArray = Array.from({length: 6}, () => Math.random() < 0.1 ? 1 : 0);
+          const spawnArray = Array.from({length: 6}, () => Math.random() < 0.3 ? 1 : 0);
           // 배열을 문자열로 변환: "0,1,0,0,1,0"
           const spawnString = spawnArray.join(',');
           io.to(joinedRoom).emit('ServerToItemSpawn', spawnString);
