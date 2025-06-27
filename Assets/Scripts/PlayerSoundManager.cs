@@ -23,6 +23,9 @@ public class PlayerSoundManager : MonoBehaviour
     public AudioClip DeathClip;
 
     public AudioClip clapClip;
+    public AudioClip whistleClip;
+
+    public AudioClip getPointClip;
 
     public void PlayFootstep()
     {
@@ -81,5 +84,15 @@ public class PlayerSoundManager : MonoBehaviour
     {
         WedgieaudioSource.Stop();
         WedgieaudioSource.PlayOneShot(clapClip);
+    }
+    public void PlayWistle()
+    {
+        audioSource.Stop();
+        audioSource.PlayOneShot(whistleClip);
+    }
+    public void PlayGetPoint()
+    {
+        WedgieaudioSource.Stop();
+        WedgieaudioSource.PlayOneShot(getPointClip);
     }
 }

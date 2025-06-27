@@ -211,10 +211,13 @@ public class UIManager : MonoBehaviour
     {
         StopCoroutine(DeathCamera());
         StartCoroutine(DeathCamera());
-        youdiedPanel.SetActive(true);
         youdied = true;
 
         float countdown = playerMove.respawnTime;
+        Debug.Log(countdown);
+        youdiedPanel.SetActive(true);
+
+
         while (countdown > 0f)
         {
             respawnTimeText.text = $"Respawning in {Mathf.CeilToInt(countdown)}...";
@@ -252,6 +255,9 @@ public class UIManager : MonoBehaviour
     IEnumerator RewardCamera()
     {
         rewarding = true;
+        playerSoundManager.PlayWistle();
+        yield return new WaitForSeconds(5f);
+
         rewardPlayerText.text = scoreManager.GetTopPlayerNickname();
         Vector3 curtainLeftStartPos = CurtainLeft.transform.position;
         Vector3 curtainRightStartPos = CurtainRight.transform.position;
@@ -343,7 +349,8 @@ public class UIManager : MonoBehaviour
     {
         playerMove.invincibleShield.SetActive(true);
         playerMove.attackPointBack.SetActive(false);
-        invincibleShieldPanel.SetActive(true);
+        if (!rewarding)
+            invincibleShieldPanel.SetActive(true);
 
         float duration = 3f;
         float remaining = duration;
@@ -366,7 +373,7 @@ public class UIManager : MonoBehaviour
     public void GameSet()
     {
         restartPanel.SetActive(false);
-        socketManager.Gamerestart(socketManager.mySocketID);
+        socketManager.Gamerestart();
     }
 
 }

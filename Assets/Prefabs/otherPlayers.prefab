@@ -3735,9 +3735,9 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 2
   m_Constraints: 112
   m_CollisionDetection: 3
 --- !u!65 &5444835407842126789
@@ -3809,7 +3809,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4428847562279949321}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 28e375c0bc72e22468af431af52178fc, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -3863,6 +3863,9 @@ MonoBehaviour:
   pantySetPosClip: {fileID: 8300000, guid: c80b31953a7c27940b3dffa47065a6ce, type: 3}
   KillClip: {fileID: 8300000, guid: fc85cb0f02bc07748891b75831ced1c6, type: 3}
   DeathClip: {fileID: 8300000, guid: 7b019fe3833d2024ea9f38f3d4facca1, type: 3}
+  clapClip: {fileID: 0}
+  whistleClip: {fileID: 0}
+  getPointClip: {fileID: 0}
 --- !u!82 &2194092647569528611
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3885,7 +3888,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 25
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -3920,7 +3923,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

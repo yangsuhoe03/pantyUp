@@ -120,7 +120,7 @@ public class PlayerMove : MonoBehaviour
         HandleOtherPlayerHealth();
         HandleWedgieHealth();
 
-        if (Input.GetMouseButtonDown(0) && !dead && Cursor.lockState == CursorLockMode.Locked )
+        if (Input.GetMouseButtonDown(0) && !dead && Cursor.lockState == CursorLockMode.Locked)
         {
             if (isAttack == false && isGrounded && attackSuccess == false)// 공격 상태가 아니고 땅에 있을 때만 공격 가능
             {
@@ -160,7 +160,7 @@ public class PlayerMove : MonoBehaviour
     }
     public void Jump()
     {
-        if (dead || Cursor.lockState != CursorLockMode.Locked || UIManagerScript.rewarding)  return;
+        if (dead || Cursor.lockState != CursorLockMode.Locked || UIManagerScript.rewarding) return;
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isAttack && !jumpRequested)
         {
@@ -182,7 +182,11 @@ public class PlayerMove : MonoBehaviour
     }
     public void Move()
     {
-        if (dead || Cursor.lockState != CursorLockMode.Locked) return;
+        if (dead || Cursor.lockState != CursorLockMode.Locked)
+        {
+            player_Anim.Move(0);
+            return;
+        }
 
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveZ = Input.GetAxisRaw("Vertical");
@@ -464,9 +468,11 @@ public class PlayerMove : MonoBehaviour
 
         // 정확히 위치 고정
         playerPanty.transform.localPosition = targetPos;
-        if (dead!)
-        { playerSoundManager.PlaySetPos(); }
-        
+        if (!dead)
+        {
+            playerSoundManager.PlaySetPos();
+        }
+
     }
     private void OnTriggerStay(Collider other)
     {

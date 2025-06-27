@@ -38,6 +38,7 @@ public class ScoreUpItem : MonoBehaviour
             if (other.gameObject == myPlayer)
             {
                 socketManager.GetComponent<SocketManager>().SendGetItem(mySocketID);
+                GameObject.Find("Player").GetComponent<PlayerSoundManager>().PlayGetPoint();
             }
             if (spawnPoint != null)
             {

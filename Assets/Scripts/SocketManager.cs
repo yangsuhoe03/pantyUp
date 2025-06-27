@@ -58,7 +58,7 @@ public class SocketManager : MonoBehaviour
     private static extern void SendPlayerGetItem(string mySocketID);
 
     [DllImport("__Internal")]
-    private static extern void GameRestart(string mySocketID);
+    private static extern void GameRestart();
 
 
     void Awake()
@@ -172,11 +172,11 @@ public class SocketManager : MonoBehaviour
     }
 
 
-    public void Gamerestart(string mySocketID)
+    public void Gamerestart()
     {
         Debug.Log("게임 리스타트 요청");
 #if !UNITY_EDITOR && UNITY_WEBGL
-        GameRestart(mySocketID);
+        GameRestart();
 #endif
     }
 
@@ -316,6 +316,7 @@ public class SocketManager : MonoBehaviour
                 attackerOtherPlayer.otherPlayerPanty = target.GetComponent<OtherPlayer>().playerPanty;
             }
             target.GetComponent<OtherPlayer>().isWedgied = true;
+            target.GetComponent<OtherPlayer>().PlayStretching();
         }
     }
     public void ReceiveSucceseAttack(string attacks)
