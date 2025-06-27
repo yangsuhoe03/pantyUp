@@ -40,6 +40,10 @@ public class OtherPlayer : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerSoundManager = GetComponent<PlayerSoundManager>();
         //rb.freezeRotation = false;
+        if (mynickNameText.text == "null")
+        {
+
+        }
     }
     void Update()
     {
@@ -130,8 +134,9 @@ public class OtherPlayer : MonoBehaviour
         }
         else if (num == "4")
         {
+            if(landing == false)
+                playerSoundManager.PlayLand();
             landing = true;
-            playerSoundManager.PlayLand();
             SetAnimationParameter();
         }
         else if (num == "5")
@@ -313,5 +318,9 @@ public class OtherPlayer : MonoBehaviour
         {
             playerSoundManager.PlayFootstep();
         }
+    }
+    public void PlayStretching()
+    {
+        playerSoundManager.PlayStretching();
     }
 }
