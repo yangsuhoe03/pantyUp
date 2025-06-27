@@ -148,9 +148,9 @@ public class PlayerMove : MonoBehaviour
 
             if (SocketManager != null)
             {
-                GameObject otherPlayer = GameObject.Find("otherPlayers");
-                Vector3 poqs = transform.position + new Vector3(3, 0, 0); // Y축을 약간 올려서 위치 보정
-                otherPlayer.GetComponent<OtherPlayer>().SetPosition(poqs,rotationY);
+                // GameObject otherPlayer = GameObject.Find("otherPlayers");
+                // Vector3 poqs = transform.position + new Vector3(3, 0, 0); // Y축을 약간 올려서 위치 보정
+                // otherPlayer.GetComponent<OtherPlayer>().SetPosition(poqs,rotationY);
 
 
 
