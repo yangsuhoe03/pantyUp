@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
     public Button tutorialButton;
     public Button restartButton;
 
+    public Slider mouseSensitivityslide;
     public Image wedgieHealthBar;
 
     public ScoreManager scoreManager;
@@ -83,6 +84,11 @@ public class UIManager : MonoBehaviour
         if (restartButton != null)
         {
             restartButton.onClick.AddListener(GameSet);
+        }
+        if (mouseSensitivityslide != null)
+        {
+            mouseSensitivityslide.onValueChanged.AddListener(OnMouseSenseValueChanged);
+            mouseSensitivityslide.value = Camera.main.GetComponent<CameraMove>().mouseSensitivity/30;
         }
         cameraManager = GetComponent<CameraManager>();
         usernameText.text = scoreManager.userName;
@@ -204,6 +210,11 @@ public class UIManager : MonoBehaviour
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time % 60);
         playTimerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    public void OnMouseSenseValueChanged(float newValue)
+    {
+        Camera.main.GetComponent<CameraMove>().mouseSensitivity = newValue * 30;
     }
     public void GameEnd()
     {
