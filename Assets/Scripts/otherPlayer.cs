@@ -32,6 +32,8 @@ public class OtherPlayer : MonoBehaviour
     public float wedgieCooldown = 5f;
     public Rigidbody rb;
 
+    Vector3 otherPos;
+    float otherRotationY;
     bool isAttacked = false;
     void Start()
     {
@@ -60,6 +62,11 @@ public class OtherPlayer : MonoBehaviour
 
         SoundPlayer();
     }
+    void FixedUpdate()
+    {
+        transform.position = Vector3.Lerp(transform.position, otherPos, Time.deltaTime * 10f);
+        transform.rotation = Quaternion.Euler(0, otherRotationY, 0); // Y축 회전 적용
+    }
     void LateUpdate()
     {
         LookPlayer();
@@ -73,9 +80,10 @@ public class OtherPlayer : MonoBehaviour
     {
         //transform.position = pos;
         // 부드러운 움직임을 위한 보간 적용
-        transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * 10f);
-        transform.rotation = Quaternion.Euler(0, rotationY, 0); // Y축 회전 적용
+        otherPos = pos;
+        otherRotationY = rotationY;
         lastSentPosition = pos;
+        
     }
     public void LookPlayer()
     {
