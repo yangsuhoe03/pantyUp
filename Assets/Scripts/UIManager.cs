@@ -44,6 +44,7 @@ public class UIManager : MonoBehaviour
     SocketManager socketManager;
     public TextMeshPro rewardPlayerText;
     public PlayerSoundManager playerSoundManager;
+    AudioSource audioSource;
     void Start()
     {
         socketManager = GameObject.Find("SocketManager").GetComponent<SocketManager>();
@@ -86,6 +87,7 @@ public class UIManager : MonoBehaviour
         cameraManager = GetComponent<CameraManager>();
         usernameText.text = scoreManager.userName;
         playerMove = GameObject.Find("Player").GetComponent<PlayerMove>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -168,6 +170,8 @@ public class UIManager : MonoBehaviour
         }
         pausePanel.SetActive(false);
         SetCursorState(true);
+        audioSource.Stop();
+
     }
 
     public void SettingPanel()
