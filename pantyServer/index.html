@@ -6,7 +6,30 @@
     <title>Unity Web Player | pantyUp</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+       <style>
+      body {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        overflow: hidden;
+        
+    
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        top: 0;
+        left: 0;
+        
+        display: block;
+        
+      }
+    </style>
   </head>
+  
   <body>
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1"></canvas>
@@ -16,12 +39,7 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">pantyUp</div>
-      </div>
+      
     </div>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
@@ -117,12 +135,19 @@
                 };
 
               }).catch((message) => {
-                alert(message);
+                //alert(message);
               });
             };
 
       document.body.appendChild(script);
 
+    </script>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+      canvas.style.width = window.innerWidth + 1 +"px";
+      canvas.style.height = window.innerHeight+ 1 + "px";
+      console.log("Canvas size set to: " + window.screen.width + " x " + window.screen.height);
+      console.log("Canvas style size set to: " + canvas.style.width + " x " + canvas.style.height);
     </script>
   </body>
 </html>

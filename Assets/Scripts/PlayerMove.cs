@@ -91,19 +91,19 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
-        //디버깅용 키
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Death(GameObject.Find("Player"));
-        }
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            UIManagerScript.GameEnd();
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Respawn();
-        }
+        // //디버깅용 키
+        // if (Input.GetKeyDown(KeyCode.F))
+        // {
+        //     Death(GameObject.Find("Player"));
+        // }
+        // if (Input.GetKeyDown(KeyCode.G))
+        // {
+        //     UIManagerScript.GameEnd();
+        // }
+        // if (Input.GetKeyDown(KeyCode.R))
+        // {
+        //     Respawn();
+        // }
 
         if (isAttacked && otherPlayerRighthand != null)
         {
@@ -593,3 +593,32 @@ public class PlayerMove : MonoBehaviour
         playerSoundManager.PlayDeath();
     }
 }
+
+    // <style>
+    //   body {
+    //     margin: 0;
+    //     padding: 0;
+    //     border: 0;
+        
+    //     overflow: hidden;
+    //   }
+    //   canvas {
+    //     width: 100%;
+    //     height: 100%;
+    //     margin: 0;
+    //     padding: 0;
+    //     border: 0;
+    //     top: 0;
+    //     left: 0;
+        
+    //     display: block;
+        
+    //   }
+    // </style>
+// <script>
+//       var canvas = document.querySelector("#unity-canvas");
+//       canvas.style.width = window.innerWidth + 1 +"px";
+//       canvas.style.height = window.innerHeight+ 1 + "px";
+//       console.log("Canvas size set to: " + window.screen.width + " x " + window.screen.height);
+//       console.log("Canvas style size set to: " + canvas.style.width + " x " + canvas.style.height);
+//     </script>

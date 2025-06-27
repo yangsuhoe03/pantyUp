@@ -322,4 +322,5 @@ io.on('connection', (socket) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 서버 실행 중');
 });
+
 //<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
