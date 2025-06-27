@@ -145,8 +145,6 @@ public class PlayerMove : MonoBehaviour
 
         if (Vector3.Distance(transform.position, lastSentPosition) > 0.5f || Mathf.Abs(transform.rotation.y - rotationY) > 0.08f)
         {
-            Debug.Log("플레이어 위치 전송됨: " + transform.position + ", 회전: " + transform.rotation.y);
-            //Debug.Log("플레이어 위치 전송됨: " + transform.position + ", 회전: " + transform.rotation.y);
             if (SocketManager != null)
             {
 
