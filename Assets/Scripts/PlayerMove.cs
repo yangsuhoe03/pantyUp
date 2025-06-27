@@ -143,8 +143,9 @@ public class PlayerMove : MonoBehaviour
         }
 
 
-        if (Vector3.Distance(transform.position, lastSentPosition) > 0.05f || Mathf.Abs(transform.rotation.y - rotationY) > 0.01f)
+        if (Vector3.Distance(transform.position, lastSentPosition) > 0.5f || Mathf.Abs(transform.rotation.y - rotationY) > 0.08f)
         {
+            Debug.Log("플레이어 위치 전송됨: " + transform.position + ", 회전: " + transform.rotation.y);
             //Debug.Log("플레이어 위치 전송됨: " + transform.position + ", 회전: " + transform.rotation.y);
             if (SocketManager != null)
             {
@@ -152,7 +153,7 @@ public class PlayerMove : MonoBehaviour
                 string pos = $"{transform.position.x},{transform.position.y},{transform.position.z},{transform.eulerAngles.y}";
                 SocketManagerScript.SendPlayerPosition(pos);
                 lastSentPosition = transform.position;
-                rotationY = transform.eulerAngles.y; // 현재 Y축 회전 값 저장
+                rotationY = transform.rotation.y; // 현재 Y축 회전 값 저장
             }
         }
 
