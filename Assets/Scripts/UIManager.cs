@@ -389,5 +389,8 @@ public class UIManager : MonoBehaviour
         restartPanel.SetActive(false);
         socketManager.Gamerestart();
     }
+    public void feedbackLink(){
+        Application.OpenURL("https://forms.gle/vz4ff7V1eBy4ZxfTA");
+    }
 
 }
