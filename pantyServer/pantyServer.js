@@ -71,6 +71,8 @@ function writeLog(message) {
 
 let Scores = {};
 const playerCount = 0;
+const bestPlayerCount = 0; // 최고 플레이어 수
+const allPlayercount = 0; // 총 플레이어 수
 const RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
 const Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
 const PlayerRooms = {}; // { playerId: roomName } - 플레이어가 속한 방 정보
@@ -101,8 +103,13 @@ function getRemainingTime(roomName) {
 }
 
 io.on('connection', (socket) => {
-  console.log(' Unity 클라이언트 연결됨', socket.id);
+  //console.log(' Unity 클라이언트 연결됨', socket.id);
   playerCount++;
+  allPlayercount++;
+  if( playerCount > bestPlayerCount) {
+    bestPlayerCount = playerCount;
+    writeLog(`최고 플레이어 수 갱신: ${bestPlayerCount}`);
+  }
 
   socket.on('joinRandomRoom', (playerId) => {
     let joinedRoom = null;
@@ -195,7 +202,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('setNickName', (playerStatus) => {
-    console.log("닉네임 설정 받음: ", playerStatus);
+    //console.log("닉네임 설정 받음: ", playerStatus);
     const [id, nickname] = playerStatus.split(',');
     const playerRoom = PlayerRooms[id];
     if (!playerRoom) return;
@@ -209,7 +216,7 @@ io.on('connection', (socket) => {
       RoomPlayerStatus[playerRoom][id].nickname = nickname;
     }
 
-    console.log("정보 전송: ", UpdatePlayerStatus(playerRoom));
+    //console.log("정보 전송: ", UpdatePlayerStatus(playerRoom));
     io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
     io.to(playerRoom).emit('ServerToMakePlayers');
   });
@@ -253,7 +260,7 @@ io.on('connection', (socket) => {
         socket.disconnect(true);
         return; // 과도한 요청은 무시
       }
-    console.log("서버받음: ", attacks);
+    //console.log("서버받음: ", attacks);
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
       io.to(playerRoom).emit('ServerToAttack', attacks);
@@ -324,11 +331,11 @@ io.on('connection', (socket) => {
         }
         delete roomStartTime[playerRoom]; // 시작 시간 정보 삭제
 
-        console.log(`방 ${playerRoom} 삭제됨`);
+        //console.log(`방 ${playerRoom} 삭제됨`);
       } else {
         io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
         io.to(playerRoom).emit('roomPlayerList', Rooms[playerRoom].join(','));
-        console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
+        //console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
       }
       if (itemSpawnTimers[playerRoom]) {
         clearInterval(itemSpawnTimers[playerRoom]);
