@@ -23,7 +23,8 @@ public class player_anim : MonoBehaviour
 
     public SocketManager socketManager;
     public Animator animator1, animator2;
-    public GameObject player1, player2, player3, playerdeadbody;
+    public GameObject player1, player2, player3, uzuhamaHead, playerdeadbody;
+    public Transform uzuhamaheadSpawnPosition;
 
     PlayerSoundManager playerSoundManager;
 
@@ -122,6 +123,9 @@ public class player_anim : MonoBehaviour
         player2.SetActive(true);
         player3.SetActive(true);
         animator2.SetTrigger("death");
+        GameObject uzuhamahead = Instantiate(uzuhamaHead, uzuhamaheadSpawnPosition);
+        uzuhamahead.GetComponent<Rigidbody>().AddForce(Vector3.up*2, ForceMode.Impulse);
+        Destroy(uzuhamahead, 10f);
 
         currentmove = "11";
         socketManager.SendPlayerAnim($"{socketManager.GetMySocketID()},{currentmove}");
