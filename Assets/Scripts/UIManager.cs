@@ -390,7 +390,7 @@ public class UIManager : MonoBehaviour
         socketManager.Gamerestart();
     }
     public void feedbackLink(){
-        Application.OpenURL("https://forms.gle/vz4ff7V1eBy4ZxfTA");
+        Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSfr8a76mXOfduMsqs6R9-YFBKb_SUKLDQqiDLrU_246VOIhyw/viewform?usp=dialog");
     }
 
 }
