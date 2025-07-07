@@ -5,6 +5,8 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
+const fs = require('fs');
+
 
 const io = new Server(server, {
   cors: {
@@ -56,7 +58,21 @@ setInterval(() => {
 
 
 
+const LOG_PATH = './logs/game.log';
+
+function writeLog(message) {
+  const timestamp = new Date().toISOString();
+  const logEntry = `[${timestamp}] ${message}\n`;
+  fs.appendFile(LOG_PATH, logEntry, (err) => {
+    if (err) console.error('로그 저장 실패:', err);
+  });
+}
+
+
 let Scores = {};
+const playerCount = 0;
+const bestPlayerCount = 0; // 최고 플레이어 수
+const allPlayercount = 0; // 총 플레이어 수
 const RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
 const Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
 const PlayerRooms = {}; // { playerId: roomName } - 플레이어가 속한 방 정보
@@ -87,10 +103,18 @@ function getRemainingTime(roomName) {
 }
 
 io.on('connection', (socket) => {
-  console.log(' Unity 클라이언트 연결됨', socket.id);
+  //console.log(' Unity 클라이언트 연결됨', socket.id);
+  playerCount++;
+  allPlayercount++;
+  if( playerCount > bestPlayerCount) {
+    bestPlayerCount = playerCount;
+    writeLog(`최고 플레이어 수 갱신: ${bestPlayerCount}`);
+  }
 
   socket.on('joinRandomRoom', (playerId) => {
     let joinedRoom = null;
+    writeLog(`플레이어 ${playerId}가 방에 입장`);
+    writeLog(`현재 플레이어 수: ${playerCount}`);
 
     for (const roomName in Rooms) {
       if (Rooms[roomName].length < MAX_PLAYERS_PER_ROOM) {
@@ -102,7 +126,8 @@ io.on('connection', (socket) => {
 
     if (!joinedRoom) {
       roomCount++;
-      console.log("방 생성: ", roomCount);
+      //console.log("방 생성: ", roomCount);
+      writeLog(`방 생성: ${roomCount}`);
       joinedRoom = `room${roomCount}`;
       Rooms[joinedRoom] = [playerId];
       RoomPlayerStatus[joinedRoom] = {};
@@ -121,11 +146,11 @@ io.on('connection', (socket) => {
     PlayerRooms[playerId] = joinedRoom;
     socket.join(joinedRoom);
 
-    console.log(`${playerId} joined ${joinedRoom}`);
+    //console.log(`${playerId} joined ${joinedRoom}`);
 
     socket.emit('joinedRoom', joinedRoom);
     io.to(joinedRoom).emit('roomPlayerList', Rooms[joinedRoom].join(','));
-    console.log(`방 ${joinedRoom} 플레이어 목록: `, Rooms[joinedRoom]);
+    //console.log(`방 ${joinedRoom} 플레이어 목록: `, Rooms[joinedRoom]);
     // 방 입장 시 바로 플레이어 상태 업데이트 전송
     //io.to(joinedRoom).emit('updatePlayerStatus', UpdatePlayerStatus(joinedRoom));
 
@@ -177,7 +202,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('setNickName', (playerStatus) => {
-    console.log("닉네임 설정 받음: ", playerStatus);
+    //console.log("닉네임 설정 받음: ", playerStatus);
     const [id, nickname] = playerStatus.split(',');
     const playerRoom = PlayerRooms[id];
     if (!playerRoom) return;
@@ -191,7 +216,7 @@ io.on('connection', (socket) => {
       RoomPlayerStatus[playerRoom][id].nickname = nickname;
     }
 
-    console.log("정보 전송: ", UpdatePlayerStatus(playerRoom));
+    //console.log("정보 전송: ", UpdatePlayerStatus(playerRoom));
     io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
     io.to(playerRoom).emit('ServerToMakePlayers');
   });
@@ -235,7 +260,7 @@ io.on('connection', (socket) => {
         socket.disconnect(true);
         return; // 과도한 요청은 무시
       }
-    console.log("서버받음: ", attacks);
+    //console.log("서버받음: ", attacks);
     const playerRoom = PlayerRooms[socket.id];
     if (playerRoom) {
       io.to(playerRoom).emit('ServerToAttack', attacks);
@@ -267,6 +292,8 @@ io.on('connection', (socket) => {
 
     io.to(attackerRoom).emit('ServerToSucceseAttack', data);
     io.to(attackerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(attackerRoom));
+    writeLog(`AttackSuccess - data:${data}`);
+
   });
 
   socket.on('SendFaildAttack', (data) => {
@@ -277,7 +304,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('클라이언트 연결 종료');
+    playerCount--;
+    writeLog(`현재 플레이어 수: ${playerCount}`);
+    
+    //console.log('클라이언트 연결 종료');
     const disconnectedId = socket.id;
     const playerRoom = PlayerRooms[disconnectedId];
 
@@ -301,20 +331,22 @@ io.on('connection', (socket) => {
         }
         delete roomStartTime[playerRoom]; // 시작 시간 정보 삭제
 
-        console.log(`방 ${playerRoom} 삭제됨`);
+        //console.log(`방 ${playerRoom} 삭제됨`);
       } else {
         io.to(playerRoom).emit('updatePlayerStatus', UpdatePlayerStatus(playerRoom));
         io.to(playerRoom).emit('roomPlayerList', Rooms[playerRoom].join(','));
-        console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
+        //console.log(`플레이어 ${disconnectedId}가 방 ${playerRoom}에서 나감`);
       }
       if (itemSpawnTimers[playerRoom]) {
         clearInterval(itemSpawnTimers[playerRoom]);
         delete itemSpawnTimers[playerRoom];
       }
     }
+    writeLog(`PlayerLeft - id:${socket.id} - room:${playerRoom} - reason:disconnected`);
 
     delete PlayerRooms[disconnectedId];
-    console.log(`플레이어 ${disconnectedId} 정보 정리 완료`);
+    //console.log(`플레이어 ${disconnectedId} 정보 정리 완료`);
+    
   });
 });
 
@@ -322,4 +354,5 @@ io.on('connection', (socket) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 서버 실행 중');
 });
+
 //<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
