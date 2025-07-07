@@ -14,6 +14,8 @@ public class OtherPlayer : MonoBehaviour
     public GameObject attackPointFront;
     public GameObject attackPointBack;
     public GameObject invincibleShield;
+    public GameObject uzuhamaHead;
+    public Transform uzuhamaheadSpawnPosition;
     private string currentmove;
     //animation Parameter List
     public bool walking, running, walkingbackward, landing, grabsuccess;
@@ -84,7 +86,7 @@ public class OtherPlayer : MonoBehaviour
         otherPos = pos;
         otherRotationY = rotationY;
         lastSentPosition = pos;
-        
+
     }
     public void LookPlayer()
     {
@@ -143,7 +145,7 @@ public class OtherPlayer : MonoBehaviour
         }
         else if (num == "4")
         {
-            if(landing == false)
+            if (landing == false)
                 playerSoundManager.PlayLand();
             landing = true;
             SetAnimationParameter();
@@ -188,6 +190,11 @@ public class OtherPlayer : MonoBehaviour
             animator2.SetTrigger("death");
             attackPointFront.SetActive(false);
             attackPointBack.SetActive(false);
+            GameObject uzuhamahead = Instantiate(uzuhamaHead, uzuhamaheadSpawnPosition);
+            uzuhamahead.GetComponent<Rigidbody>().AddForce(Vector3.up * 2, ForceMode.Impulse);
+            Destroy(uzuhamahead, 10f);
+
+
             isdead = true;
             isWedgied = false;
         }
