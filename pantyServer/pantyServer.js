@@ -10,7 +10,7 @@ const fs = require('fs');
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // 개발 시엔 전체 허용, 배포 시엔 특정 도메인으로 제한
+    origin: "http://13.125.67.86", // 개발 시엔 전체 허용, 배포 시엔 특정 도메인으로 제한
     methods: ["GET", "POST"]
   }
 });
