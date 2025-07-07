@@ -70,21 +70,21 @@ function writeLog(message) {
 
 
 let Scores = {};
-const playerCount = 0;
-const bestPlayerCount = 0; // 최고 플레이어 수
-const allPlayercount = 0; // 총 플레이어 수
-const RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
-const Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
-const PlayerRooms = {}; // { playerId: roomName } - 플레이어가 속한 방 정보
+let playerCount = 0;
+let bestPlayerCount = 0; // 최고 플레이어 수
+let allPlayercount = 0; // 총 플레이어 수
+let RoomPlayerStatus = {}; // { roomName: { playerId: { nickname, score } } }
+let Rooms = {}; // { roomName: [playerId1, playerId2, ...] }
+let PlayerRooms = {}; // { playerId: roomName } - 플레이어가 속한 방 정보
 let roomCount = 0;
 const MAX_PLAYERS_PER_ROOM = 6;
 
 // ✅ 방별 타이머 관리 시스템
-const roomStartTime = {}; // { roomName: 시작시간 } - 각 방의 게임 시작 시간을 저장
-const roomTimers = {};    // { roomName: setInterval 핸들 } - 각 방의 타이머 인터벌을 저장
-const GAME_DURATION = 10 * 60 * 1000; // 10분 (밀리초 단위) - 게임 지속 시간
+let roomStartTime = {}; // { roomName: 시작시간 } - 각 방의 게임 시작 시간을 저장
+let roomTimers = {};    // { roomName: setInterval 핸들 } - 각 방의 타이머 인터벌을 저장
+let GAME_DURATION = 10 * 60 * 1000; // 10분 (밀리초 단위) - 게임 지속 시간
 
-const itemSpawnTimers = {}; // { roomName: setInterval 핸들 }
+let itemSpawnTimers = {}; // { roomName: setInterval 핸들 }
 
 function UpdatePlayerStatus(roomName) {
   if (!RoomPlayerStatus[roomName]) return '';
@@ -104,8 +104,9 @@ function getRemainingTime(roomName) {
 
 io.on('connection', (socket) => {
   //console.log(' Unity 클라이언트 연결됨', socket.id);
-  playerCount++;
-  allPlayercount++;
+  playerCount ++;
+  console.log(`현재 플레이어 수: ${playerCount}`);
+  allPlayercount ++;
   if( playerCount > bestPlayerCount) {
     bestPlayerCount = playerCount;
     writeLog(`최고 플레이어 수 갱신: ${bestPlayerCount}`);
@@ -135,7 +136,7 @@ io.on('connection', (socket) => {
       if (!itemSpawnTimers[joinedRoom]) {
         itemSpawnTimers[joinedRoom] = setInterval(() => {
           // 6개 스폰포인트에 대해 30% 확률로 1, 아니면 0
-          const spawnArray = Array.from({length: 6}, () => Math.random() < 0.2 ? 1 : 0);
+          const spawnArray = Array.from({length: 6}, () => Math.random() < 0.1 ? 1 : 0);
           // 배열을 문자열로 변환: "0,1,0,0,1,0"
           const spawnString = spawnArray.join(',');
           io.to(joinedRoom).emit('ServerToItemSpawn', spawnString);
@@ -168,7 +169,7 @@ io.on('connection', (socket) => {
         let isScoreOver = false;
         if (RoomPlayerStatus[joinedRoom]) {
           for (const pid in RoomPlayerStatus[joinedRoom]) {
-            if (RoomPlayerStatus[joinedRoom][pid].score >=10) {
+            if (RoomPlayerStatus[joinedRoom][pid].score >=30) {
               isScoreOver = true;
               break;
             }
