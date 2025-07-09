@@ -169,7 +169,7 @@ io.on('connection', (socket) => {
         let isScoreOver = false;
         if (RoomPlayerStatus[joinedRoom]) {
           for (const pid in RoomPlayerStatus[joinedRoom]) {
-            if (RoomPlayerStatus[joinedRoom][pid].score >=30) {
+            if (RoomPlayerStatus[joinedRoom][pid].score >=50) {
               isScoreOver = true;
               break;
             }
@@ -283,8 +283,12 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (!RoomPlayerStatus[attackerRoom][attackerID] || !RoomPlayerStatus[attackerRoom][targetID]) {
-      console.log('유효하지 않은 플레이어 ID:', { attackerID, targetID });
+    if (
+      !RoomPlayerStatus[attackerRoom] ||
+      !RoomPlayerStatus[attackerRoom][attackerID] ||
+      !RoomPlayerStatus[attackerRoom][targetID]
+    ) {
+      console.log('유효하지 않은 플레이어 ID 또는 방:', { attackerID, targetID, attackerRoom });
       return;
     }
 
@@ -356,4 +360,15 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('🚀 서버 실행 중');
 });
 
-//<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+// 전역 예외 핸들러: 서버가 예기치 않게 종료되지 않도록
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // 필요하다면 로그 파일에 기록
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', reason);
+  
+  // 필요하다면 로그 파일에 기록
+});
+
+//    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
